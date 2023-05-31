@@ -1,14 +1,17 @@
+using System.Diagnostics;
+using Blogic.Crm.Infrastructure.Data;
 using Blogic.Crm.Infrastructure.Logging;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 #region Serilog
 
-IConfigurationRoot configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .Build();
+var configuration = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .Build();
 
-LoggerOptions loggerOptions = configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>()
-    ?? throw new InvalidOperationException();
+var loggerOptions = configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>()
+                    ?? throw new InvalidOperationException();
 
 LoggerBuilder loggerBuilder = new();
 
@@ -23,39 +26,50 @@ Log.Logger = loggerBuilder.CreateBootstrapLogger();
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+	var applicationBuilder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog();
+	applicationBuilder.Host.UseSerilog();
 
-    builder.Services.AddControllersWithViews();
+	applicationBuilder.Services.AddControllersWithViews();
 
-    var app = builder.Build();
+	var connectionString = applicationBuilder.Configuration.GetConnectionString(nameof(DataContext));
+	Debug.Assert(!string.IsNullOrEmpty(connectionString));
+	
+	applicationBuilder.Services.AddDbContext<DataContext>(options =>
+	{
+		options.UseSqlServer(connectionString, builder =>
+		{
+			builder.MigrationsAssembly(typeof(Program).Assembly.GetName().FullName);
+		});
+	});
+	
+	var application = applicationBuilder.Build();
 
-    app.UseSerilogRequestLogging();
+	application.UseSerilogRequestLogging();
 
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseExceptionHandler("/Home/Error");
-        app.UseHsts();
-    }
+	if (!application.Environment.IsDevelopment())
+	{
+		application.UseExceptionHandler("/Home/Error");
+		application.UseHsts();
+	}
 
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-    app.UseRouting();
-    app.UseAuthorization();
+	application.UseHttpsRedirection();
+	application.UseStaticFiles();
+	application.UseRouting();
+	application.UseAuthorization();
 
-    app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
+	application.MapControllerRoute(
+		"default",
+		"{controller=Home}/{action=Index}/{id?}");
 
-    Log.Information("Application is starting up");
-    app.Run();
+	Log.Information("Application is starting up");
+	application.Run();
 }
 catch (Exception exception)
 {
-    Log.Error("Application is shutting down. Message {Message}", exception.Message);
+	Log.Error("Application is shutting down. Message {Message}", exception.Message);
 }
 finally
 {
-    Log.CloseAndFlush();
+	Log.CloseAndFlush();
 }

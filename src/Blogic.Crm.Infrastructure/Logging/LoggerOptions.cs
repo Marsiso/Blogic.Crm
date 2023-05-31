@@ -1,18 +1,18 @@
 ﻿namespace Blogic.Crm.Infrastructure.Logging;
 
-public class LoggerOptions
+public sealed class LoggerOptions
 {
     public ConsoleSinkOptions Console { get; set; } = default!;
 
     public SeqSinkOptions Seq { get; set; } = default!;
 }
 
-public class ConsoleSinkOptions
+public sealed class ConsoleSinkOptions
 {
     public string OutputTemplate { get; set; } = default!;
 }
 
-public class SeqSinkOptions
+public sealed class SeqSinkOptions
 {
     public string ServerUrl { get; set; } = default!;
 }
