@@ -46,6 +46,7 @@ try
 
 	applicationBuilder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 	applicationBuilder.Services.AddScoped<ISecurityStampProvider, SecurityStampProvider>();
+	applicationBuilder.Services.AddScoped<ILookupNormalizer, LookupNormalizer>();
 	
 	var application = applicationBuilder.Build();
 
