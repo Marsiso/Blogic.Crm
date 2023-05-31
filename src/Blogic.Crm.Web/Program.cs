@@ -45,6 +45,7 @@ try
 	});
 
 	applicationBuilder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+	applicationBuilder.Services.AddScoped<ISecurityStampProvider, SecurityStampProvider>();
 	
 	var application = applicationBuilder.Build();
 
