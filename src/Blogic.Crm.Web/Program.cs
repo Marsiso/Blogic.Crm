@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Data;
 using Blogic.Crm.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,8 @@ try
 			builder.MigrationsAssembly(typeof(Program).Assembly.GetName().FullName);
 		});
 	});
+
+	applicationBuilder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 	
 	var application = applicationBuilder.Build();
 
