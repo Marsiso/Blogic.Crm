@@ -1,27 +1,61 @@
-var builder = WebApplication.CreateBuilder(args);
+using Blogic.Crm.Infrastructure.Logging;
+using Serilog;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+#region Serilog
 
-var app = builder.Build();
+IConfigurationRoot configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+LoggerOptions loggerOptions = configuration.GetSection(nameof(LoggerOptions)).Get<LoggerOptions>()
+    ?? throw new InvalidOperationException();
+
+LoggerBuilder loggerBuilder = new();
+
+loggerBuilder.AddConsole(loggerOptions.Console);
+loggerBuilder.AddSeq(loggerOptions.Seq);
+loggerBuilder.AddEnriches();
+loggerBuilder.OverrideMinimumLevels();
+
+Log.Logger = loggerBuilder.CreateBootstrapLogger();
+
+#endregion
+
+try
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog();
+
+    builder.Services.AddControllersWithViews();
+
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+    app.UseRouting();
+    app.UseAuthorization();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    Log.Information("Application is starting up");
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
+catch (Exception exception)
+{
+    Log.Error("Application is shutting down. Message {Message}", exception.Message);
+}
+finally
+{
+    Log.CloseAndFlush();
+}
