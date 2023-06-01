@@ -1,15 +1,6 @@
-using System.Diagnostics;
-using Blogic.Crm.Infrastructure.Authentication;
-using Blogic.Crm.Infrastructure.Commands;
-using Blogic.Crm.Infrastructure.Data;
 using Blogic.Crm.Infrastructure.Logging;
-using Blogic.Crm.Infrastructure.Validations;
-using Blogic.Crm.Infrastructure.Validators;
 using Blogic.Crm.Web.Data;
 using Blogic.Crm.Web.Installers;
-using FluentValidation;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 #region Serilog
@@ -60,6 +51,10 @@ try
 	application.MapControllerRoute(
 		"default",
 		"{controller=Home}/{action=Index}/{id?}");
+	
+	application.MapControllerRoute(
+		"default",
+		"{controller=Client}/{action=Index}/{id?}");
 
 	Log.Information("Application is starting up");
 	application.Run();

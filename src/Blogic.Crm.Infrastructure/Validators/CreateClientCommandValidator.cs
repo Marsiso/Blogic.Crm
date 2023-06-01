@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Commands;
 using FluentValidation;
 using PhoneNumbers;

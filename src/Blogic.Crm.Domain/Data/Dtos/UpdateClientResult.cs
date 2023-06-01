@@ -1,5 +1,4 @@
 using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Domain.Exceptions;
 
 namespace Blogic.Crm.Domain.Data.Dtos;
 

@@ -1,4 +1,3 @@
-using Blogic.Crm.Domain.Data.Dtos;
 using FluentValidation;
 using MediatR;
 using ValidationException = Blogic.Crm.Domain.Exceptions.ValidationException;

@@ -1,0 +1,281 @@
+@using Humanizer
+@using Blogic.Crm.Domain.Data.Entities
+@using Blogic.Crm.Infrastructure.Paging
+@model Blogic.Crm.Infrastructure.Paging.PaginatedList<Blogic.Crm.Domain.Data.Dtos.ClientRepresentation>
+
+@{
+    ViewData["Title"] = "Client Dashboard";
+}
+
+<h1 class="mt-4">Dashboard</h1>
+
+@if (Model is { Count: > 0 })
+{
+    <form method="get">
+        <table class="table table-borderless">
+            <tbody>
+            <tr>
+                <td>
+                    <label for="page-size" class="form-label">@($"Page Size: \t {Model.PageSize}")</label>
+                    <input type="range"
+                           class="form-range"
+                           min="@QueryStringParameters.MinimumPageSize"
+                           max="@QueryStringParameters.MaximumPageSize"
+                           id="page-size" name="@nameof(Model.PageSize)"
+                           value="@Model.PageSize">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn" type="submit">Filter</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <caption>@Model.TotalTotalItems Matches</caption>
+            <thead>
+            <tr>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.Id).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.Id"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.IdDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.Email).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.Email"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.EmailDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.IsEmailConfirmed).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.IsEmailConfirmed"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.IsEmailConfirmedDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.GivenName).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.GivenName"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.GivenNameDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.FamilyName).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.FamilyName"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.FamilyNameDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.Phone).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.Phone"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.PhoneDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.IsPhoneConfirmed).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.IsEmailConfirmed"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.IsEmailConfirmedDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.DateBorn).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.DateBorn"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.DateBornDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @nameof(Client.BirthNumber).Humanize()
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.BirthNumber"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
+                            </svg>
+                        </a>
+                        <a asp-action="Index"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-sortOrder="@ClientSortOrder.BirthNumberDesc"
+                           class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>
+                        @item.Email
+                        <br/>
+                        @item.NormalizedEmail
+                    </td>
+                    <td>@item.IsEmailConfirmed.ToString()</td>
+                    <td>@item.GivenName</td>
+                    <td>@item.FamilyName</td>
+                    <td>@item.Phone</td>
+                    <td>@item.IsPhoneConfirmed.ToString()</td>
+                    <td>
+                        @item.DateBorn.ToString("yyyy-MM-dd")
+                        <br>
+                        @item.DateBorn.Humanize()
+                    </td>
+                    <td>@item.BirthNumber</td>
+                </tr>
+            }
+            </tbody>
+            </table>
+    </div>
+
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <div class="d-flex justify-content-center align-items-center">
+                <a asp-action="Index"
+                   asp-route-pageSize="@(Model.PageSize)"
+                   asp-route-pageNumber="@(Model.CurrentPage - 1)"
+                   class="@($"btn {(Model.HasPrevious ? string.Empty : "disabled")}")">
+                    Previous
+                </a>
+                <span class="ms-2 me-2">@Model.CurrentPage</span>
+                <a asp-action="Index"
+                   asp-route-pageSize="@(Model.PageSize)"
+                   asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                   class="@($"btn {(Model.HasNext ? string.Empty : "disabled")}")">
+                    Next
+                </a>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+}
