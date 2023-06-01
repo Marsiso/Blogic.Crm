@@ -6,6 +6,7 @@ using Blogic.Crm.Infrastructure.Logging;
 using Blogic.Crm.Infrastructure.Validations;
 using Blogic.Crm.Infrastructure.Validators;
 using Blogic.Crm.Web.Data;
+using Blogic.Crm.Web.Installers;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,29 +37,8 @@ try
 	var applicationBuilder = WebApplication.CreateBuilder(args);
 
 	applicationBuilder.Host.UseSerilog();
-
-	applicationBuilder.Services.AddControllersWithViews();
-
-	var connectionString = applicationBuilder.Configuration.GetConnectionString(nameof(DataContext));
-	Debug.Assert(!string.IsNullOrEmpty(connectionString));
-	
-	applicationBuilder.Services.AddDbContext<DataContext>(options =>
-	{
-		options.UseSqlServer(connectionString, builder =>
-		{
-			builder.MigrationsAssembly(typeof(Program).Assembly.GetName().FullName);
-		});
-	});
-
-	applicationBuilder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-	applicationBuilder.Services.AddScoped<ISecurityStampProvider, SecurityStampProvider>();
-	applicationBuilder.Services.AddScoped<IEmailLookupNormalizer, EmailLookupNormalizer>();
-	applicationBuilder.Services.AddScoped<IPhoneLookupNormalizer, PhoneLookupNormalizer>();
-	applicationBuilder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-	applicationBuilder.Services.AddScoped<ClientRepository>();
-	applicationBuilder.Services.AddValidatorsFromAssembly(typeof(CreateClientCommandValidator).Assembly);
-	applicationBuilder.Services.AddMediatR(mediatrConfiguration => mediatrConfiguration.RegisterServicesFromAssembly(typeof(CreateClientCommandHandler).Assembly));
-	applicationBuilder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+	applicationBuilder.Services.InstallServicesInAssembly(applicationBuilder.Configuration,
+	                                                      applicationBuilder.Environment, typeof(Program).Assembly);
 
 	applicationBuilder.Services.AddHostedService<Seed>();
 	
