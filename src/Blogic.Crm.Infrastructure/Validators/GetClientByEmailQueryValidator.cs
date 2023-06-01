@@ -5,7 +5,7 @@ using static Blogic.Crm.Infrastructure.Extensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
-public sealed class GetClientByEmailQueryValidator : AbstractValidator<GetClientByEmailQuery>
+public sealed class GetClientByEmailQueryValidator : AbstractValidator<FindClientByEmailQuery>
 {
 	public GetClientByEmailQueryValidator()
 	{

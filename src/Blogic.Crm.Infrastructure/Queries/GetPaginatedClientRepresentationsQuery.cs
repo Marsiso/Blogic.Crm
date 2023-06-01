@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Queries;
 
-public sealed record GetPaginatedClientRepresentationsQuery(ClientQueryStringParameters QueryStringParameters,
+public sealed record GetPaginatedClientRepresentationsQuery(int PageNumber, int PageSize, ClientSortOrder SortOrder,
                                                             bool TrackChanges) : IRequest<PaginatedList<ClientRepresentation>>;
 
 public sealed class GetPaginatedClientRepresentationsQueryHandler : IRequestHandler<GetPaginatedClientRepresentationsQuery, PaginatedList<ClientRepresentation>>
@@ -29,16 +29,16 @@ public sealed class GetPaginatedClientRepresentationsQueryHandler : IRequestHand
 
 		var totalClientEntities = clientEntities.Count();
 		
-		var orderedClientEntities= await OrderClientsByProperty(clientEntities, request.QueryStringParameters.SortOrder)
-		                           .Skip((request.QueryStringParameters.PageNumber - 1) * request.QueryStringParameters.PageSize)
-		                           .Take(request.QueryStringParameters.PageSize)
+		var orderedClientEntities= await OrderClientsByProperty(clientEntities, request.SortOrder)
+		                           .Skip((request.PageNumber - 1) * request.PageSize)
+		                           .Take(request.PageSize)
 		                           .ToListAsync(cancellationToken);
 
 		var clientRepresentations = orderedClientEntities.Adapt<List<ClientRepresentation>>();
 		
 		return new PaginatedList<ClientRepresentation>(
-			clientRepresentations, totalClientEntities, request.QueryStringParameters.PageNumber,
-			request.QueryStringParameters.PageSize);
+			clientRepresentations, totalClientEntities, request.PageNumber,
+			request.PageSize);
 	}
 
 	public IOrderedQueryable<Client> OrderClientsByProperty(IQueryable<Client> clientEntities, ClientSortOrder sortOrder)

@@ -1,7 +1,6 @@
-using Blogic.Crm.Domain.Data.Dtos;
+using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Data;
-using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,17 +62,11 @@ public sealed class Seed : IHostedService
 			{
 				// Get required services
 				using var serviceScope = _serviceScopeFactory.CreateScope();
-
-				using var dataContext = serviceScope.ServiceProvider.GetService<DataContext>()
-				                        ?? throw new InvalidOperationException();
-
 				ISender sender = serviceScope.ServiceProvider.GetService<ISender>() ??
 				                 throw new InvalidOperationException();
 
-				CreateClientInput createClientInput = GenerateClientInput();
-				CreateClientCommand createClientCommand = createClientInput.Adapt<CreateClientCommand>();
-
-				Task<CreateClientResult> createClientResultTask = sender.Send(createClientCommand, cancellationToken);
+				CreateClientCommand createClientCommand = GenerateCreateClientCommand();
+				Task<Entity> createClientResultTask = sender.Send(createClientCommand, cancellationToken);
 				createClientResultTask.Wait(cancellationToken);
 			}
 			catch (Exception)
@@ -83,7 +76,7 @@ public sealed class Seed : IHostedService
 		});
 	}
 
-	public static CreateClientInput GenerateClientInput()
+	public static CreateClientCommand GenerateCreateClientCommand()
 	{
 		const string password = $"Pass123$";
 		const string dateFormat = "yyMMdd";
@@ -96,6 +89,6 @@ public sealed class Seed : IHostedService
 		var dateBorn = Faker.Identification.DateOfBirth();
 		var birthNumber = $"{dateBorn.ToString(dateFormat)}{Faker.RandomNumber.Next(0, 9999).ToString(numberFormat)}";
 		
-		return new CreateClientInput(email, password, givenName, familyName, phone, dateBorn, birthNumber);
+		return new CreateClientCommand(email, password, givenName, familyName, phone, dateBorn, birthNumber);
 	}
 }

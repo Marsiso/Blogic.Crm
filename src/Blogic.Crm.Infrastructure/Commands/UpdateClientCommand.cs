@@ -1,38 +1,39 @@
-using Blogic.Crm.Domain.Data.Dtos;
+using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Domain.Exceptions;
 using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Data;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using static Blogic.Crm.Infrastructure.Extensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Commands;
 
 public record UpdateClientCommand(long Id, string? Email, string? Password, string? GivenName, string? FamilyName,
-                                  string? Phone, DateTime? DateBorn, string? BirthNumber) : IRequest<UpdateClientResult>;
+                                  string? Phone, DateTime? DateBorn, string? BirthNumber) : IRequest<Entity>;
 
-public sealed class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, UpdateClientResult>
+public sealed class UpdateClientCommandHandler : IRequestHandler<UpdateClientCommand, Entity>
 {
-	private readonly ClientRepository _clientRepository;
+	private readonly DataContext _dataContext;
 	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
 	private readonly IPasswordHasher _passwordHasher;
 	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
 	private readonly ISecurityStampProvider _securityStampProvider;
 
-	public UpdateClientCommandHandler(ClientRepository clientRepository, IPasswordHasher passwordHasher,
+	public UpdateClientCommandHandler(DataContext dataContext, IPasswordHasher passwordHasher,
 	                                  IEmailLookupNormalizer emailLookupNormalizer,
 	                                  IPhoneLookupNormalizer phoneLookupNormalizer,
 	                                  ISecurityStampProvider securityStampProvider)
 	{
-		_clientRepository = clientRepository;
+		_dataContext = dataContext;
 		_passwordHasher = passwordHasher;
 		_emailLookupNormalizer = emailLookupNormalizer;
 		_phoneLookupNormalizer = phoneLookupNormalizer;
 		_securityStampProvider = securityStampProvider;
 	}
 
-	public async Task<UpdateClientResult> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
+	public async Task<Entity> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
 	{
-		var clientEntity = await _clientRepository.FindById(request.Id, true);
+		var clientEntity = await _dataContext.Clients.SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 		if (clientEntity != null)
 		{
 			var generateSecurityStamp = false;
@@ -84,10 +85,10 @@ public sealed class UpdateClientCommandHandler : IRequestHandler<UpdateClientCom
 				clientEntity.SecurityStamp = securityStamp;
 			}
 
-			_clientRepository.Update(clientEntity);
-			await _clientRepository.SaveChangesAsync(cancellationToken);
+			_dataContext.Update(clientEntity);
+			await _dataContext.SaveChangesAsync(cancellationToken);
 
-			return new UpdateClientResult(clientEntity);
+			return clientEntity;
 		}
 
 		throw new EntityNotFoundException("Client does not exist.", request.Id);

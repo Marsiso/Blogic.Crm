@@ -18,18 +18,13 @@ public sealed class ClientController : Controller
 	public async Task<IActionResult> Index(int? pageSize, int? pageNumber, ClientSortOrder? sortOrder,
 	                                       CancellationToken cancellationToken)
 	{
-		ViewData[nameof(ClientSortOrder)] = ClientSortOrder.FamilyNameDesc;
-		
-		// Builder query string
-		ClientQueryStringParameters queryStringParameters = new()
-		{
-			PageNumber = pageNumber ?? QueryStringParameters.MinimumPageNumber,
-			PageSize = pageSize ?? QueryStringParameters.MinimumPageSize,
-			SortOrder = sortOrder ?? ClientSortOrder.FamilyNameDesc
-		};
-
 		// Get paginated client entity representations
-		GetPaginatedClientRepresentationsQuery getPaginatedClientRepresentationsQuery = new(queryStringParameters, false);
+		GetPaginatedClientRepresentationsQuery getPaginatedClientRepresentationsQuery =
+			new(pageNumber ?? QueryStringParameters.MinimumPageNumber,
+			    pageSize ?? QueryStringParameters.MinimumPageSize,
+			    sortOrder ?? ClientSortOrder.FamilyNameDesc,
+			    false);
+		
 		var paginatedClientRepresentations= await _sender.Send(getPaginatedClientRepresentationsQuery, cancellationToken);
 		
 		// Return View Model
