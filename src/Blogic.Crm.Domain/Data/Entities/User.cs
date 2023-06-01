@@ -12,9 +12,10 @@ public class User : Entity
 	public const int GivenNameMaximumLength = 256;
 	public const int FamilyNameMaximumLength = 256;
 	public const int EmailMaximumLength = 256;
-	public const int PhoneMaximumLength = 128;
-	public const int BirthNumberMaximumLength = 128;
-	public const int SecurityStampMaximumLength = 128;
+	public const int PhoneMaximumLength = 64;
+	public const int BirthNumberMaximumLength = 64;
+	public const int SecurityStampMaximumLength = 64;
+	public const int AgeMinimumValue = 18;
 
 	[Column("given_name")]
 	[Required]
@@ -51,7 +52,7 @@ public class User : Entity
 	[Required]
 	public bool IsPhoneConfirmed { get; set; } = true;
 
-	[Column("age")] [Required] public short Age { get; set; }
+	[Column("date_born")] [Required] public DateTime DateBorn { get; set; }
 
 	[Column("birth_number")]
 	[Required]

@@ -32,14 +32,10 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<short>("Age")
-                        .HasColumnType("smallint")
-                        .HasColumnName("age");
-
                     b.Property<string>("BirthNumber")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("birth_number");
 
                     b.Property<byte[]>("ConcurrencyStamp")
@@ -48,6 +44,10 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion")
                         .HasColumnName("concurrency_stamp");
+
+                    b.Property<DateTime>("DateBorn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("date_born");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -90,14 +90,14 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("phone");
 
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("security_stamp");
 
                     b.HasKey("Id");
@@ -123,14 +123,10 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<short>("Age")
-                        .HasColumnType("smallint")
-                        .HasColumnName("age");
-
                     b.Property<string>("BirthNumber")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("birth_number");
 
                     b.Property<byte[]>("ConcurrencyStamp")
@@ -139,6 +135,10 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion")
                         .HasColumnName("concurrency_stamp");
+
+                    b.Property<DateTime>("DateBorn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("date_born");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -181,14 +181,14 @@ namespace Blogic.Crm.Web.Data.Migrations.IdentityModel
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("phone");
 
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
                         .HasColumnName("security_stamp");
 
                     b.HasKey("Id");

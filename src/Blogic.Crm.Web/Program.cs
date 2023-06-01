@@ -1,7 +1,13 @@
 using System.Diagnostics;
 using Blogic.Crm.Infrastructure.Authentication;
+using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Data;
 using Blogic.Crm.Infrastructure.Logging;
+using Blogic.Crm.Infrastructure.Validations;
+using Blogic.Crm.Infrastructure.Validators;
+using Blogic.Crm.Web.Data;
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -46,7 +52,15 @@ try
 
 	applicationBuilder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 	applicationBuilder.Services.AddScoped<ISecurityStampProvider, SecurityStampProvider>();
-	applicationBuilder.Services.AddScoped<ILookupNormalizer, LookupNormalizer>();
+	applicationBuilder.Services.AddScoped<IEmailLookupNormalizer, EmailLookupNormalizer>();
+	applicationBuilder.Services.AddScoped<IPhoneLookupNormalizer, PhoneLookupNormalizer>();
+	applicationBuilder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+	applicationBuilder.Services.AddScoped<ClientRepository>();
+	applicationBuilder.Services.AddValidatorsFromAssembly(typeof(CreateClientCommandValidator).Assembly);
+	applicationBuilder.Services.AddMediatR(mediatrConfiguration => mediatrConfiguration.RegisterServicesFromAssembly(typeof(CreateClientCommandHandler).Assembly));
+	applicationBuilder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+	applicationBuilder.Services.AddHostedService<Seed>();
 	
 	var application = applicationBuilder.Build();
 
@@ -72,7 +86,7 @@ try
 }
 catch (Exception exception)
 {
-	Log.Error("Application is shutting down. Message {Message}", exception.Message);
+	Log.Error(exception, "Application is shutting down. Message {Message}", exception.Message);
 }
 finally
 {
