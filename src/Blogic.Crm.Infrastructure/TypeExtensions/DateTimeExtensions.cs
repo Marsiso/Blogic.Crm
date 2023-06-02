@@ -1,4 +1,4 @@
-namespace Blogic.Crm.Infrastructure.Extensions;
+namespace Blogic.Crm.Infrastructure.TypeExtensions;
 
 public static class DateTimeExtensions
 {

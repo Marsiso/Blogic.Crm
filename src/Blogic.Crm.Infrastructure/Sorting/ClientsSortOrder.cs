@@ -1,6 +1,6 @@
-namespace Blogic.Crm.Infrastructure.Paging;
+namespace Blogic.Crm.Infrastructure.Sorting;
 
-public enum ClientSortOrder
+public enum ClientsSortOrder
 {
 	GivenName,
 	GivenNameDesc,

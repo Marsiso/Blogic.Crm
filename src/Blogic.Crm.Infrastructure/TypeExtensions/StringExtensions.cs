@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Blogic.Crm.Infrastructure.Extensions;
+namespace Blogic.Crm.Infrastructure.TypeExtensions;
 
 public static class StringExtensions
 {

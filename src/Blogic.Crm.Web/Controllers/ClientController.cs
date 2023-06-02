@@ -1,5 +1,7 @@
-using Blogic.Crm.Infrastructure.Paging;
+using Blogic.Crm.Infrastructure.Pagination;
 using Blogic.Crm.Infrastructure.Queries;
+using Blogic.Crm.Infrastructure.Sorting;
+using Blogic.Crm.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,19 +17,23 @@ public sealed class ClientController : Controller
 	}
 
 	[HttpGet]
-	public async Task<IActionResult> Index(int? pageSize, int? pageNumber, ClientSortOrder? sortOrder,
+	public async Task<IActionResult> Index(ClientQueryStringParameters? queryStringParameters,
 	                                       CancellationToken cancellationToken)
 	{
-		// Get paginated client entity representations
-		GetPaginatedClientRepresentationsQuery getPaginatedClientRepresentationsQuery =
-			new(pageNumber ?? QueryStringParameters.MinimumPageNumber,
-			    pageSize ?? QueryStringParameters.MinimumPageSize,
-			    sortOrder ?? ClientSortOrder.FamilyNameDesc,
-			    false);
+		queryStringParameters ??= new ClientQueryStringParameters()
+		{
+			PageNumber = QueryStringParameters.MinimumPageNumber,
+			PageSize = QueryStringParameters.MinimumPageSize,
+			SearchString = string.Empty,
+			SortOrder = ClientQueryStringParameters.DefaultSortOrder
+		};
 		
-		var paginatedClientRepresentations= await _sender.Send(getPaginatedClientRepresentationsQuery, cancellationToken);
+		// Get paginated client entity representations
+		GetPaginatedClientsQuery getPaginatedClientsQuery = new(queryStringParameters,false);
+		
+		var paginatedClientRepresentations= await _sender.Send(getPaginatedClientsQuery, cancellationToken);
 		
 		// Return View Model
-		return View(paginatedClientRepresentations);
+		return View(new ClientViewModel(paginatedClientRepresentations, queryStringParameters));
 	}
 }

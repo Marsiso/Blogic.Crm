@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Blogic.Crm.Infrastructure.Data;
-using Blogic.Crm.Infrastructure.Extensions;
+using Blogic.Crm.Infrastructure.TypeExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Web.Installers;

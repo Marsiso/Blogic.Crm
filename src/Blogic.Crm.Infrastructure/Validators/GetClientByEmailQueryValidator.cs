@@ -1,7 +1,7 @@
 using Blogic.Crm.Infrastructure.Queries;
 using FluentValidation;
 using static Blogic.Crm.Domain.Data.Entities.User;
-using static Blogic.Crm.Infrastructure.Extensions.StringExtensions;
+using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 

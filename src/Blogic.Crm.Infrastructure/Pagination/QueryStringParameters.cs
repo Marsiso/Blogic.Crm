@@ -1,4 +1,4 @@
-namespace Blogic.Crm.Infrastructure.Paging;
+namespace Blogic.Crm.Infrastructure.Pagination;
 
 public class QueryStringParameters
 {
@@ -7,7 +7,7 @@ public class QueryStringParameters
 	public const int MinimumPageNumber = 1;
 	private int _pageSize = MinimumPageSize;
 	private int _pageNumber = MinimumPageNumber;
-
+	
 	public int PageNumber
 	{
 		get => _pageNumber;
@@ -25,4 +25,6 @@ public class QueryStringParameters
 				? value
 				: MinimumPageSize;
 	}
+
+	public string SearchString { get; set; } = string.Empty;
 }

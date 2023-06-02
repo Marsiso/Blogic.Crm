@@ -4,7 +4,7 @@ using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static Blogic.Crm.Infrastructure.Extensions.StringExtensions;
+using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Commands;
 

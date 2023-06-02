@@ -1,4 +1,4 @@
-namespace Blogic.Crm.Infrastructure.Paging;
+namespace Blogic.Crm.Infrastructure.Pagination;
 
 public sealed class PaginatedList<T> : List<T> where T : class
 {
