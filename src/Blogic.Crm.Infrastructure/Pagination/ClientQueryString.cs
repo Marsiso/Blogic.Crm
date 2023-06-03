@@ -2,16 +2,16 @@ using Blogic.Crm.Infrastructure.Sorting;
 
 namespace Blogic.Crm.Infrastructure.Pagination;
 
-public sealed record ClientQueryStringParameters : QueryStringParameters
+public sealed class ClientQueryString : QueryStringBase
 {
-	public ClientQueryStringParameters()
+	public ClientQueryString()
 	{
 		SortOrder = ClientsSortOrder.FamilyName;
 		MinDateBorn = DateTime.MinValue;
 		MaxDateBorn =  DateTime.MaxValue;
 	}
 
-	public ClientQueryStringParameters(int pageSize, int pageNumber, string searchString,
+	public ClientQueryString(int pageSize, int pageNumber, string searchString,
 	                                   ClientsSortOrder sortOrder,
 	                                   DateTime minDateBorn,
 	                                   DateTime maxDateBorn) : base(pageSize, pageNumber, searchString)
@@ -31,9 +31,9 @@ public sealed record ClientQueryStringParameters : QueryStringParameters
 
 	public const ClientsSortOrder DefaultSortOrder = ClientsSortOrder.FamilyName;
 
-	public ClientsSortOrder SortOrder { get; private init; }
-	public DateTime MinDateBorn { get; private init; }
-	public DateTime MaxDateBorn { get; private init; }
+	public ClientsSortOrder SortOrder { get; set; }
+	public DateTime MinDateBorn { get; set; }
+	public DateTime MaxDateBorn { get; set; }
 
 	public bool IsValidDateBorn => MaxDateBorn >= MinDateBorn;
 }

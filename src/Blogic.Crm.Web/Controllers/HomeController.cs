@@ -6,11 +6,17 @@ namespace Blogic.Crm.Web.Controllers
 {
     public sealed class HomeController : Controller
     {
+        [HttpGet]
+        [Route("/")]
+        [Route("/Index")]
+        [Route("/Home")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet]
+        [Route("/Privacy")]
         public IActionResult Privacy()
         {
             return View();

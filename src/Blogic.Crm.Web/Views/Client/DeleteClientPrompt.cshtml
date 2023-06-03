@@ -1,0 +1,52 @@
+@using Blogic.Crm.Web.Controllers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Blogic.Crm.Infrastructure.TypeExtensions
+@model Blogic.Crm.Web.Views.Client.DeleteClientViewModel
+
+@{
+    ViewData["Title"] = "Delete Client Prompt";
+    var client = Model.Client;
+}
+
+<h1 class="mt-4">Prompt</h1>
+
+@if (client != null)
+{
+    <p>Proceed to delete client?</p>
+    <div class="d-flex justify-content-start align-items-center">
+        <form asp-route-id="@client.Id.ToString()"
+              asp-action="DeleteClient"
+              asp-controller="Client"
+              method="@HttpMethods.Post"
+              asp-antiforgery="true"
+              class="me-1">
+            <button type="submit" class="btn btn-primary text-decoration-none">Yes</button>
+        </form>
+        @if (StringExtensions.IsNotNullOrEmpty(Model.OriginAction) &&
+             nameof(ClientController.GetClient).Equals(Model.OriginAction, StringComparison.OrdinalIgnoreCase))
+        {
+            <a asp-route-id="@client.Id.ToString()"
+               asp-action="GetClient"
+               class="btn btn-primary text-decoration-none">
+                No
+            </a>
+        }
+        else
+        {
+            <a asp-action="GetClients"
+               class="btn btn-primary text-decoration-none">
+                No
+            </a>
+        }
+    </div>
+}
+else
+{
+    <p>Client not found!</p>
+    <div class="d-flex justify-content-start align-items-center">
+        <a asp-action="GetClients"
+           class="btn btn-primary text-decoration-none">
+            Dashboard
+        </a>
+    </div>
+}

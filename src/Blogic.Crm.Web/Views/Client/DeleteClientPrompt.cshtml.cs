@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Blogic.Crm.Web.Views.Client;
 
-public sealed class ClientDeleteViewModel : PageModel
+public sealed class DeleteClientViewModel
 {
-	public ClientDeleteViewModel(ClientRepresentation? client, string originAction)
+	public DeleteClientViewModel(ClientRepresentation? client, string originAction)
 	{
 		Client = client;
 		OriginAction = originAction;

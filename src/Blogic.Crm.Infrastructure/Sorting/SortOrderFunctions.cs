@@ -7,9 +7,9 @@ namespace Blogic.Crm.Infrastructure.Sorting;
 public static class SortOrderFunctions
 {
 	public static IOrderedQueryable<Client> OrderClients(this IQueryable<Client> clients,
-	                                                     ClientQueryStringParameters queryStringParameters)
+	                                                     ClientQueryString queryString)
 	{
-		return queryStringParameters.SortOrder switch
+		return queryString.SortOrder switch
 		{
 			Id => clients.OrderBy(c => c.Id),
 			IdDesc => clients.OrderByDescending(c => c.Id),

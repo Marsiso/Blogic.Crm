@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Queries;
 
-public sealed record GetPaginatedClientsQuery(ClientQueryStringParameters QueryStringParameters, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
+public sealed record GetPaginatedClientsQuery(ClientQueryString QueryString, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
 
 public sealed class GetPaginatedClientsQueryHandler : IQueryHandler<GetPaginatedClientsQuery, PaginatedList<ClientRepresentation>>
 {
@@ -25,23 +25,23 @@ public sealed class GetPaginatedClientsQueryHandler : IQueryHandler<GetPaginated
 	{
 		var clientEntities = request.TrackChanges
 			? _dataContext.Clients.AsTracking()
-			              .FilterClients(request.QueryStringParameters)
-			              .SearchClients(request.QueryStringParameters)
+			              .FilterClients(request.QueryString)
+			              .SearchClients(request.QueryString)
 			: _dataContext.Clients.AsNoTracking()
-			              .FilterClients(request.QueryStringParameters)
-			              .SearchClients(request.QueryStringParameters);
+			              .FilterClients(request.QueryString)
+			              .SearchClients(request.QueryString);
 
 		var totalClientEntities = clientEntities.Count();
 		var orderedClientEntities= await clientEntities
-		                                 .OrderClients(request.QueryStringParameters)
-		                                 .Skip((request.QueryStringParameters.PageNumber - 1) * request.QueryStringParameters.PageSize)
-		                                 .Take(request.QueryStringParameters.PageSize)
+		                                 .OrderClients(request.QueryString)
+		                                 .Skip((request.QueryString.PageNumber - 1) * request.QueryString.PageSize)
+		                                 .Take(request.QueryString.PageSize)
 		                                 .ToListAsync(cancellationToken);
 
 		var clientRepresentations = orderedClientEntities.Adapt<List<ClientRepresentation>>();
 		
 		return new PaginatedList<ClientRepresentation>(
-			clientRepresentations, totalClientEntities, request.QueryStringParameters.PageNumber,
-			request.QueryStringParameters.PageSize);
+			clientRepresentations, totalClientEntities, request.QueryString.PageNumber,
+			request.QueryString.PageSize);
 	}
 }

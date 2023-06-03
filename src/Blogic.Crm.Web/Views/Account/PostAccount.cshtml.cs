@@ -5,14 +5,14 @@ using Blogic.Crm.Domain.Exceptions;
 
 namespace Blogic.Crm.Web.Views.Account;
 
-public sealed class RegisterViewModel
+public sealed class AccountRegisterIndexViewModel
 {
-	public RegisterViewModel()
+	public AccountRegisterIndexViewModel()
 	{
 		Client = new ClientInput();
 	}
 	
-	public RegisterViewModel(ClientInput client, ValidationException validationException)
+	public AccountRegisterIndexViewModel(ClientInput client, ValidationException validationException)
 	{
 		Client = client;
 		ValidationException = validationException;

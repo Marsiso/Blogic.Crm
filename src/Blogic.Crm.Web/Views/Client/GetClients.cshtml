@@ -1,0 +1,262 @@
+@using Humanizer
+@using Blogic.Crm.Domain.Data.Entities
+@using Blogic.Crm.Infrastructure.Pagination
+@using Blogic.Crm.Infrastructure.Sorting
+@using Blogic.Crm.Web.Controllers
+@model Blogic.Crm.Web.Views.Client.GetClientsViewModel
+
+@{
+    ViewData["Title"] = "Client Dashboard";
+}
+
+<h1 class="mt-4">Dashboard</h1>
+
+@if (Model.Clients is { Count: > 0 })
+{
+    <h2>Filters</h2>
+    <form asp-controller="Client" asp-action="GetClients" method="@HttpMethods.Post" class="mb-5">
+        <div class="mb-3">
+            <label class="form-label"
+                   asp-for="@Model.QueryString.SearchString">
+                Search
+            </label>
+            <input type="text"
+                   class="form-control"
+                   asp-for="@Model.QueryString.SearchString">
+            <div asp-for="@Model.QueryString.SearchString" class="form-text">Search clients.</div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="@Model.QueryString.PageSize"
+                   class="form-label">
+                @($"Page Size: \t {Model.Clients.PageSize.ToString()}")
+            </label>
+            <input type="range"
+                   class="form-range"
+                   min="@QueryStringBase.MinimumPageSize.ToString()"
+                   max="@QueryStringBase.MaximumPageSize.ToString()"
+                   asp-for="@Model.QueryString.PageSize">
+            <div asp-for="@Model.QueryString.PageSize" class="form-text">Number of displayed clients.</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label"
+                   asp-for="@Model.QueryString.SortOrder">
+                Order by
+            </label>
+            <select class="form-select" asp-for="@Model.QueryString.SortOrder">
+                <option selected value="@ClientsSortOrder.Id">@ClientsSortOrder.Id.Humanize()</option>
+                <option value="@ClientsSortOrder.IdDesc">@ClientsSortOrder.IdDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.Email">@ClientsSortOrder.Email.Humanize()</option>
+                <option value="@ClientsSortOrder.EmailDesc">@ClientsSortOrder.EmailDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.GivenName">@ClientsSortOrder.GivenName.Humanize()</option>
+                <option value="@ClientsSortOrder.GivenNameDesc">@ClientsSortOrder.GivenNameDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.FamilyName">@ClientsSortOrder.FamilyName.Humanize()</option>
+                <option value="@ClientsSortOrder.FamilyNameDesc">@ClientsSortOrder.FamilyNameDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.Phone">@ClientsSortOrder.Phone.Humanize()</option>
+                <option value="@ClientsSortOrder.PhoneDesc">@ClientsSortOrder.PhoneDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.DateBorn">@ClientsSortOrder.DateBorn.Humanize()</option>
+                <option value="@ClientsSortOrder.DateBornDesc">@ClientsSortOrder.DateBornDesc.Humanize()</option>
+                <option value="@ClientsSortOrder.BirthNumber">@ClientsSortOrder.BirthNumber.Humanize()</option>
+                <option value="@ClientsSortOrder.BirthNumberDesc">@ClientsSortOrder.BirthNumberDesc.Humanize()</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </form>
+
+    <h2>Clients</h2>
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <caption>@Model.Clients.TotalTotalItems.ToString() Matches</caption>
+            <thead>
+            <tr>
+                <th scope="col">
+                    @nameof(Client.Id).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.Email).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.GivenName).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.FamilyName).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.Phone).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.DateBorn).Humanize()
+                </th>
+                <th scope="col">
+                    @nameof(Client.BirthNumber).Humanize()
+                </th>
+                <th scope="col">
+                    Manage
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var client in Model.Clients)
+            {
+                <tr>
+                    <td class="pe-5">@client.Id</td>
+                    <td class="pe-5">
+                        @client.Email
+                        <br/>
+                        @client.NormalizedEmail
+                    </td>
+                    <td class="pe-5">@client.GivenName</td>
+                    <td class="pe-5">@client.FamilyName</td>
+                    <td class="pe-5">@client.Phone</td>
+                    <td class="pe-5">
+                        @client.DateBorn.ToString("dd/MM/yyyy")
+                        <br>
+                        @client.DateBorn.Humanize()
+                    </td>
+                    <td class="pe-5">@($"{client.BirthNumber[..6]}/{client.BirthNumber[6..]}")</td>
+                    <td>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <a asp-route-id="@client.Id.ToString()"
+                               asp-controller="Client"
+                               asp-action="GetClient"
+                               class="btn btn-primary text-decoration-none me-1">
+                                Detail
+                            </a>
+                            <a asp-route-id="@client.Id.ToString()"
+                               asp-controller="Client"
+                               asp-action="DeleteClientPrompt"
+                               asp-route-originAction="@nameof(ClientController.GetClients)"
+                               class="btn btn-danger text-decoration-none">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <div class="d-flex justify-content-center align-items-center">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        @{
+                            Dictionary<string, string> queryStringBase = new()
+                            {
+                                { nameof(Model.QueryString.SearchString), Model.QueryString.SearchString },
+                                { nameof(Model.QueryString.SortOrder), Model.QueryString.SortOrder.ToString() },
+                                { nameof(Model.QueryString.PageSize), Model.QueryString.PageSize.ToString() }
+                            };
+                            
+                            Dictionary<string, string> currentPageQueryString = new(queryStringBase)
+                            {
+                                [nameof(Model.QueryString.PageNumber)] = Model.Clients.CurrentPage.ToString()
+                            };
+
+                            Dictionary<string, string> previousPageQueryString = new(queryStringBase)
+                            {
+                                [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage - 1).ToString()
+                            };
+                            
+                            Dictionary<string, string> nextPageQueryString = new(queryStringBase)
+                            {
+                                [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage + 1).ToString()
+                            };
+                            
+                            Dictionary<string, string> firstPageQueryString = new(queryStringBase)
+                            {
+                                [nameof(Model.QueryString.PageNumber)] = QueryStringBase.MinimumPageNumber.ToString()
+                            };
+                            
+                            Dictionary<string, string> lastPageQueryString = new(queryStringBase)
+                            {
+                                [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
+                            };
+
+                            var hasPrevListItemClass = $"page-item{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+                            var hasPrevLinkClass = $"btn page-link{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+                            var prevPage = (Model.Clients.CurrentPage - 1).ToString();
+                            
+                            var hasNextListItemClass = $"page-item{(Model.Clients.HasNext ? string.Empty : "disabled")}";
+                            var hasNextLinkClass = $"btn page-link{(Model.Clients.HasNext ? string.Empty : "disabled")}";
+                            var nextPage = (Model.Clients.CurrentPage + 1).ToString();
+                        }
+
+                        <li class="@hasPrevListItemClass">
+                            <a type="submit"
+                               class="@hasPrevLinkClass"
+                               asp-controller="Client"
+                               asp-action="GetClients"
+                               asp-all-route-data="@firstPageQueryString">
+                                First
+                            </a>
+                        </li>
+                        <li class="@hasPrevListItemClass">
+                            <a type="submit"
+                               class="@hasPrevLinkClass"
+                               asp-controller="Client"
+                               asp-action="GetClients"
+                               asp-all-route-data="@previousPageQueryString">
+                                Prev
+                            </a>
+                        </li>
+                        @if (Model.Clients.HasPrevious)
+                        {
+                            <li class="page-item">
+                                <a type="submit"
+                                   class="page-link"
+                                   asp-controller="Client"
+                                   asp-action="GetClients"
+                                   asp-all-route-data="@previousPageQueryString">
+                                    @prevPage
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item active">
+                            <a class="page-link"
+                               type="submit"
+                               asp-controller="Client"
+                               asp-action="GetClients"
+                               asp-all-route-data="@currentPageQueryString">
+                                @Model.Clients.CurrentPage.ToString()
+                            </a>
+                        </li>
+                        
+                        @if (Model.Clients.HasNext)
+                        {
+                            <li class="page-item">
+                                <a type="submit"
+                                   class="page-link"
+                                   asp-controller="Client"
+                                   asp-action="GetClients"
+                                   asp-all-route-data="@nextPageQueryString">
+                                    @nextPage
+                                </a>
+                            </li>
+                        }
+                        <li class="@hasNextListItemClass">
+                            <a type="submit"
+                               class="@hasNextLinkClass"
+                               asp-controller="Client"
+                               asp-action="GetClients"
+                               asp-all-route-data="@nextPageQueryString">
+                                Next
+                            </a>
+                        </li>
+                        <li class="@hasNextListItemClass">
+                            <a class="@hasNextLinkClass"
+                               asp-controller="Client"
+                               asp-action="GetClients"
+                               asp-all-route-data="@lastPageQueryString">
+                                Last
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+}

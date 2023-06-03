@@ -1,5 +1,5 @@
 @using Humanizer
-@model Blogic.Crm.Web.Views.Account.RegisterViewModel
+@model Blogic.Crm.Web.Views.Account.AccountRegisterIndexViewModel
 
 @{
     ViewData["Title"] = "Client Dashboard";
@@ -9,7 +9,7 @@
 
 <h1 class="mt-4">Register Client</h1>
 
-<form asp-controller="Account" asp-action="Register" method="@HttpMethods.Post">
+<form asp-controller="Account" asp-action="PostAccount" method="@HttpMethods.Post">
     <div class="mb-3">
         <label asp-for="@client.Email" class="form-label">@nameof(client.Email).Humanize()</label>
         <input type="email" class="form-control" asp-for="@client.Email">
@@ -129,5 +129,5 @@
             </div>
         }
     </div>
-    <button type="submit" class="btn">Submit</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

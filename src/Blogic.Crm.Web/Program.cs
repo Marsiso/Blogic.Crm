@@ -47,22 +47,7 @@ try
 	application.UseStaticFiles();
 	application.UseRouting();
 	application.UseAuthorization();
-
-	application.MapControllerRoute(
-		"homePage",
-		"{controller=Home}/{action=Index}");
-	
-	application.MapControllerRoute(
-		"clientDashboard",
-		"{controller=Client}/{action=Dashboard}");
-	
-	application.MapControllerRoute(
-		"clientDetail",
-		"{controller=Client}/{action=Detail}/{id}");
-	
-	application.MapControllerRoute(
-		"register",
-		"{controller=Account}/{action=Register}");
+	application.MapControllers();
 
 	Log.Information("Application is starting up");
 	application.Run();

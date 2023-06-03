@@ -7,15 +7,15 @@ namespace Blogic.Crm.Infrastructure.Searching;
 public static class SearchFunctions
 {
 	public static IQueryable<Client> SearchClients(this IQueryable<Client> clients,
-	                                               ClientQueryStringParameters queryStringParameters)
+	                                               ClientQueryString queryString)
 	{
-		Debug.Assert(queryStringParameters != null);
-		if (string.IsNullOrEmpty(queryStringParameters.SearchString))
+		Debug.Assert(queryString != null);
+		if (string.IsNullOrEmpty(queryString.SearchString))
 		{
 			return clients;
 		}
 
-		string[] searchTerms = queryStringParameters.SearchString.Split(' ');
+		string[] searchTerms = queryString.SearchString.Split(' ');
 		return searchTerms.Aggregate(clients, (current, searchTerm) =>
 		{
 			return current.Where(c => c.BirthNumber.Contains(searchTerm) ||

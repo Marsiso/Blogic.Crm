@@ -1,6 +1,7 @@
 using Blogic.Crm.Domain.Data.Dtos;
 using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Domain.Exceptions;
+using Blogic.Crm.Domain.Routing;
 using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Web.Views.Account;
 using Mapster;
@@ -19,28 +20,30 @@ public sealed class AccountController : Controller
 	private readonly ISender _sender;
 
 	[HttpGet]
-	public IActionResult Register()
+	[Route(Routes.Account.PostAccount)]
+	public IActionResult PostAccount()
 	{
-		return View(new RegisterViewModel());
+		return View(new AccountRegisterIndexViewModel());
 	}
 
 	[HttpPost]
+	[Route(Routes.Account.PostClient)]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult>Register(RegisterViewModel viewModel, CancellationToken cancellationToken)
+	public async Task<IActionResult>PostClient(AccountRegisterIndexViewModel indexViewModel, CancellationToken cancellationToken)
 	{
 		try
 		{
-			CreateClientCommand createClientCommand = viewModel.Client.Adapt<CreateClientCommand>();
+			CreateClientCommand createClientCommand = indexViewModel.Client.Adapt<CreateClientCommand>();
 			Entity entity = await _sender.Send(createClientCommand, cancellationToken);
-			return RedirectToAction("Detail", "Client", new { entity.Id });
+			return RedirectToAction("GetClient", "Client", new { entity.Id });
 		}
 		catch (ValidationException exception)
 		{
-			return View("Register", new RegisterViewModel(viewModel.Client, exception));
+			return View(nameof(PostAccount), new AccountRegisterIndexViewModel(indexViewModel.Client, exception));
 		}
 		catch (Exception)
 		{
-			return View(new RegisterViewModel());
+			return View(nameof(PostAccount), new AccountRegisterIndexViewModel());
 		}
 	}
 }
