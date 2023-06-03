@@ -17,6 +17,7 @@ public sealed class ClientController : Controller
 	}
 
 	[HttpGet]
+	[HttpPost]
 	public async Task<IActionResult> Index(ClientQueryStringParameters? queryStringParameters,
 	                                       CancellationToken cancellationToken)
 	{

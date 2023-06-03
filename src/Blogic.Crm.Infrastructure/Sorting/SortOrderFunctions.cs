@@ -1,13 +1,15 @@
 using Blogic.Crm.Domain.Data.Entities;
+using Blogic.Crm.Infrastructure.Pagination;
 using static Blogic.Crm.Infrastructure.Sorting.ClientsSortOrder;
 
 namespace Blogic.Crm.Infrastructure.Sorting;
 
 public static class SortOrderFunctions
 {
-	public static IOrderedQueryable<Client> OrderClients(this IQueryable<Client> clients, ClientsSortOrder sortOrder)
+	public static IOrderedQueryable<Client> OrderClients(this IQueryable<Client> clients,
+	                                                     ClientQueryStringParameters queryStringParameters)
 	{
-		return sortOrder switch
+		return queryStringParameters.SortOrder switch
 		{
 			Id => clients.OrderBy(c => c.Id),
 			IdDesc => clients.OrderByDescending(c => c.Id),

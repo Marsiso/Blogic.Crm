@@ -1,7 +1,7 @@
 using Blogic.Crm.Domain.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blogic.Crm.Infrastructure.Data;
+namespace Blogic.Crm.Infrastructure.Persistence;
 
 public sealed class DataContext : DbContext
 {

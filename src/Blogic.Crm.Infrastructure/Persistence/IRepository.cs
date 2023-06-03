@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Blogic.Crm.Domain.Data.Entities;
 
-namespace Blogic.Crm.Infrastructure.Data;
+namespace Blogic.Crm.Infrastructure.Persistence;
 
 public interface IRepository<TEntity> : IDisposable where TEntity : Entity
 {

@@ -1,6 +1,6 @@
 using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Authentication;
-using Blogic.Crm.Infrastructure.Data;
+using Blogic.Crm.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

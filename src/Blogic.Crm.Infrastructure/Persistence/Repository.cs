@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Blogic.Crm.Domain.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blogic.Crm.Infrastructure.Data;
+namespace Blogic.Crm.Infrastructure.Persistence;
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 {

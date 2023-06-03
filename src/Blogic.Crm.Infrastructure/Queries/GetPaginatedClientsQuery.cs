@@ -1,7 +1,9 @@
 using Blogic.Crm.Domain.Data.Dtos;
 using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Infrastructure.Data;
+using Blogic.Crm.Infrastructure.Filtering;
 using Blogic.Crm.Infrastructure.Pagination;
+using Blogic.Crm.Infrastructure.Persistence;
+using Blogic.Crm.Infrastructure.Searching;
 using Blogic.Crm.Infrastructure.Sorting;
 using Blogic.Crm.Infrastructure.TypeExtensions;
 using Mapster;
@@ -26,17 +28,15 @@ public sealed class GetPaginatedClientsQueryHandler : IRequestHandler<GetPaginat
 	{
 		var clientEntities = request.TrackChanges
 			? _dataContext.Clients.AsTracking()
-			: _dataContext.Clients.AsNoTracking();
-
-		if (StringExtensions.IsNotNullOrEmpty(request.QueryStringParameters.SearchString))
-		{
-		}
+			              .FilterClients(request.QueryStringParameters)
+			              .SearchClients(request.QueryStringParameters)
+			: _dataContext.Clients.AsNoTracking()
+			              .FilterClients(request.QueryStringParameters)
+			              .SearchClients(request.QueryStringParameters);
 
 		var totalClientEntities = clientEntities.Count();
-		
-		
 		var orderedClientEntities= await clientEntities
-		                                 .OrderClients(request.QueryStringParameters.SortOrder)
+		                                 .OrderClients(request.QueryStringParameters)
 		                                 .Skip((request.QueryStringParameters.PageNumber - 1) * request.QueryStringParameters.PageSize)
 		                                 .Take(request.QueryStringParameters.PageSize)
 		                                 .ToListAsync(cancellationToken);

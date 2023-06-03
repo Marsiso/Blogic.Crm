@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Blogic.Crm.Infrastructure.Data;
+using Blogic.Crm.Infrastructure.Persistence;
 using Blogic.Crm.Infrastructure.TypeExtensions;
 using Microsoft.EntityFrameworkCore;
 

@@ -21,8 +21,4 @@
         <ProjectReference Include="..\Blogic.Crm.Domain\Blogic.Crm.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Filtering\" />
-    </ItemGroup>
-
 </Project>
