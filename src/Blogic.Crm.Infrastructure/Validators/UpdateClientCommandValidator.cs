@@ -16,6 +16,11 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.GivenName)
 				.MaximumLength(GivenNameMaximumLength)
 				.WithMessage($"Client's given name must be at most {GivenNameMaximumLength} characters long.");
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.GivenName)
+				.NotEmpty()
+				.WithMessage("Client's given name is required.");
 		});
 		
 		When(c => IsNotNullOrEmpty(c.FamilyName), () =>
@@ -23,6 +28,11 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.FamilyName)
 				.MaximumLength(FamilyNameMaximumLength)
 				.WithMessage($"Client's family name must be at most {FamilyNameMaximumLength} characters long.");
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.FamilyName)
+				.NotEmpty()
+				.WithMessage("Client's family name is required.");
 		});
 		
 		When(c => IsNotNullOrEmpty(c.Email), () =>
@@ -34,6 +44,11 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.Email)
 				.EmailAddress()
 				.WithMessage($"Client's email address format is invalid.");
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.Email)
+				.NotEmpty()
+				.WithMessage("Client's email address is required.");
 		});
 		
 		When(c => IsNotNullOrEmpty(c.Phone), () =>
@@ -43,8 +58,13 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 				.WithMessage($"Client's phone number must be at most {PhoneMaximumLength} characters long.");
 			
 			RuleFor(c => c.Phone)
-				.Must(IsPhoneNumber!)
+				.Must(IsPhoneNumber)
 				.WithMessage("Client's phone number format is invalid.");
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.Phone)
+				.NotEmpty()
+				.WithMessage("Client's phone number is required.");
 		});
 		
 		When(c => IsNotNullOrEmpty(c.BirthNumber), () =>
@@ -54,18 +74,20 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 				.WithMessage($"Client's birth number must be at most {BirthNumberMaximumLength} characters long.");
 			
 			RuleFor(c => c.BirthNumber)
-				.Must(IsBirthNumber!)
+				.Must(IsBirthNumber)
 				.WithMessage("Client's birth number format is invalid.");
-		});
-
-		When(c => c.DateBorn.HasValue, () =>
+		}).Otherwise(() =>
 		{
-			RuleFor(c => c.DateBorn!.Value)
-				.Must(IsLegalAge)
-				.WithMessage($"Client must be at least {AgeMinimumValue} years old.");
+			RuleFor(c => c.BirthNumber)
+				.NotEmpty()
+				.WithMessage("Client's birth number is required.");
 		});
+		
+		RuleFor(c => c.DateBorn)
+			.Must(IsLegalAge)
+			.WithMessage($"Client must be at least {AgeMinimumValue} years old.");
 	}
-	
+
 	public static bool IsPhoneNumber(string phone)
 	{
 		return PhoneNumberUtil.IsViablePhoneNumber(phone);
@@ -85,7 +107,7 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 
 		return true;
 	}
-	
+
 	public static bool IsLegalAge(DateTime dateBorn)
 	{
 		DateTime utcNow = DateTime.UtcNow;

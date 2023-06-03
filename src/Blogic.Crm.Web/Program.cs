@@ -49,12 +49,16 @@ try
 	application.UseAuthorization();
 
 	application.MapControllerRoute(
-		"default",
-		"{controller=Home}/{action=Index}/{id?}");
+		"homePage",
+		"{controller=Home}/{action=Index}");
 	
 	application.MapControllerRoute(
-		"default",
-		"{controller=Client}/{action=Index}/{id?}");
+		"clientDashboard",
+		"{controller=Client}/{action=Dashboard}");
+	
+	application.MapControllerRoute(
+		"clientDetail",
+		"{controller=Client}/{action=Detail}/{id}");
 
 	Log.Information("Application is starting up");
 	application.Run();

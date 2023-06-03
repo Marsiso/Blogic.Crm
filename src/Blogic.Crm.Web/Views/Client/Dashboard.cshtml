@@ -2,51 +2,48 @@
 @using Blogic.Crm.Domain.Data.Entities
 @using Blogic.Crm.Infrastructure.Pagination
 @using Blogic.Crm.Infrastructure.Sorting
-@model ClientViewModel
+@model Blogic.Crm.Web.Views.Client.ClientDashboardViewModel
 
 @{
     ViewData["Title"] = "Client Dashboard";
     var clients = Model.Clients;
-    var queryString = Model.QueryStringParameters;
 }
 
 <h1 class="mt-4">Dashboard</h1>
 
 @if (clients is { Count: > 0 })
 {
-    <form method="get">
+    <form asp-controller="Client" asp-action="Dashboard" method="GET">
         <div class="table-responsive">
             <table class="table table-borderless">
                 <tbody>
                 <tr>
                     <td>
-                        <div class="input-group">
-                            <span class="input-group-text" id="search-bar">Search</span>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Search clients ..."
-                                   aria-label="Search"
-                                   aria-describedby="search-bar"
-                                   name="@nameof(queryString.SearchString)"
-                                   value="@queryString.SearchString">
-                        </div>
+                        <label class="form-label"
+                               asp-for="SearchString">Search</label>
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Search clients ..."
+                               asp-for="SearchString">
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <label for="page-size" class="form-label">@($"Page Size: \t {clients.PageSize}")</label>
+                        <label asp-for="PageSize" class="form-label">@($"Page Size: \t {clients.PageSize.ToString()}")</label>
                         <input type="range"
                                class="form-range"
-                               min="@QueryStringParameters.MinimumPageSize"
-                               max="@QueryStringParameters.MaximumPageSize"
-                               id="page-size"
-                               name="@nameof(queryString.PageSize)"
-                               value="@queryString.PageSize">
+                               min="@QueryStringParameters.MinimumPageSize.ToString()"
+                               max="@QueryStringParameters.MaximumPageSize.ToString()"
+                               asp-for="PageSize">
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <button class="btn" type="submit">Filter</button>
+                        <a asp-action="Dashboard"
+                           asp-route-pageSize="@Model.PageSize.ToString()"
+                           asp-route-searchString="@(Model.SearchString)">
+                            <button class="btn">Filter</button>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -56,25 +53,25 @@
 
     <div class="table-responsive">
     <table class="table table-hover table-sm">
-    <caption>@clients.TotalTotalItems Matches</caption>
+    <caption>@clients.TotalTotalItems.ToString() Matches</caption>
     <thead>
     <tr>
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.Id).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.Id"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.IdDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -85,19 +82,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.Email).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.Email"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.EmailDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -108,19 +105,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.IsEmailConfirmed).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.IsEmailConfirmed"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.IsEmailConfirmedDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -131,19 +128,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.GivenName).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.GivenName"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.GivenNameDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -154,19 +151,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.FamilyName).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.FamilyName"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.FamilyNameDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -177,19 +174,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.Phone).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.Phone"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.PhoneDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -200,19 +197,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.IsPhoneConfirmed).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.IsEmailConfirmed"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.IsEmailConfirmedDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -223,19 +220,19 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.DateBorn).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.DateBorn"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.DateBornDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
@@ -246,24 +243,29 @@
     <th scope="col">
         <div class="d-flex justify-content-start align-items-center">
             @nameof(Client.BirthNumber).Humanize()
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.BirthNumber"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"></path>
                 </svg>
             </a>
-            <a asp-action="Index"
-               asp-route-pageSize="@queryString.PageSize"
+            <a asp-action="Dashboard"
+               asp-route-pageSize="@Model.PageSize.ToString()"
                asp-route-sortOrder="@ClientsSortOrder.BirthNumberDesc"
-               asp-route-searcString="@(queryString.SearchString)"
+               asp-route-searchString="@(Model.SearchString)"
                class="btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>
                 </svg>
             </a>
+        </div>
+    </th>
+    <th scope="col">
+        <div class="d-flex justify-content-start align-items-center">
+            Manage
         </div>
     </th>
     </tr>
@@ -284,11 +286,29 @@
             <td>@client.Phone</td>
             <td>@client.IsPhoneConfirmed.ToString()</td>
             <td>
-                @client.DateBorn.ToString("yyyy-MM-dd")
+                @client.DateBorn.ToString("dd/MM/yyyy")
                 <br>
                 @client.DateBorn.Humanize()
             </td>
-            <td>@client.BirthNumber</td>
+            <td>@($"{client.BirthNumber[..6]}/{client.BirthNumber[6..]}")</td>
+            <td>
+                <div class="d-flex justify-content-start align-items-center">
+                    <a asp-route-id="@client.Id.ToString()"
+                       asp-controller="Client"
+                       asp-action="Detail"
+                       class="text-decoration-none me-2">
+                        Detail
+                    </a>
+                </div>
+                <div class="d-flex justify-content-start align-items-center">
+                    <a asp-route-id="@client.Id.ToString()"
+                       asp-controller="Client"
+                       asp-action="DeleteClient"
+                       class="text-decoration-none me-2">
+                        Delete
+                    </a>
+                </div>
+            </td>
         </tr>
     }
     </tbody>
@@ -302,10 +322,21 @@
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
                         <li class="@($"page-item {(clients.HasPrevious ? string.Empty : "disabled")}")">
-                            <a asp-action="Index"
-                               asp-route-pageSize="@(clients.PageSize)"
-                               asp-route-pageNumber="@(clients.CurrentPage - 1)"
-                               asp-route-searcString="@(queryString.SearchString)"
+                            <a asp-action="Dashboard"
+                               asp-route-pageSize="@clients.PageSize.ToString()"
+                               asp-route-pageNumber="@QueryStringParameters.MinimumPageNumber"
+                               asp-route-searchString="@(Model.SearchString)"
+                               asp-route-sortOrder="@(Model.SortOrder)"
+                               class="@($"page-link {(clients.CurrentPage == QueryStringParameters.MinimumPageNumber ? "disabled" : string.Empty)}")">
+                                First
+                            </a>
+                        </li>
+                        <li class="@($"page-item {(clients.HasPrevious ? string.Empty : "disabled")}")">
+                            <a asp-action="Dashboard"
+                               asp-route-pageSize="@clients.PageSize.ToString()"
+                               asp-route-pageNumber="@((clients.CurrentPage - 1).ToString())"
+                               asp-route-searchString="@(Model.SearchString)"
+                               asp-route-sortOrder="@(Model.SortOrder)"
                                class="@($"btn page-link {(clients.HasPrevious ? string.Empty : "disabled")}")">
                                 Prev
                             </a>
@@ -313,43 +344,57 @@
                         @if (clients.HasPrevious)
                         {
                             <li class="page-item">
-                                <a asp-action="Index"
-                                   asp-route-pageSize="@(clients.PageSize)"
-                                   asp-route-pageNumber="@(clients.CurrentPage - 1)"
-                                   asp-route-searcString="@(queryString.SearchString)"
+                                <a asp-action="Dashboard"
+                                   asp-route-pageSize="@clients.PageSize.ToString()"
+                                   asp-route-pageNumber="@((clients.CurrentPage - 1).ToString())"
+                                   asp-route-searchString="@(Model.SearchString)"
+                                   asp-route-sortOrder="@(Model.SortOrder)"
                                    class="page-link">
                                     @((clients.CurrentPage - 1).ToString())
                                 </a>
                             </li>
                         }
-                        <li class="page-item disabled">
+                        <li class="page-item active">
                             <a class="page-link"
-                               asp-action="Index"
-                               asp-route-pageSize="@(clients.PageSize)"
-                               asp-route-pageNumber="@(clients.CurrentPage)"
-                               asp-route-searcString="@(queryString.SearchString)">
+                               asp-action="Dashboard"
+                               asp-route-pageSize="@clients.PageSize.ToString()"
+                               asp-route-pageNumber="@clients.CurrentPage.ToString()"
+                               asp-route-searchString="@(Model.SearchString)"
+                               asp-route-sortOrder="@(Model.SortOrder)">
                                 @clients.CurrentPage
                             </a>
                         </li>
                         @if (clients.HasNext)
                         {
                             <li class="page-item ">
-                                <a asp-action="Index"
-                                   asp-route-pageSize="@(clients.PageSize)"
-                                   asp-route-pageNumber="@(clients.CurrentPage + 1)"
-                                   asp-route-searcString="@(queryString.SearchString)"
+                                <a asp-action="Dashboard"
+                                   asp-route-pageSize="@clients.PageSize.ToString()"
+                                   asp-route-pageNumber="@((clients.CurrentPage + 1).ToString())"
+                                   asp-route-searchString="@(Model.SearchString)"
+                                   asp-route-sortOrder="@(Model.SortOrder)"
                                    class="page-link">
                                     @((clients.CurrentPage + 1).ToString())
                                 </a>
                             </li>
                         }
                         <li class="@($"page-item {(clients.HasNext ? string.Empty : "disabled")}")">
-                            <a asp-action="Index"
-                               asp-route-pageSize="@(clients.PageSize)"
-                               asp-route-pageNumber="@(clients.CurrentPage + 1)"
-                               asp-route-searcString="@(queryString.SearchString)"
-                               class="@($"page-link {(clients.HasPrevious ? string.Empty : "disabled")}")">
+                            <a asp-action="Dashboard"
+                               asp-route-pageSize="@clients.PageSize.ToString()"
+                               asp-route-pageNumber="@((clients.CurrentPage + 1).ToString())"
+                               asp-route-searchString="@(Model.SearchString)"
+                               asp-route-sortOrder="@(Model.SortOrder)"
+                               class="@($"page-link {(clients.HasNext ? string.Empty : "disabled")}")">
                                 Next
+                            </a>
+                        </li>
+                        <li class="@($"page-item {(clients.HasNext ? string.Empty : "disabled")}")">
+                            <a asp-action="Dashboard"
+                               asp-route-pageSize="@clients.PageSize.ToString()"
+                               asp-route-pageNumber="@clients.TotalPages.ToString()"
+                               asp-route-searchString="@(Model.SearchString)"
+                               asp-route-sortOrder="@(Model.SortOrder)"
+                               class="@($"page-link {(clients.CurrentPage == clients.TotalPages ? "disabled" : string.Empty)}")">
+                                Last
                             </a>
                         </li>
                     </ul>

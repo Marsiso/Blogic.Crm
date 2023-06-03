@@ -1,20 +1,17 @@
 using Blogic.Crm.Domain.Data.Dtos;
-using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Filtering;
 using Blogic.Crm.Infrastructure.Pagination;
 using Blogic.Crm.Infrastructure.Persistence;
 using Blogic.Crm.Infrastructure.Searching;
 using Blogic.Crm.Infrastructure.Sorting;
-using Blogic.Crm.Infrastructure.TypeExtensions;
 using Mapster;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Queries;
 
-public sealed record GetPaginatedClientsQuery(ClientQueryStringParameters QueryStringParameters, bool TrackChanges) : IRequest<PaginatedList<ClientRepresentation>>;
+public sealed record GetPaginatedClientsQuery(ClientQueryStringParameters QueryStringParameters, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
 
-public sealed class GetPaginatedClientsQueryHandler : IRequestHandler<GetPaginatedClientsQuery, PaginatedList<ClientRepresentation>>
+public sealed class GetPaginatedClientsQueryHandler : IQueryHandler<GetPaginatedClientsQuery, PaginatedList<ClientRepresentation>>
 {
 	public GetPaginatedClientsQueryHandler(DataContext dataContext)
 	{

@@ -66,9 +66,9 @@ public sealed class Seed : IHostedService
 				                 throw new InvalidOperationException();
 
 				CreateClientCommand createClientCommand = GenerateCreateClientCommand();
-				Task<Entity> createClientResultTask = sender.Send(createClientCommand, cancellationToken);
+				Task<Unit> createClientResultTask = sender.Send(createClientCommand, cancellationToken);
 				createClientResultTask.Wait(cancellationToken);
-			}
+			} 
 			catch (Exception)
 			{
 				// ignored
