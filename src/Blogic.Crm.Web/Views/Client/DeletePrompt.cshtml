@@ -1,0 +1,40 @@
+@using Blogic.Crm.Domain.Data.Dtos
+@model Blogic.Crm.Web.Views.Client.ClientDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Client Prompt";
+    ClientRepresentation? client = Model.Client;
+}
+
+<h1 class="mt-4">Prompt</h1>
+
+@if (client != null)
+{
+    <p>Proceed to delete client?</p>
+     <div class="d-flex justify-content-start align-items-center">
+         <a asp-route-id="@client.Id.ToString()"
+            asp-controller="Client"
+            asp-action="DeleteForm"
+            class="text-decoration-none me-2">
+             Yes
+         </a>
+         <a asp-route-id="@client.Id.ToString()"
+            asp-controller="Client"
+            asp-action="@Model.OriginAction"
+            class="text-decoration-none">
+             No
+         </a>
+    </div>
+}
+else
+{
+    <p>Client not found!</p>
+    <div class="d-flex justify-content-start align-items-center">
+        <a asp-controller="Client"
+           asp-action="Dashboard"
+           class="text-decoration-none">
+            Dashboard
+        </a>
+    </div>
+}
+

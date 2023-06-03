@@ -7,9 +7,9 @@ using MediatR;
 namespace Blogic.Crm.Infrastructure.Commands;
 
 public record CreateClientCommand(string Email, string Password, string GivenName, string FamilyName, string Phone,
-                                  DateTime DateBorn, string BirthNumber) : ICommand<Unit>;
+                                  DateTime DateBorn, string BirthNumber) : ICommand<Entity>;
 
-public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCommand, Unit>
+public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCommand, Entity>
 {
 	private readonly DataContext _dataContext;
 	private readonly IPasswordHasher _passwordHasher;
@@ -29,7 +29,7 @@ public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCom
 		_phoneLookupNormalizer = phoneLookupNormalizer;
 	}
 
-	public Task<Unit> Handle(CreateClientCommand request, CancellationToken cancellationToken)
+	public Task<Entity> Handle(CreateClientCommand request, CancellationToken cancellationToken)
 	{
 		Client clientEntity = request.Adapt<Client>();
 			
@@ -41,6 +41,6 @@ public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCom
 		_dataContext.Clients.Add(clientEntity);
 		_dataContext.SaveChanges();
 
-		return Task.FromResult(Unit.Value);
+		return Task.FromResult((Entity)clientEntity);
 	}
 }

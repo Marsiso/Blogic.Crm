@@ -1,5 +1,6 @@
 @using Humanizer
-@using Blogic.Crm.Infrastructure.Pagination
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Blogic.Crm.Web.Controllers
 @model Blogic.Crm.Web.Views.Client.ClientDetailViewModel
 
 @{
@@ -36,7 +37,7 @@
     <p>
         <span class="fw-bold">@nameof(client.BirthNumber).Humanize():</span> @($"{client.BirthNumber[..6]}/{client.BirthNumber[6..]}")
     </p>
-    <div class="btn-group" role="group" aria-label="Basic example">
+    <div class="row col-12">
         <a asp-controller="Client"
            asp-action="Dashboard"
            class="text-decoration-none me-2">
@@ -44,7 +45,8 @@
         </a>
         <a asp-route-id="@client.Id.ToString()"
            asp-controller="Client"
-           asp-action="DeleteClient"
+           asp-action="DeletePrompt"
+           asp-route-originAction="@nameof(ClientController.Detail)"
            class="text-decoration-none">
             Delete
         </a>

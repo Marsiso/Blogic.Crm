@@ -2,6 +2,7 @@
 @using Blogic.Crm.Domain.Data.Entities
 @using Blogic.Crm.Infrastructure.Pagination
 @using Blogic.Crm.Infrastructure.Sorting
+@using Blogic.Crm.Web.Controllers
 @model Blogic.Crm.Web.Views.Client.ClientDashboardViewModel
 
 @{
@@ -296,15 +297,16 @@
                     <a asp-route-id="@client.Id.ToString()"
                        asp-controller="Client"
                        asp-action="Detail"
-                       class="text-decoration-none me-2">
+                       class="text-decoration-none">
                         Detail
                     </a>
                 </div>
                 <div class="d-flex justify-content-start align-items-center">
                     <a asp-route-id="@client.Id.ToString()"
                        asp-controller="Client"
-                       asp-action="DeleteClient"
-                       class="text-decoration-none me-2">
+                       asp-action="DeletePrompt"
+                       asp-route-originAction="@nameof(ClientController.Dashboard)"
+                       class="text-decoration-none">
                         Delete
                     </a>
                 </div>

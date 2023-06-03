@@ -59,6 +59,10 @@ try
 	application.MapControllerRoute(
 		"clientDetail",
 		"{controller=Client}/{action=Detail}/{id}");
+	
+	application.MapControllerRoute(
+		"register",
+		"{controller=Account}/{action=Register}");
 
 	Log.Information("Application is starting up");
 	application.Run();

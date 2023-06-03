@@ -16,6 +16,10 @@ public class User : Entity
 	public const int BirthNumberMaximumLength = 64;
 	public const int SecurityStampMaximumLength = 64;
 	public const int AgeMinimumValue = 18;
+	public const int RequiredSpecialCharacters = 1;
+	public const int RequiredDigitCharacters = 1;
+	public const int RequiredLowerCaseCharacters = 1;
+	public const int RequiredUpperCaseCharacters = 1;
 
 	[Column("given_name")]
 	[Required]
