@@ -68,35 +68,30 @@ public sealed class ClientController : Controller
 		return View(new GetClientViewModel(client));
 	}
 
-	[HttpGet(Routes.Client.DeleteClientPrompt)]
-	public async Task<IActionResult> DeleteClientPrompt(long id, string originAction, CancellationToken cancellationToken)
+	[HttpGet(Routes.Client.CreateClient)]
+	public IActionResult CreateClient()
 	{
-		// Prompt user before deleting client.
-		// Get client.
-		GetClientByIdQuery query = new(id, false);
-		var clientEntity = await _sender.Send(query, cancellationToken);
-		
-		// Create view model.
-		if (clientEntity == null)
-		{
-			return View(new DeleteClientViewModel(null, originAction));
-		}
-
-		var client = clientEntity.Adapt<ClientRepresentation>();
-		return View(new DeleteClientViewModel(client, originAction));
-
+		return View(new ClientCreateViewModel());
 	}
 
-	[HttpPost(Routes.Client.DeleteClient)]
+	[HttpPost(Routes.Client.CreateClient)]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> DeleteClient(long id, CancellationToken cancellationToken)
+	public async Task<IActionResult>CreateClient(ClientCreateViewModel indexViewModel, CancellationToken cancellationToken)
 	{
-		// Delete client.
-		DeleteClientCommand command = new(id);
-		await _sender.Send(command, cancellationToken);
-
-		// Redirect user to dashboard.
-		return RedirectToAction(nameof(GetClients));
+		try
+		{
+			CreateClientCommand createClientCommand = indexViewModel.Client.Adapt<CreateClientCommand>();
+			Entity entity = await _sender.Send(createClientCommand, cancellationToken);
+			return RedirectToAction("GetClient", "Client", new { entity.Id });
+		}
+		catch (ValidationException exception)
+		{
+			return View(nameof(CreateClient), new ClientCreateViewModel(indexViewModel.Client, exception));
+		}
+		catch (Exception)
+		{
+			return View(nameof(CreateClient), new ClientCreateViewModel());
+		}
 	}
 
 	[HttpGet(Routes.Client.UpdateClient)]
@@ -115,7 +110,7 @@ public sealed class ClientController : Controller
 		ClientInput client = clientEntity.Adapt<ClientInput>();
 		return View(new ClientUpdateViewModel(id, originAction, client));
 	}
-	
+
 	[HttpPost(Routes.Client.UpdateClient)]
 	public async Task<IActionResult> UpdateClient(long id, ClientUpdateViewModel viewModel,
 	                                              CancellationToken cancellationToken)
@@ -138,5 +133,36 @@ public sealed class ClientController : Controller
 		{
 			return View(new ClientUpdateViewModel(viewModel.Id, viewModel.OriginAction, viewModel.Client, validationException));
 		}
+	}
+
+	[HttpPost(Routes.Client.DeleteClient)]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteClient(long id, CancellationToken cancellationToken)
+	{
+		// Delete client.
+		DeleteClientCommand command = new(id);
+		await _sender.Send(command, cancellationToken);
+
+		// Redirect user to dashboard.
+		return RedirectToAction(nameof(GetClients));
+	}
+
+	[HttpGet(Routes.Client.DeleteClientPrompt)]
+	public async Task<IActionResult> DeleteClientPrompt(long id, string originAction, CancellationToken cancellationToken)
+	{
+		// Prompt user before deleting client.
+		// Get client.
+		GetClientByIdQuery query = new(id, false);
+		var clientEntity = await _sender.Send(query, cancellationToken);
+		
+		// Create view model.
+		if (clientEntity == null)
+		{
+			return View(new DeleteClientViewModel(null, originAction));
+		}
+
+		var client = clientEntity.Adapt<ClientRepresentation>();
+		return View(new DeleteClientViewModel(client, originAction));
+
 	}
 }

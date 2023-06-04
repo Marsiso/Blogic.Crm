@@ -1,5 +1,6 @@
 @using Humanizer
-@model Blogic.Crm.Web.Views.Account.AccountRegisterIndexViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Blogic.Crm.Web.Views.Client.ClientCreateViewModel
 
 @{
     ViewData["Title"] = "Client Dashboard";
@@ -9,7 +10,7 @@
 
 <h1 class="mt-4">Register Client</h1>
 
-<form asp-controller="Account" asp-action="PostClient" method="@HttpMethods.Post">
+<form asp-controller="Client" asp-action="CreateClient" method="@HttpMethods.Post">
     <div class="mb-3">
         <label asp-for="@client.Email" class="form-label">@nameof(client.Email).Humanize()</label>
         <input type="email" class="form-control" asp-for="@client.Email">

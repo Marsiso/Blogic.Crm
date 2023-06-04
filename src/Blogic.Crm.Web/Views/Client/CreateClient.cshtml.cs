@@ -3,15 +3,15 @@
 using Blogic.Crm.Domain.Data.Dtos;
 using Blogic.Crm.Domain.Exceptions;
 
-namespace Blogic.Crm.Web.Views.Account;
+namespace Blogic.Crm.Web.Views.Client;
 
-public sealed class AccountRegisterIndexViewModel
+public sealed class ClientCreateViewModel
 {
-	public AccountRegisterIndexViewModel()
+	public ClientCreateViewModel()
 	{
 	}
 	
-	public AccountRegisterIndexViewModel(ClientInput client, ValidationException validationException)
+	public ClientCreateViewModel(ClientInput client, ValidationException validationException)
 	{
 		Client = client;
 		ValidationException = validationException;
