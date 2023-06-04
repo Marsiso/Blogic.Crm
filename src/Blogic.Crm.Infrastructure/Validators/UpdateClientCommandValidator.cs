@@ -1,6 +1,9 @@
+using Blogic.Crm.Domain.Data.Entities;
+using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Commands;
+using Blogic.Crm.Infrastructure.Persistence;
 using FluentValidation;
-using PhoneNumbers;
+using Microsoft.EntityFrameworkCore;
 using static Blogic.Crm.Domain.Data.Entities.User;
 using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
 using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
@@ -9,8 +12,17 @@ namespace Blogic.Crm.Infrastructure.Validators;
 
 public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClientCommand>
 {
-	public UpdateClientCommandValidator()
+	private readonly DataContext _dataContext;
+	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
+	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
+	
+	public UpdateClientCommandValidator(DataContext dataContext, IEmailLookupNormalizer emailLookupNormalizer,
+	                                    IPhoneLookupNormalizer phoneLookupNormalizer)
 	{
+		_dataContext = dataContext;
+		_emailLookupNormalizer = emailLookupNormalizer;
+		_phoneLookupNormalizer = phoneLookupNormalizer;
+
 		When(c => IsNotNullOrEmpty(c.GivenName), () =>
 		{
 			RuleFor(c => c.GivenName)
@@ -44,6 +56,10 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.Email)
 				.EmailAddress()
 				.WithMessage($"Client's email address format is invalid.");
+			
+			RuleFor(c => c.Email)
+				.Must((c, e) => EmailNotTaken(c.Id, e))
+				.WithMessage("Client's email address already taken.");
 		}).Otherwise(() =>
 		{
 			RuleFor(c => c.Email)
@@ -60,6 +76,10 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.Phone)
 				.Must(IsPhoneNumber)
 				.WithMessage("Client's phone number format is invalid.");
+			
+			RuleFor(c => c.Phone)
+				.Must((c, p) => PhoneNotTaken(c.Id, p))
+				.WithMessage("Client's phone number already taken.");
 		}).Otherwise(() =>
 		{
 			RuleFor(c => c.Phone)
@@ -76,6 +96,10 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 			RuleFor(c => c.BirthNumber)
 				.Must(IsBirthNumber)
 				.WithMessage("Client's birth number format is invalid.");
+			
+			RuleFor(c => c.BirthNumber)
+				.Must((c, b) => BirthNumberNotTaken(c.Id, b))
+				.WithMessage("Client's birth number already taken.");
 		}).Otherwise(() =>
 		{
 			RuleFor(c => c.BirthNumber)
@@ -83,35 +107,67 @@ public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClien
 				.WithMessage("Client's birth number is required.");
 		});
 		
+		When(c => IsNotNullOrEmpty(c.Password), () =>
+		{
+			RuleFor(c => c.Password)
+				.Must(p => ContainSpecialCharacters(p, RequiredSpecialCharacters))
+				.WithMessage($"Password must contain at least {RequiredSpecialCharacters} special characters.");
+			
+			RuleFor(c => c.Password)
+				.Must(p => ContainDigits(p, RequiredDigitCharacters))
+				.WithMessage($"Password must contain at least {RequiredDigitCharacters} special characters.");
+			
+			RuleFor(c => c.Password)
+				.Must(p => ContainLowerCaseCharacters(p, RequiredLowerCaseCharacters))
+				.WithMessage($"Password must contain at least {RequiredLowerCaseCharacters} lower case characters.");
+			
+			RuleFor(c => c.Password)
+				.Must(p => ContainUpperCaseCharacters(p, RequiredUpperCaseCharacters))
+				.WithMessage($"Password must contain at least {RequiredUpperCaseCharacters} upper case characters.");
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.Password)
+				.NotEmpty()
+				.WithMessage("Password is required.");
+		});
+		
 		RuleFor(c => c.DateBorn)
-			.Must(IsLegalAge)
+			.Must(db => IsLegalAge(db, AgeMinimumValue))
 			.WithMessage($"Client must be at least {AgeMinimumValue} years old.");
 	}
 
-	public static bool IsPhoneNumber(string phone)
+	public bool EmailNotTaken(long id, string email)
 	{
-		return PhoneNumberUtil.IsViablePhoneNumber(phone);
-	}
-	
-	public static bool IsBirthNumber(string birthNumber)
-	{
-		foreach (var c in birthNumber.AsSpan())
+		string normalizedEmail = _emailLookupNormalizer.Normalize(email)!;
+		Client? client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.NormalizedEmail == normalizedEmail);
+		if (client == null)
 		{
-			if (char.IsDigit(c))
-			{
-				continue;
-			}
-
-			return false;
+			return true;
 		}
 
-		return true;
+		return client.Id == id;
+	}
+	
+	public bool PhoneNotTaken(long id, string phone)
+	{
+		string normalizedPhone = _phoneLookupNormalizer.Normalize(phone)!;
+		Client? client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.Phone == normalizedPhone);
+		if (client == null)
+		{
+			return true;
+		}
+
+		return client.Id == id;
 	}
 
-	public static bool IsLegalAge(DateTime dateBorn)
+	public bool BirthNumberNotTaken(long id, string birthNumber)
 	{
-		DateTime utcNow = DateTime.UtcNow;
-		DateTime legalAgeLowerBoundary = RemoveYears(utcNow, AgeMinimumValue);
-		return DateTime.Compare(dateBorn, legalAgeLowerBoundary) < 0;
+		Client? client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.BirthNumber == birthNumber);
+		if (client == null)
+		{
+			return true;
+		}
+
+		return client.Id == id;
 	}
 }

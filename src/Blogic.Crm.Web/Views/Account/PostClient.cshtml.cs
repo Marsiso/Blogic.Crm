@@ -9,7 +9,6 @@ public sealed class AccountRegisterIndexViewModel
 {
 	public AccountRegisterIndexViewModel()
 	{
-		Client = new ClientInput();
 	}
 	
 	public AccountRegisterIndexViewModel(ClientInput client, ValidationException validationException)

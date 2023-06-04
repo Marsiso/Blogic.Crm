@@ -1,15 +1,18 @@
 @using Humanizer
-@model Blogic.Crm.Web.Views.Account.AccountRegisterIndexViewModel
+@model Blogic.Crm.Web.Views.Client.ClientUpdateViewModel
 
 @{
-    ViewData["Title"] = "Client Dashboard";
+    ViewData["Title"] = "Update Client";
     var client = Model.Client;
     var validationException = Model.ValidationException;
 }
 
-<h1 class="mt-4">Register Client</h1>
+<h1 class="mt-4">Update Client</h1>
 
-<form asp-controller="Account" asp-action="PostAccount" method="@HttpMethods.Post">
+@if (client != null)
+{
+    <form asp-controller="Client" asp-action="UpdateClient" asp-route-id="@Model.Id.ToString()"
+          asp-route-originAction="@Model.OriginAction" method="@HttpMethods.Post">
     <div class="mb-3">
         <label asp-for="@client.Email" class="form-label">@nameof(client.Email).Humanize()</label>
         <input type="email" class="form-control" asp-for="@client.Email">
@@ -131,3 +134,12 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+}
+else
+{
+    <p>Client not found!</p>
+    <a asp-action="GetClients"
+       class="btn btn-primary text-decoration-none">
+        Dashboard
+    </a>
+}

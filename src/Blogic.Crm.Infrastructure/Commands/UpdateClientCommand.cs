@@ -13,7 +13,9 @@ public sealed record UpdateClientCommand(long Id, string Email, string Password,
 
 public sealed class UpdateClientCommandHandler : ICommandHandler<UpdateClientCommand, Unit>
 {
-	public UpdateClientCommandHandler(DataContext dataContext, ISecurityStampProvider securityStampProvider, IEmailLookupNormalizer emailLookupNormalizer, IPhoneLookupNormalizer phoneLookupNormalizer, IPasswordHasher passwordHasher)
+	public UpdateClientCommandHandler(DataContext dataContext, ISecurityStampProvider securityStampProvider,
+	                                  IEmailLookupNormalizer emailLookupNormalizer,
+	                                  IPhoneLookupNormalizer phoneLookupNormalizer, IPasswordHasher passwordHasher)
 	{
 		_dataContext = dataContext;
 		_securityStampProvider = securityStampProvider;
@@ -33,39 +35,44 @@ public sealed class UpdateClientCommandHandler : ICommandHandler<UpdateClientCom
 		Client? clientEntity= await _dataContext.Clients
 		                                         .AsTracking()
 		                                         .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
-		
-		if (clientEntity != null)
+
+		if (clientEntity == null)
 		{
-			Client clientToUpdate = (Client)clientEntity.Clone();
-			request.Adapt(clientToUpdate);
-
-			bool generateSecurityStamp = false;
-			if (clientEntity.Email.Equals(clientToUpdate.Email, StringComparison.OrdinalIgnoreCase))
-			{
-				generateSecurityStamp = true;
-				clientToUpdate.NormalizedEmail = _emailLookupNormalizer.Normalize(clientToUpdate.Email)!;
-			}
-			
-			if (clientEntity.Phone.Equals(clientToUpdate.Phone, StringComparison.OrdinalIgnoreCase))
-			{
-				generateSecurityStamp = true;
-				clientToUpdate.Phone = _phoneLookupNormalizer.Normalize(clientToUpdate.Phone)!;
-			}
-
-			if (IsNotNullOrEmpty(request.Password))
-			{
-				generateSecurityStamp = true;
-				clientToUpdate.PasswordHash = _passwordHasher.HashPassword(request.Password);
-			}
-
-			if (generateSecurityStamp)
-			{
-				clientToUpdate.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
-			}
-
-			_dataContext.Clients.Update(clientToUpdate);
-			await _dataContext.SaveChangesAsync(cancellationToken);
+			return Unit.Value;
 		}
+
+		Client clientPrevious = (Client)clientEntity.Clone();
+		request.Adapt(clientEntity);
+
+		var generateSecurityStamp = false;
+			
+		var normalizedEmail =  _emailLookupNormalizer.Normalize(request.Email)!;
+		if (EqualsNot(normalizedEmail,clientPrevious.NormalizedEmail, StringComparison.Ordinal))
+		{
+			generateSecurityStamp = true;
+			clientEntity.NormalizedEmail = normalizedEmail;
+		}
+			
+		var normalizedPhone = _phoneLookupNormalizer.Normalize(request.Phone)!;
+		if (EqualsNot(normalizedPhone,clientPrevious.Phone, StringComparison.Ordinal))
+		{
+			generateSecurityStamp = true;
+			clientEntity.Phone = normalizedPhone;
+		}
+
+		if (_passwordHasher.VerifyPassword(request.Password, clientPrevious.PasswordHash) == PasswordVerificationResult.Fail)
+		{
+			generateSecurityStamp = true;
+			clientEntity.PasswordHash = _passwordHasher.HashPassword(request.Password);
+		}
+
+		if (generateSecurityStamp)
+		{
+			clientEntity.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
+		}
+
+		_dataContext.Clients.Update(clientEntity);
+		await _dataContext.SaveChangesAsync(cancellationToken);
 
 		return Unit.Value;
 	}

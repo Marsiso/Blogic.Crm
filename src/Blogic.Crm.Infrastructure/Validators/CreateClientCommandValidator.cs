@@ -3,6 +3,7 @@ using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Persistence;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using static Blogic.Crm.Domain.Data.Entities.User;
 using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
 using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
@@ -138,17 +139,17 @@ public sealed class CreateClientCommandValidator : AbstractValidator<CreateClien
 	public bool EmailNotTaken(string email)
 	{
 		string normalizedEmail = _emailLookupNormalizer.Normalize(email)!;
-		return !_dataContext.Clients.Any(c => c.NormalizedEmail == normalizedEmail);
+		return !_dataContext.Clients.AsNoTracking().Any(c => c.NormalizedEmail == normalizedEmail);
 	}
 	
 	public bool PhoneNotTaken(string phone)
 	{
 		string normalizedPhone = _phoneLookupNormalizer.Normalize(phone)!;
-		return !_dataContext.Clients.Any(c => c.Phone == normalizedPhone);
+		return !_dataContext.Clients.AsNoTracking().Any(c => c.Phone == normalizedPhone);
 	}
 
 	public bool BirthNumberNotTaken(string birthNumber)
 	{
-		return !_dataContext.Clients.Any(c => c.BirthNumber == birthNumber);
+		return !_dataContext.Clients.AsNoTracking().Any(c => c.BirthNumber == birthNumber);
 	}
 }

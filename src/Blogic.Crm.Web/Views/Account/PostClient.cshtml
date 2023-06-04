@@ -1,0 +1,133 @@
+@using Humanizer
+@model Blogic.Crm.Web.Views.Account.AccountRegisterIndexViewModel
+
+@{
+    ViewData["Title"] = "Client Dashboard";
+    var client = Model.Client;
+    var validationException = Model.ValidationException;
+}
+
+<h1 class="mt-4">Register Client</h1>
+
+<form asp-controller="Account" asp-action="PostClient" method="@HttpMethods.Post">
+    <div class="mb-3">
+        <label asp-for="@client.Email" class="form-label">@nameof(client.Email).Humanize()</label>
+        <input type="email" class="form-control" asp-for="@client.Email">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.Email)) &&
+             validationException.ValidationFailures[nameof(client.Email)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.Email)];
+
+            <div for="@client.Email" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.Password" class="form-label">@nameof(client.Password).Humanize()</label>
+        <input type="password" class="form-control" asp-for="@client.Password">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.Password)) &&
+             validationException.ValidationFailures[nameof(client.Password)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.Password)];
+
+            <div for="@client.Password" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.GivenName" class="form-label">@nameof(client.GivenName).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@client.GivenName">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.GivenName)) &&
+             validationException.ValidationFailures[nameof(client.GivenName)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.GivenName)];
+
+            <div for="@client.GivenName" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.FamilyName" class="form-label">@nameof(client.FamilyName).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@client.FamilyName">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.FamilyName)) &&
+             validationException.ValidationFailures[nameof(client.FamilyName)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.FamilyName)];
+
+            <div for="@client.FamilyName" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.DateBorn" class="form-label">@nameof(client.DateBorn).Humanize()</label>
+        <input type="date" class="form-control" asp-for="@client.DateBorn">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.DateBorn)) &&
+             validationException.ValidationFailures[nameof(client.DateBorn)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.DateBorn)];
+
+            <div for="@client.DateBorn" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.Phone" class="form-label">@nameof(client.Phone).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@client.Phone">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.Phone)) &&
+             validationException.ValidationFailures[nameof(client.Phone)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.Phone)];
+
+            <div for="@client.Phone" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@client.BirthNumber" class="form-label">@nameof(client.BirthNumber).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@client.BirthNumber">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(client.BirthNumber)) &&
+             validationException.ValidationFailures[nameof(client.BirthNumber)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(client.BirthNumber)];
+
+            <div for="@client.BirthNumber" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

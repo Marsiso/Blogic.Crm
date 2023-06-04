@@ -6,7 +6,7 @@ namespace Blogic.Crm.Infrastructure.Validations;
 
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
 	where TRequest : IRequest<TResponse>
-	where TResponse : class?
+	// where TResponse : class 
 {
 	private readonly IEnumerable<IValidator<TRequest>> _validators;
 

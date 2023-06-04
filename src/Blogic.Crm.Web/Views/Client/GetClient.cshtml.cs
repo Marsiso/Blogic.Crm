@@ -1,11 +1,13 @@
+using Blogic.Crm.Domain.Data.Dtos;
+
 namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class GetClientViewModel
 {
-	public GetClientViewModel(Domain.Data.Entities.Client? client)
+	public GetClientViewModel(ClientRepresentation? client)
 	{
 		Client = client;
 	}
 	
-	public Domain.Data.Entities.Client? Client { get; set; }
+	public ClientRepresentation? Client { get; set; }
 }

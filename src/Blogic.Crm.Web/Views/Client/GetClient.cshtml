@@ -69,20 +69,31 @@
     </div>
 
 
-        <a asp-controller="Client"
-                asp-action="GetClients"
-                class="btn btn-primary text-decoration-none me-2">
-            Dashboard
-        </a>
-        <a asp-route-id="@client.Id.ToString()"
-                asp-controller="Client"
-                asp-action="DeleteClientPrompt"
-                asp-route-originAction="@nameof(ClientController.GetClient)"
-                class="btn btn-danger text-decoration-none">
-            Delete
-        </a>
+    <a asp-controller="Client"
+       asp-action="GetClients"
+       class="btn btn-primary text-decoration-none me-2">
+        Dashboard
+    </a>
+    <a asp-route-id="@client.Id.ToString()"
+       asp-controller="Client"
+       asp-action="UpdateClient"
+       asp-route-originAction="@nameof(ClientController.GetClient)"
+       class="btn btn-warning text-decoration-none me-2">
+        Update
+    </a>
+    <a asp-route-id="@client.Id.ToString()"
+       asp-controller="Client"
+       asp-action="DeleteClientPrompt"
+       asp-route-originAction="@nameof(ClientController.GetClient)"
+       class="btn btn-danger text-decoration-none">
+        Delete
+    </a>
 }
 else
 {
-    <p>Not Found!</p>
+    <p>Client not found!</p>
+    <a asp-action="GetClients"
+       class="btn btn-primary text-decoration-none">
+        Dashboard
+    </a>
 }

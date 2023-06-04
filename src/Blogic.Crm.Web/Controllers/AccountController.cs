@@ -19,15 +19,13 @@ public sealed class AccountController : Controller
 
 	private readonly ISender _sender;
 
-	[HttpGet]
-	[Route(Routes.Account.PostAccount)]
-	public IActionResult PostAccount()
+	[HttpGet(Routes.Account.PostClient)]
+	public IActionResult PostClient()
 	{
 		return View(new AccountRegisterIndexViewModel());
 	}
 
-	[HttpPost]
-	[Route(Routes.Account.PostClient)]
+	[HttpPost(Routes.Account.PostClient)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult>PostClient(AccountRegisterIndexViewModel indexViewModel, CancellationToken cancellationToken)
 	{
@@ -39,11 +37,11 @@ public sealed class AccountController : Controller
 		}
 		catch (ValidationException exception)
 		{
-			return View(nameof(PostAccount), new AccountRegisterIndexViewModel(indexViewModel.Client, exception));
+			return View(nameof(PostClient), new AccountRegisterIndexViewModel(indexViewModel.Client, exception));
 		}
 		catch (Exception)
 		{
-			return View(nameof(PostAccount), new AccountRegisterIndexViewModel());
+			return View(nameof(PostClient), new AccountRegisterIndexViewModel());
 		}
 	}
 }

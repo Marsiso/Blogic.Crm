@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using PhoneNumbers;
+using static System.Char;
+using static System.String;
 
 namespace Blogic.Crm.Infrastructure.TypeExtensions;
 
@@ -7,12 +9,12 @@ public static class StringExtensions
 {
 	public static bool IsNotNullOrEmpty([NotNullWhen(true)] string? value)
 	{
-		return !string.IsNullOrEmpty(value);
+		return !IsNullOrEmpty(value);
 	}
 	
 	public static bool ContainSpecialCharacters([NotNullWhen(true)] string? value, int count)
 	{
-		if (string.IsNullOrEmpty(value))
+		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
@@ -20,7 +22,7 @@ public static class StringExtensions
 		var matchCount = 0;
 		foreach (var c in value.AsSpan())
 		{
-			if (char.IsSymbol(c))
+			if (IsSymbol(c))
 			{
 				matchCount++;
 			}
@@ -36,7 +38,7 @@ public static class StringExtensions
 	
 	public static bool ContainDigits([NotNullWhen(true)] string? value, int count)
 	{
-		if (string.IsNullOrEmpty(value))
+		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
@@ -44,7 +46,7 @@ public static class StringExtensions
 		var matchCount = 0;
 		foreach (var c in value.AsSpan())
 		{
-			if (char.IsDigit(c))
+			if (IsDigit(c))
 			{
 				matchCount++;
 			}
@@ -60,7 +62,7 @@ public static class StringExtensions
 	
 	public static bool ContainLowerCaseCharacters([NotNullWhen(true)] string? value, int count)
 	{
-		if (string.IsNullOrEmpty(value))
+		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
@@ -68,7 +70,7 @@ public static class StringExtensions
 		var matchCount = 0;
 		foreach (var c in value.AsSpan())
 		{
-			if (char.IsLower(c))
+			if (IsLower(c))
 			{
 				matchCount++;
 			}
@@ -84,7 +86,7 @@ public static class StringExtensions
 	
 	public static bool ContainUpperCaseCharacters([NotNullWhen(true)] string? value, int count)
 	{
-		if (string.IsNullOrEmpty(value))
+		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
@@ -92,7 +94,7 @@ public static class StringExtensions
 		var matchCount = 0;
 		foreach (var c in value.AsSpan())
 		{
-			if (char.IsUpper(c))
+			if (IsUpper(c))
 			{
 				matchCount++;
 			}
@@ -106,16 +108,16 @@ public static class StringExtensions
 		return false;
 	}
 	
-	public static bool IsBirthNumber(string? value)
+	public static bool IsBirthNumber([NotNullWhen(true)] string? value)
 	{
-		if (string.IsNullOrEmpty(value))
+		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
 		
 		foreach (var c in value.AsSpan())
 		{
-			if (char.IsDigit(c))
+			if (IsDigit(c))
 			{
 				continue;
 			}
@@ -126,13 +128,13 @@ public static class StringExtensions
 		return true;
 	}
 	
-	public static bool IsPhoneNumber(string? value)
+	public static bool IsPhoneNumber([NotNullWhen(true)] string? value)
 	{
-		if (string.IsNullOrEmpty(value))
-		{
-			return false;
-		}
-		
-		return PhoneNumberUtil.IsViablePhoneNumber(value);
+		return !IsNullOrEmpty(value) && PhoneNumberUtil.IsViablePhoneNumber(value);
+	}
+
+	public static bool EqualsNot(string? left, string? right, StringComparison comparisonType)
+	{
+		return !string.Equals(left, right, comparisonType);
 	}
 }

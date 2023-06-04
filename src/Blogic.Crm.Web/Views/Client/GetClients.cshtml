@@ -121,6 +121,13 @@
                                class="btn btn-primary text-decoration-none me-1">
                                 Detail
                             </a>
+                             <a asp-route-id="@client.Id.ToString()"
+                               asp-controller="Client"
+                               asp-action="UpdateClient"
+                               asp-route-originAction="@nameof(ClientController.GetClients)"
+                               class="btn btn-warning text-decoration-none me-1">
+                                Update
+                            </a>
                             <a asp-route-id="@client.Id.ToString()"
                                asp-controller="Client"
                                asp-action="DeleteClientPrompt"
