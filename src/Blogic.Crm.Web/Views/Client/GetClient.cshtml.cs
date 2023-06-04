@@ -1,5 +1,3 @@
-using Blogic.Crm.Domain.Data.Dtos;
-
 namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class GetClientViewModel

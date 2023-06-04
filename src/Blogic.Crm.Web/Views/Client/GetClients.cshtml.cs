@@ -1,9 +1,6 @@
 #nullable disable
 
-using Blogic.Crm.Domain.Data.Dtos;
-using Blogic.Crm.Infrastructure.Pagination;
 using Blogic.Crm.Infrastructure.Sorting;
-using static Blogic.Crm.Infrastructure.Pagination.QueryStringBase;
 
 namespace Blogic.Crm.Web.Views.Client;
 

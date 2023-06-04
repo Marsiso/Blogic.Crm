@@ -9,27 +9,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Queries;
 
-public sealed record GetPaginatedClientsRepresentationsQuery(ClientQueryString QueryString, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
+public sealed record GetClientsRepresentationsQuery(ClientQueryString QueryString) : IQuery<PaginatedList<ClientRepresentation>>;
 
-public sealed class GetPaginatedClientsRepresentationsQueryHandler : IQueryHandler<GetPaginatedClientsRepresentationsQuery, PaginatedList<ClientRepresentation>>
+public sealed class GetClientsRepresentationsQueryHandler : IQueryHandler<GetClientsRepresentationsQuery, PaginatedList<ClientRepresentation>>
 {
-	public GetPaginatedClientsRepresentationsQueryHandler(DataContext dataContext)
+	public GetClientsRepresentationsQueryHandler(DataContext dataContext)
 	{
 		_dataContext = dataContext;
 	}
 
 	private readonly DataContext _dataContext;
 
-	public async Task<PaginatedList<ClientRepresentation>> Handle(GetPaginatedClientsRepresentationsQuery request,
+	public async Task<PaginatedList<ClientRepresentation>> Handle(GetClientsRepresentationsQuery request,
 	                                                              CancellationToken cancellationToken)
 	{
-		var clientEntities = request.TrackChanges
-			? _dataContext.Clients.AsTracking()
-			              .FilterClients(request.QueryString)
-			              .SearchClients(request.QueryString)
-			: _dataContext.Clients.AsNoTracking()
-			              .FilterClients(request.QueryString)
-			              .SearchClients(request.QueryString);
+		var clientEntities = _dataContext.Clients.AsNoTracking()
+		                                 .FilterClients(request.QueryString)
+		                                 .SearchClients(request.QueryString);
 
 		var totalClientEntities = clientEntities.Count();
 		var orderedClientEntities= await clientEntities

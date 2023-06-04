@@ -1,20 +1,9 @@
 using System.Globalization;
 using System.Net.Mime;
-using Blogic.Crm.Domain.Data.Dtos;
-using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Domain.Routing;
-using Blogic.Crm.Infrastructure.Commands;
-using Blogic.Crm.Infrastructure.Pagination;
-using Blogic.Crm.Infrastructure.Queries;
 using Blogic.Crm.Infrastructure.Sorting;
-using Blogic.Crm.Infrastructure.TypeExtensions;
 using Blogic.Crm.Web.Views.Client;
 using CsvHelper;
-using Mapster;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Blogic.Crm.Infrastructure.Pagination.QueryStringBase;
-using ValidationException = Blogic.Crm.Domain.Exceptions.ValidationException;
 
 namespace Blogic.Crm.Web.Controllers;
 
@@ -35,7 +24,7 @@ public sealed class ClientController : Controller
 		                                      ClientsSortOrder.Id, DateTime.MinValue, DateTime.MaxValue);
 
 		// Get paginated client representations.
-		GetPaginatedClientsRepresentationsQuery query = new(queryString, false);
+		GetClientsRepresentationsQuery query = new(queryString);
 		var paginatedClients = await _sender.Send(query, cancellationToken);
 
 		// Return View Model.
@@ -47,7 +36,7 @@ public sealed class ClientController : Controller
 	public async Task<IActionResult> GetClients(GetClientsViewModel viewModel, CancellationToken cancellationToken)
 	{
 		// Get paginated client representations.
-		GetPaginatedClientsRepresentationsQuery query = new(viewModel.QueryString, false);
+		GetClientsRepresentationsQuery query = new(viewModel.QueryString);
 		var paginatedClients = await _sender.Send(query, cancellationToken);
 
 		// Return View Model.

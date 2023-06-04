@@ -1,8 +1,5 @@
 #nullable disable
 
-using Blogic.Crm.Domain.Data.Dtos;
-using Blogic.Crm.Domain.Exceptions;
-
 namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class ClientCreateViewModel

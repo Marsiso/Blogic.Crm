@@ -1,6 +1,4 @@
-using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Validations;
-using MediatR;
 
 namespace Blogic.Crm.Web.Installers;
 

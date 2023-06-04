@@ -1,6 +1,5 @@
 #nullable disable
 
-using System.Runtime.Serialization;
 using CsvHelper.Configuration.Attributes;
 
 namespace Blogic.Crm.Domain.Data.Dtos;

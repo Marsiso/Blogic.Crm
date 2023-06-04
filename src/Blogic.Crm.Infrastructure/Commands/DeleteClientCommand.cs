@@ -1,6 +1,5 @@
 using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Persistence;
-using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

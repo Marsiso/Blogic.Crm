@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Blogic.Crm.Infrastructure.Persistence;
-using Blogic.Crm.Infrastructure.TypeExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Web.Installers;
@@ -23,6 +22,5 @@ public sealed class DbServiceInstaller : IServiceInstaller
 
 	
 		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-		services.AddScoped<ClientRepository>();
 	}
 }

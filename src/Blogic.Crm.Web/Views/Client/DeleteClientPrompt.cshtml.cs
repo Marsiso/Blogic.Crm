@@ -1,6 +1,3 @@
-using Blogic.Crm.Domain.Data.Dtos;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
 namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class DeleteClientViewModel

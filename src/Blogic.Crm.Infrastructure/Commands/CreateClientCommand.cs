@@ -2,7 +2,6 @@ using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Authentication;
 using Blogic.Crm.Infrastructure.Persistence;
 using Mapster;
-using MediatR;
 
 namespace Blogic.Crm.Infrastructure.Commands;
 

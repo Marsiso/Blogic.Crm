@@ -1,7 +1,4 @@
-using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Persistence;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Web.Data;
