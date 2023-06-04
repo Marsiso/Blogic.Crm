@@ -4,6 +4,9 @@ using FluentValidation;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
+/// <summary>
+/// <see cref="Contract"/> model validations.
+/// </summary>
 public sealed class ContractValidator : AbstractValidator<Contract>
 {
 	public ContractValidator()

@@ -1,5 +1,8 @@
 namespace Blogic.Crm.Infrastructure.Pagination;
 
+/// <summary>
+/// General query string parameters used by the searching and pagination for the database entity data sets.
+/// </summary>
 public class QueryStringBase
 {
 	public QueryStringBase()
@@ -16,12 +19,27 @@ public class QueryStringBase
 		SearchString = searchString;
 	}
 
+	/// <summary>
+	/// <see cref="PageSize"/> lower bound.
+	/// </summary>
 	public const int MinimumPageSize = 10;
+	
+	/// <summary>
+	/// <see cref="PageSize"/> upper bound.
+	/// </summary>
 	public const int MaximumPageSize = 50;
+	
+	/// <summary>
+	/// <see cref="PageNumber"/> lower bound.
+	/// </summary>
 	public const int MinimumPageNumber = 1;
+	
 	private int _pageSize;
 	private int _pageNumber;
 
+	/// <summary>
+	/// Used by the pagination for the index of the retrieved data set 'fragment' (page).
+	/// </summary>
 	public int PageNumber
 	{
 		get => _pageNumber;
@@ -30,6 +48,9 @@ public class QueryStringBase
 			: MinimumPageNumber;
 	}
 
+	/// <summary>
+	/// Used by the pagination for the size of the retrieved data set 'fragment' (page).
+	/// </summary>
 	public int PageSize
 	{
 		get => _pageSize;
@@ -40,5 +61,10 @@ public class QueryStringBase
 				: MinimumPageSize;
 	}
 
+	/// <summary>
+	/// Used for the searching through database entity data set.
+	/// Consists of search terms separated by the delimiter.
+	/// Example search string 'user@example.com Petr 19323455843'.
+	/// </summary>
 	public string SearchString { get; set; }
 }

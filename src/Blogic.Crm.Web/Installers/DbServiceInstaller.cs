@@ -1,10 +1,13 @@
 using System.Diagnostics;
 using Blogic.Crm.Infrastructure.Persistence;
-using Blogic.Crm.Web.Data;
+using Blogic.Crm.Web.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Web.Installers;
 
+/// <summary>
+/// Installer for the database related services.
+/// </summary>
 public sealed class DbServiceInstaller : IServiceInstaller
 {
 	public void InstallServices(IServiceCollection services, IConfiguration configuration,

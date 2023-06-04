@@ -1,7 +1,11 @@
+using Blogic.Crm.Domain.Data.Entities;
 using Blogic.Crm.Infrastructure.Sorting;
 
 namespace Blogic.Crm.Infrastructure.Pagination;
 
+/// <summary>
+/// Query string parameters used by the searching, filtering sorting related to the <see cref="Client"/> data set .
+/// </summary>
 public sealed class ClientQueryString : QueryStringBase
 {
 	public ClientQueryString()
@@ -31,10 +35,24 @@ public sealed class ClientQueryString : QueryStringBase
 
 	public const ClientsSortOrder DefaultSortOrder = ClientsSortOrder.FamilyName;
 
+	/// <summary>
+	/// Used to sort the <see cref="Client"/> data set.
+	/// </summary>
 	public ClientsSortOrder SortOrder { get; set; }
+	
+	/// <summary>
+	/// Used for the <see cref="Client"/> data set filtering.
+	/// </summary>
 	public DateTime MinDateBorn { get; set; }
+	
+	/// <summary>
+	/// Used for the <see cref="Client"/> data set filtering.
+	/// </summary>
 	public DateTime MaxDateBorn { get; set; }
 
+	/// <summary>
+	/// Validation for the minimal and maximal date born.
+	/// </summary>
 	public bool IsValidDateBorn => MaxDateBorn >= MinDateBorn;
 }
 

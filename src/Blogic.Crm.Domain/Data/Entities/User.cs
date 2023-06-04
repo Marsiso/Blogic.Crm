@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Domain.Data.Entities;
 
+/// <summary>
+/// Persistence data model for user. 
+/// </summary>
 [Index(nameof(NormalizedEmail), IsUnique = true)]
 [Index(nameof(Phone), IsUnique = true)]
 [Index(nameof(BirthNumber), IsUnique = true)]

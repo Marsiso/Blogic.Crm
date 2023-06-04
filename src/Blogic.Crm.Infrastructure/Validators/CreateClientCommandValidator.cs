@@ -10,6 +10,9 @@ using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
+/// <summary>
+/// Model validations to be executed before the <see cref="CreateClientCommand"/> command handler.
+/// </summary>
 public sealed class CreateClientCommandValidator : AbstractValidator<CreateClientCommand>
 {
 	private readonly DataContext _dataContext;

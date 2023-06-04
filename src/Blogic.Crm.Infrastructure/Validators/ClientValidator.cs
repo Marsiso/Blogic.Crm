@@ -6,6 +6,9 @@ using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
+/// <summary>
+/// <see cref="Client"/> model validations.
+/// </summary>
 public sealed class ClientValidator :AbstractValidator<Client>
 {
 	public ClientValidator()

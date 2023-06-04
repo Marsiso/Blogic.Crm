@@ -4,8 +4,17 @@ using static Blogic.Crm.Infrastructure.Sorting.ClientsSortOrder;
 
 namespace Blogic.Crm.Infrastructure.Sorting;
 
+/// <summary>
+/// Provides LINQ extensions related to the data set ordering using the query string parameters.
+/// </summary>
 public static class SortOrderFunctions
 {
+	/// <summary>
+	/// Orders the <see cref="Client"/> data set using the <see cref="ClientQueryString"/> query string parameters.
+	/// </summary>
+	/// <param name="clients">The <see cref="Client"/> data set to be ordered.</param>
+	/// <param name="queryString">Provided query string used to order the <see cref="Client"/> data set.</param>
+	/// <returns>The ordered <see cref="Client"/> data set.</returns>
 	public static IOrderedQueryable<Client> OrderClients(this IQueryable<Client> clients,
 	                                                     ClientQueryString queryString)
 	{

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Blogic.Crm.Infrastructure.Authentication;
 
+/// <summary>
+/// Password hashing provider that uses PBKDF2 key derivation and randomly generated salt. 
+/// </summary>
 public sealed class PasswordHasher : IPasswordHasher
 {
 	private const int KeySize = 32;
@@ -16,15 +19,19 @@ public sealed class PasswordHasher : IPasswordHasher
 		Debug.Assert(!password.IsEmpty);
 		Debug.Assert(!password.IsWhiteSpace());
 		
+		// Encode the provided password. 
 		Span<byte> passwordBytes = stackalloc byte[password.Length];
 		Encoding.UTF8.GetBytes(password, passwordBytes);
 
+		// Generate random salt.
 		Span<byte> salt = stackalloc byte[SaltSize];
 		RandomNumberGenerator.Fill(salt);
 
+		// Derive key from the encoded password and salt.
 		Span<byte> key = stackalloc byte[KeySize];
 		Rfc2898DeriveBytes.Pbkdf2(passwordBytes, salt, key, Cycles, Algorithm);
 
+		// Return derived key and salt separated by the delimiter.
 		return $"{Convert.ToBase64String(key)};{Convert.ToBase64String(salt)}";
 	}
 
@@ -35,9 +42,11 @@ public sealed class PasswordHasher : IPasswordHasher
 		Debug.Assert(!passwordHash.IsEmpty);
 		Debug.Assert(!passwordHash.IsWhiteSpace());
 		
+		// Encode the provided password. 
 		Span<byte> passwordBytes = stackalloc byte[password.Length];
 		Encoding.UTF8.GetBytes(password, passwordBytes);
 
+		// Separate derived key and salt using the delimiter.
 		var delimiter = passwordHash.IndexOf(';');
 		if (delimiter == -1)
 		{
@@ -47,9 +56,11 @@ public sealed class PasswordHasher : IPasswordHasher
 		var passwordHashKey = Convert.FromBase64String(passwordHash[..delimiter++].ToString());
 		var passwordHashSalt = Convert.FromBase64String(passwordHash[delimiter..].ToString());
 
+		// Derive key using the encoded password and salt. 
 		Span<byte> key = stackalloc byte[KeySize];
 		Rfc2898DeriveBytes.Pbkdf2(passwordBytes, passwordHashSalt, key, Cycles, Algorithm);
 
+		// Compare derived key with the derived key contained within password hash in fixed time interval.
 		return CryptographicOperations.FixedTimeEquals(key, passwordHashKey)
 			? PasswordVerificationResult.Success
 			: PasswordVerificationResult.Fail;

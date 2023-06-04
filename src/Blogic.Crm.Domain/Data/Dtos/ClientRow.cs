@@ -4,6 +4,9 @@ using CsvHelper.Configuration.Attributes;
 
 namespace Blogic.Crm.Domain.Data.Dtos;
 
+/// <summary>
+/// Data transfer object used to export clients.
+/// </summary>
 public sealed class ClientRow
 {
 	[Name("Id")]

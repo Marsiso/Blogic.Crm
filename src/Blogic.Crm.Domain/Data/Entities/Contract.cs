@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Domain.Data.Entities;
 
+/// <summary>
+/// Persistence data model for contract.
+/// </summary>
 [Table("contracts")]
 [Index(nameof(RegistrationNumber), IsUnique = true)]
 public sealed class Contract : Entity

@@ -4,8 +4,11 @@ using Blogic.Crm.Infrastructure.Validators;
 using Faker;
 using FluentValidation;
 
-namespace Blogic.Crm.Web.Data;
+namespace Blogic.Crm.Web.Persistence;
 
+/// <summary>
+/// Data seed provider for the database entities.
+/// </summary>
 public sealed class DatabaseSeeder : IDisposable
 {
 	public const int GeneratedClientsCount = 1000;
@@ -44,6 +47,10 @@ public sealed class DatabaseSeeder : IDisposable
 		Dispose(true);
 	}
 
+	/// <summary>
+	/// Creates the database with a randomly generated data seed. When database exists then it will be recreated to
+	/// provide freshly seeded data.
+	/// </summary>
 	public void Seed()
 	{
 		MigrateDatabase();

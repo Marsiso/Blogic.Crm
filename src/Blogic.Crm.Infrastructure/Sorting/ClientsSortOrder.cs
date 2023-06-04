@@ -1,5 +1,8 @@
 namespace Blogic.Crm.Infrastructure.Sorting;
 
+/// <summary>
+/// Client's properties that are viable for the client data set sorting options.
+/// </summary>
 public enum ClientsSortOrder
 {
 	GivenName,

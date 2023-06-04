@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Domain.Data.Entities;
 
+/// <summary>
+/// Persistence data model for contract and consultant relationship.
+/// </summary>
 [Table("contract_consultants")]
 [PrimaryKey(nameof(ContractId), nameof(ConsultantId))]
 public sealed class ContractConsultant

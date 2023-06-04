@@ -2,6 +2,9 @@
 
 namespace Blogic.Crm.Domain.Data.Dtos;
 
+/// <summary>
+/// Data transfer object used to persisting clients.
+/// </summary>
 public sealed record ClientInput
 {
 	public ClientInput()
