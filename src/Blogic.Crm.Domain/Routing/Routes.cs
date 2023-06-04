@@ -9,12 +9,13 @@ public sealed class Routes
 	public static class Client
 	{
 		public const string ClientBase = Base + "/client";
-		public const string DeleteClientPrompt = ClientBase + "/delete/{id:long}/prompt";
-		public const string DeleteClient = ClientBase + "/delete/{id:long}";
-		public const string UpdateClient = ClientBase + "/put/{id:long}";
-		public const string CreateClient = ClientBase + "/post";
-		public const string GetClients = ClientBase + "/getAll";
-		public const string GetClient = ClientBase + "/get/{id:long}";
+		public const string DeleteClientPrompt = ClientBase + "/{id:long}/account/delete/prompt";
+		public const string DeleteClient = ClientBase + "/{id:long}/account/delete";
+		public const string UpdateClient = ClientBase + "/{id:long}/account/update";
+		public const string CreateClient = ClientBase + "/account/create";
+		public const string GetClients = ClientBase + "/dashboard";
+		public const string GetClient = ClientBase + "/{id:long}/account";
+		public const string ExportClients = ClientBase + "/dashboard/export";
 	}
 	
 	public static class Account

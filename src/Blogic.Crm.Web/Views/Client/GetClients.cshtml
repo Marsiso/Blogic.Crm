@@ -7,6 +7,46 @@
 
 @{
     ViewData["Title"] = "Client Dashboard";
+    
+       Dictionary<string, string> queryStringBase = new()
+        {
+            { nameof(Model.QueryString.SearchString), Model.QueryString.SearchString },
+            { nameof(Model.QueryString.SortOrder), Model.QueryString.SortOrder.ToString() },
+            { nameof(Model.QueryString.PageSize), Model.QueryString.PageSize.ToString() }
+        };
+
+        Dictionary<string, string> currentPageQueryString = new(queryStringBase)
+        {
+            [nameof(Model.QueryString.PageNumber)] = Model.Clients.CurrentPage.ToString()
+        };
+
+        Dictionary<string, string> previousPageQueryString = new(queryStringBase)
+        {
+            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage - 1).ToString()
+        };
+
+        Dictionary<string, string> nextPageQueryString = new(queryStringBase)
+        {
+            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage + 1).ToString()
+        };
+
+        Dictionary<string, string> firstPageQueryString = new(queryStringBase)
+        {
+            [nameof(Model.QueryString.PageNumber)] = QueryStringBase.MinimumPageNumber.ToString()
+        };
+
+        Dictionary<string, string> lastPageQueryString = new(queryStringBase)
+        {
+            [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
+        };
+
+        var hasPrevListItemClass = $"page-item{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+        var hasPrevLinkClass = $"btn page-link{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+        var prevPage = (Model.Clients.CurrentPage - 1).ToString();
+
+        var hasNextListItemClass = $"page-item{(Model.Clients.HasNext ? string.Empty : "disabled")}";
+        var hasNextLinkClass = $"btn page-link{(Model.Clients.HasNext ? string.Empty : "disabled")}";
+                        var nextPage = (Model.Clients.CurrentPage + 1).ToString();
 }
 
 <h1 class="mt-4">Dashboard</h1>
@@ -67,6 +107,15 @@
         </select>
     </div>
     <button class="btn btn-primary" type="submit">Filter</button>
+</form>
+
+<h2>Export</h2>
+<form asp-controller="Client"
+      asp-action="ExportClients"
+      method="@HttpMethods.Post"
+      asp-all-route-data="@currentPageQueryString"
+      class="mb-5">
+    <button class="btn btn-primary" type="submit">CSV</button>
 </form>
 
 <h2>Clients</h2>
@@ -156,48 +205,6 @@
         <div class="d-flex justify-content-center align-items-center">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
-                    @{
-                        Dictionary<string, string> queryStringBase = new()
-                        {
-                            { nameof(Model.QueryString.SearchString), Model.QueryString.SearchString },
-                            { nameof(Model.QueryString.SortOrder), Model.QueryString.SortOrder.ToString() },
-                            { nameof(Model.QueryString.PageSize), Model.QueryString.PageSize.ToString() }
-                        };
-
-                        Dictionary<string, string> currentPageQueryString = new(queryStringBase)
-                        {
-                            [nameof(Model.QueryString.PageNumber)] = Model.Clients.CurrentPage.ToString()
-                        };
-
-                        Dictionary<string, string> previousPageQueryString = new(queryStringBase)
-                        {
-                            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage - 1).ToString()
-                        };
-
-                        Dictionary<string, string> nextPageQueryString = new(queryStringBase)
-                        {
-                            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage + 1).ToString()
-                        };
-
-                        Dictionary<string, string> firstPageQueryString = new(queryStringBase)
-                        {
-                            [nameof(Model.QueryString.PageNumber)] = QueryStringBase.MinimumPageNumber.ToString()
-                        };
-
-                        Dictionary<string, string> lastPageQueryString = new(queryStringBase)
-                        {
-                            [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
-                        };
-
-                        var hasPrevListItemClass = $"page-item{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
-                        var hasPrevLinkClass = $"btn page-link{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
-                        var prevPage = (Model.Clients.CurrentPage - 1).ToString();
-
-                        var hasNextListItemClass = $"page-item{(Model.Clients.HasNext ? string.Empty : "disabled")}";
-                        var hasNextLinkClass = $"btn page-link{(Model.Clients.HasNext ? string.Empty : "disabled")}";
-                        var nextPage = (Model.Clients.CurrentPage + 1).ToString();
-                    }
-
                     <li class="@hasPrevListItemClass">
                         <a type="submit"
                            class="@hasPrevLinkClass"

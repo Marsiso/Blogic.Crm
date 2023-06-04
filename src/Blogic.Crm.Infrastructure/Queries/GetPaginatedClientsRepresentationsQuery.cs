@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Queries;
 
-public sealed record GetPaginatedClientsQuery(ClientQueryString QueryString, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
+public sealed record GetPaginatedClientsRepresentationsQuery(ClientQueryString QueryString, bool TrackChanges) : IQuery<PaginatedList<ClientRepresentation>>;
 
-public sealed class GetPaginatedClientsQueryHandler : IQueryHandler<GetPaginatedClientsQuery, PaginatedList<ClientRepresentation>>
+public sealed class GetPaginatedClientsRepresentationsQueryHandler : IQueryHandler<GetPaginatedClientsRepresentationsQuery, PaginatedList<ClientRepresentation>>
 {
-	public GetPaginatedClientsQueryHandler(DataContext dataContext)
+	public GetPaginatedClientsRepresentationsQueryHandler(DataContext dataContext)
 	{
 		_dataContext = dataContext;
 	}
 
 	private readonly DataContext _dataContext;
 
-	public async Task<PaginatedList<ClientRepresentation>> Handle(GetPaginatedClientsQuery request,
+	public async Task<PaginatedList<ClientRepresentation>> Handle(GetPaginatedClientsRepresentationsQuery request,
 	                                                              CancellationToken cancellationToken)
 	{
 		var clientEntities = request.TrackChanges

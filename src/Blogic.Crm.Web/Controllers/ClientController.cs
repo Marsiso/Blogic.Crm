@@ -1,6 +1,7 @@
+using System.Globalization;
+using System.Net.Mime;
 using Blogic.Crm.Domain.Data.Dtos;
 using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Domain.Exceptions;
 using Blogic.Crm.Domain.Routing;
 using Blogic.Crm.Infrastructure.Commands;
 using Blogic.Crm.Infrastructure.Pagination;
@@ -8,10 +9,12 @@ using Blogic.Crm.Infrastructure.Queries;
 using Blogic.Crm.Infrastructure.Sorting;
 using Blogic.Crm.Infrastructure.TypeExtensions;
 using Blogic.Crm.Web.Views.Client;
+using CsvHelper;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using static Blogic.Crm.Infrastructure.Pagination.QueryStringBase;
+using ValidationException = Blogic.Crm.Domain.Exceptions.ValidationException;
 
 namespace Blogic.Crm.Web.Controllers;
 
@@ -32,7 +35,7 @@ public sealed class ClientController : Controller
 		                                      ClientsSortOrder.Id, DateTime.MinValue, DateTime.MaxValue);
 
 		// Get paginated client representations.
-		GetPaginatedClientsQuery query = new(queryString, false);
+		GetPaginatedClientsRepresentationsQuery query = new(queryString, false);
 		var paginatedClients = await _sender.Send(query, cancellationToken);
 
 		// Return View Model.
@@ -44,7 +47,7 @@ public sealed class ClientController : Controller
 	public async Task<IActionResult> GetClients(GetClientsViewModel viewModel, CancellationToken cancellationToken)
 	{
 		// Get paginated client representations.
-		GetPaginatedClientsQuery query = new(viewModel.QueryString, false);
+		GetPaginatedClientsRepresentationsQuery query = new(viewModel.QueryString, false);
 		var paginatedClients = await _sender.Send(query, cancellationToken);
 
 		// Return View Model.
@@ -80,8 +83,8 @@ public sealed class ClientController : Controller
 	{
 		try
 		{
-			CreateClientCommand createClientCommand = indexViewModel.Client.Adapt<CreateClientCommand>();
-			Entity entity = await _sender.Send(createClientCommand, cancellationToken);
+			CreateClientCommand command = indexViewModel.Client.Adapt<CreateClientCommand>();
+			Entity entity = await _sender.Send(command, cancellationToken);
 			return RedirectToAction("GetClient", "Client", new { entity.Id });
 		}
 		catch (ValidationException exception)
@@ -164,5 +167,29 @@ public sealed class ClientController : Controller
 		var client = clientEntity.Adapt<ClientRepresentation>();
 		return View(new DeleteClientViewModel(client, originAction));
 
+	}
+
+	[HttpPost(Routes.Client.ExportClients)]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> ExportClients([FromQuery] ClientQueryString? queryString,
+	                                               CancellationToken cancellationToken)
+	{
+		// Bind query string parameters.
+		queryString ??= new ClientQueryString(MinimumPageSize, MinimumPageNumber, string.Empty,
+		                                      ClientsSortOrder.Id, DateTime.MinValue, DateTime.MaxValue);
+		
+		// Get client.
+		GetClientRowsQuery query = new(queryString);
+		IEnumerable<ClientRow> clientRows = await _sender.Send(query, cancellationToken);
+
+		// Write client rows to CSV file
+		var content = new MemoryStream();
+		await using StreamWriter streamWriter = new(content);
+		await using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+
+		await csvWriter.WriteRecordsAsync(clientRows, cancellationToken);
+		
+		// Get CSV file
+		return File(content.GetBuffer(), MediaTypeNames.Application.Octet, "clients.csv");
 	}
 }
