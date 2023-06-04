@@ -30,11 +30,13 @@ try
 	applicationBuilder.Host.UseSerilog();
 	applicationBuilder.Services.InstallServicesInAssembly(applicationBuilder.Configuration,
 	                                                      applicationBuilder.Environment, typeof(Program).Assembly);
-
-	applicationBuilder.Services.AddHostedService<Seed>();
 	
 	var application = applicationBuilder.Build();
 
+	using var scope = application.Services.CreateScope();
+	using var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+	seeder.Seed();
+	
 	application.UseSerilogRequestLogging();
 
 	if (!application.Environment.IsDevelopment())

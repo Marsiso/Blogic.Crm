@@ -38,7 +38,7 @@ public sealed class Contract : Entity
 	[Required]
 	public long ClientId { get; set; }
 
-	[Column("manager_id")] public long? ManagerId { get; set; } = default!;
+	[Column("manager_id")] public long? ManagerId { get; set; }
 
 	[NotMapped]
 	[ForeignKey(nameof(ClientId))]

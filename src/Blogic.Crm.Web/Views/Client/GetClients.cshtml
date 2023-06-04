@@ -40,13 +40,13 @@
             [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
         };
 
-        var hasPrevListItemClass = $"page-item{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
-        var hasPrevLinkClass = $"btn page-link{(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+        var hasPrevListItemClass = $"page-item {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+        var hasPrevLinkClass = $"btn page-link {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
         var prevPage = (Model.Clients.CurrentPage - 1).ToString();
 
-        var hasNextListItemClass = $"page-item{(Model.Clients.HasNext ? string.Empty : "disabled")}";
-        var hasNextLinkClass = $"btn page-link{(Model.Clients.HasNext ? string.Empty : "disabled")}";
-                        var nextPage = (Model.Clients.CurrentPage + 1).ToString();
+        var hasNextListItemClass = $"page-item {(Model.Clients.HasNext ? string.Empty : "disabled")}";
+        var hasNextLinkClass = $"btn page-link {(Model.Clients.HasNext ? string.Empty : "disabled")}";
+        var nextPage = (Model.Clients.CurrentPage + 1).ToString();
 }
 
 <h1 class="mt-4">Dashboard</h1>
