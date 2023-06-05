@@ -1,0 +1,286 @@
+﻿@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Blogic.Crm.Web.Controllers
+@using static Blogic.Crm.Infrastructure.Sorting.ContractSortOrder;
+@model Blogic.Crm.Web.Views.Contract.GetContractsViewModel
+
+@{
+    ViewData["Title"] = "Contract Dashboard";
+    var searchString = Model.QueryString.SearchString;
+    var sortOrder = Model.QueryString.SortOrder;
+    var pageSize = Model.QueryString.PageSize;
+    var pageNumber = Model.QueryString.PageNumber;
+    var contracts = Model.Contracts;
+    var currentPage = contracts.CurrentPage;
+    var totalPages = contracts.TotalPages;
+    var totalItems = contracts.TotalItems;
+    var hasPrev= contracts.HasPrevious;
+    var hasNext = contracts.HasNext;
+
+    Dictionary<string, string> queryStringBase = new()
+    {
+        { "searchString",searchString },
+        { "sortOrder", sortOrder.ToString() },
+        { "pageSize", pageSize.ToString() },
+        { "pageNumber", pageNumber.ToString() }
+    };
+
+    var hasPrevListItemClass = $"page-item {(hasPrev ? string.Empty : "disabled")}";
+    var hasPrevLinkClass = $"btn page-link {(hasPrev ? string.Empty : "disabled")}";
+    var prevPage = (currentPage - 1).ToString();
+
+    var hasNextListItemClass = $"page-item {(hasNext? string.Empty : "disabled")}";
+    var hasNextLinkClass = $"btn page-link {(hasNext ? string.Empty : "disabled")}";
+    var nextPage = (currentPage + 1).ToString();
+    
+    Dictionary<string, string> previousPageQueryString = new(queryStringBase)
+    {
+        ["pageNumber"] = prevPage
+    };
+
+    Dictionary<string, string> nextPageQueryString = new(queryStringBase)
+    {
+        ["pageNumber"] = nextPage
+    };
+
+    Dictionary<string, string> firstPageQueryString = new(queryStringBase)
+    {
+        ["pageNumber"] = MinimumPageNumber.ToString()
+    };
+
+    Dictionary<string, string> lastPageQueryString = new(queryStringBase)
+    {
+        ["pageNumber"] = totalPages.ToString()
+    };
+}
+
+<h1 class="mt-4">Dashboard</h1>
+
+<h2>Contracts</h2>
+<div class="mb-5">
+    <a asp-action="CreateContract"
+       class="btn btn-primary">
+        Create
+    </a>
+</div>
+
+<h2>Filters</h2>
+<form asp-action="GetContracts"
+      method="@HttpMethods.Post" class="mb-5"
+      asp-antiforgery="true">
+    <div class="mb-3">
+        <label class="form-label"
+               asp-for="@searchString">
+            Search
+        </label>
+        <input type="text"
+               class="form-control"
+               asp-for="@searchString">
+        <div asp-for="@searchString" class="form-text">Search contracts.</div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="@pageSize"
+               class="form-label">
+            @($"Page Size: \t {ViewData["pageSize"]}")
+        </label>
+        <input type="range"
+               class="form-range"
+               min="@MinimumPageSize.ToString()"
+               max="@MaximumPageSize.ToString()"
+               asp-for="@pageSize">
+        <div for="pageSize" class="form-text">Number of displayed consultants.</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"
+               asp-for="@sortOrder">
+            Order by
+        </label>
+        <select class="form-select" asp-for="@sortOrder">
+            <option selected value="@Id">Select property to sort by</option>
+            <option value="@Id">Identifier</option>
+            <option value="@IdDesc">Identifier descending</option>
+            <option value="@RegistrationNumber">Registration number</option>
+            <option value="@RegistrationNumberDesc">Registration number descending</option>
+            <option value="@Institution">Institution</option>
+            <option value="@InstitutionDesc">Institution descending</option>
+            <option value="@DateConcluded">Date concluded</option>
+            <option value="@DateConcludedDesc">Date concluded descending</option>
+            <option value="@DateExpired">Date expired</option>
+            <option value="@DateExpiredDesc">Date expired descending</option>
+            <option value="@DateValid">Date valid</option>
+            <option value="@DateValidDesc">Date valid descending</option>
+            <option value="@ClientId">Client identifier</option>
+            <option value="@ClientIdDesc">Client identifier</option>
+            <option value="@ManagerId">Manager identifier descending</option>
+            <option value="@ManagerIdDesc">Manager identifier descending</option>
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Filter</button>
+</form>
+
+<h2>Export</h2>
+<form asp-action="ExportContracts"
+      method="@HttpMethods.Post"
+      asp-all-route-data="@queryStringBase"
+      asp-antiforgery="true"
+      class="mb-5">
+    <button class="btn btn-primary" type="submit">CSV</button>
+</form>
+
+<h2>Contracts</h2>
+<div class="table-responsive">
+    <table class="table table-hover table-sm">
+        <caption>@totalItems. Matches</caption>
+        <thead>
+        <tr>
+            <th scope="col">
+                Identifier
+            </th>
+            <th scope="col">
+                Registration number
+            </th>
+            <th scope="col">
+                Institution
+            </th>
+            <th scope="col">
+                Conclusion date
+            </th>
+            <th scope="col">
+                Expiration date
+            </th>
+            <th scope="col">
+                Validity date
+            </th>
+            <th scope="col">
+                Client identifier
+            </th>
+            <th scope="col">
+                Manager identifier
+            </th>
+            <th scope="col">
+                Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (ContractRepresentation contract in contracts)
+        {
+            <tr>
+                <td class="pe-5">@contract.Id.ToString()</td>
+                <td class="pe-5">@contract.RegistrationNumber</td>
+                <td class="pe-5">@contract.Institution</td>
+                <td class="pe-5">
+                    @contract.DateConcluded.ToString("dd/MM/yy")
+                    <br/>
+                     @contract.DateConcluded.Humanize()
+                </td>
+                <td class="pe-5">
+                    @contract.DateExpired.ToString("dd/MM/yy")
+                    <br>
+                    @contract.DateExpired.Humanize()
+                </td>
+                 <td class="pe-5">
+                    @contract.DateValid.ToString("dd/MM/yy")
+                    <br>
+                    @contract.DateValid.Humanize()
+                </td>
+                <td class="pe-5">@contract.ClientId.ToString()</td>
+                <td class="pe-5">@contract.ManagerId.ToString()</td>
+                <td>
+                    <div class="d-flex justify-content-start align-items-center">
+                        <a asp-route-id="@contract.Id.ToString()"
+                           asp-action="GetContract"
+                           class="btn btn-primary text-decoration-none me-1">
+                            More
+                        </a>
+                        <a asp-route-id="@contract.Id.ToString()"
+                           asp-action="UpdateContract"
+                           asp-route-originAction="@nameof(ConsultantController.GetConsultants)"
+                           class="btn btn-warning text-decoration-none me-1">
+                            Update
+                        </a>
+                        <a asp-route-id="@contract.Id.ToString()"
+                           asp-action="DeleteContractPrompt"
+                           asp-route-originAction="@nameof(ConsultantController.GetConsultants)"
+                           class="btn btn-danger text-decoration-none">
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <div class="d-flex justify-content-center align-items-center">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="@hasPrevListItemClass">
+                        <a type="submit"
+                           class="@hasPrevLinkClass"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@firstPageQueryString">
+                            First
+                        </a>
+                    </li>
+                    <li class="@hasPrevListItemClass">
+                        <a type="submit"
+                           class="@hasPrevLinkClass"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@previousPageQueryString">
+                            Prev
+                        </a>
+                    </li>
+                    @if (hasPrev)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="GetContracts"
+                               asp-all-route-data="@previousPageQueryString">
+                                @prevPage
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item active">
+                        <a class="page-link"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@queryStringBase">
+                            @currentPage.ToString()
+                        </a>
+                    </li>
+
+                    @if (hasNext)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="GetContracts"
+                               asp-all-route-data="@nextPageQueryString">
+                                @nextPage
+                            </a>
+                        </li>
+                    }
+                    <li class="@hasNextListItemClass">
+                        <a class="@hasNextLinkClass"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@nextPageQueryString">
+                            Next
+                        </a>
+                    </li>
+                    <li class="@hasNextListItemClass">
+                        <a class="@hasNextLinkClass"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@lastPageQueryString">
+                            Last
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+

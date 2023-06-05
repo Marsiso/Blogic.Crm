@@ -1,3 +1,5 @@
+using static System.String;
+
 namespace Blogic.Crm.Infrastructure.Pagination;
 
 /// <summary>
@@ -28,7 +30,7 @@ public class QueryStringBase
 	{
 		PageSize = MinimumPageSize;
 		PageNumber = MinimumPageNumber;
-		SearchString = string.Empty;
+		SearchString = Empty;
 	}
 
 	public QueryStringBase(int pageSize, int pageNumber, string searchString)

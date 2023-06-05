@@ -73,4 +73,36 @@ public static class SortFunctions
 			_ => consultants.OrderByDescending(c => c.FamilyName)
 		};
 	}
+
+	/// <summary>
+	///     Orders the <see cref="Contract" /> data set using the <see cref="ConsultantQueryString" /> query string
+	///     parameters.
+	/// </summary>
+	/// <param name="contracts">The <see cref="Contract" /> data set to be ordered.</param>
+	/// <param name="queryString">Provided query string used to order the <see cref="Contract" /> data set.</param>
+	/// <returns>The ordered <see cref="Contract" /> data set.</returns>
+	public static IOrderedQueryable<Contract> Sort(this IQueryable<Contract> contracts,
+	                                               ContractQueryString queryString)
+	{
+		return queryString.SortOrder switch
+		{
+			ContractSortOrder.Id => contracts.OrderBy(c => c.Id),
+			ContractSortOrder.IdDesc => contracts.OrderByDescending(c => c.Id),
+			ContractSortOrder.RegistrationNumber => contracts.OrderBy(c => c.RegistrationNumber),
+			ContractSortOrder.RegistrationNumberDesc => contracts.OrderByDescending(c => c.RegistrationNumber),
+			ContractSortOrder.Institution => contracts.OrderBy(c => c.Institution),
+			ContractSortOrder.InstitutionDesc => contracts.OrderByDescending(c => c.Institution),
+			ContractSortOrder.DateConcluded => contracts.OrderBy(c => c.DateConcluded),
+			ContractSortOrder.DateConcludedDesc => contracts.OrderByDescending(c => c.DateConcluded),
+			ContractSortOrder.DateExpired => contracts.OrderBy(c => c.DateExpired),
+			ContractSortOrder.DateExpiredDesc => contracts.OrderByDescending(c => c.DateExpired),
+			ContractSortOrder.DateValid => contracts.OrderBy(c => c.DateValid),
+			ContractSortOrder.DateValidDesc => contracts.OrderByDescending(c => c.DateValid),
+			ContractSortOrder.ClientId => contracts.OrderBy(c => c.ClientId),
+			ContractSortOrder.ClientIdDesc => contracts.OrderByDescending(c => c.ClientId),
+			ContractSortOrder.ManagerId => contracts.OrderBy(c => c.ManagerId),
+			ContractSortOrder.ManagerIdDesc => contracts.OrderByDescending(c => c.ManagerId),
+			_ =>  contracts.OrderBy(c => c.Id),
+		};
+	}
 }

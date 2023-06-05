@@ -29,4 +29,16 @@ public sealed class Routes
 		public const string Get = ConsultantBase + "/{id:long}/account";
 		public const string Export = ConsultantBase + "/dashboard/export";
 	}
+	
+	public static class Contract
+	{
+		public const string ContractBase = Base + "/contract";
+		public const string DeletePrompt = ContractBase + "/{id:long}/account/delete/prompt";
+		public const string Delete = ContractBase + "/{id:long}/account/delete";
+		public const string Update = ContractBase + "/{id:long}/account/update";
+		public const string Create = ContractBase + "/account/create";
+		public const string GetAll = ContractBase + "/dashboard";
+		public const string Get = ContractBase + "/{id:long}/account";
+		public const string Export = ContractBase + "/dashboard/export";
+	}
 }
