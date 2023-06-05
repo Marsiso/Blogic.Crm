@@ -195,13 +195,13 @@
                         </a>
                         <a asp-route-id="@contract.Id.ToString()"
                            asp-action="UpdateContract"
-                           asp-route-originAction="@nameof(ConsultantController.GetConsultants)"
+                           asp-route-originAction="@nameof(ContractController.GetContracts)"
                            class="btn btn-warning text-decoration-none me-1">
                             Update
                         </a>
                         <a asp-route-id="@contract.Id.ToString()"
                            asp-action="DeleteContractPrompt"
-                           asp-route-originAction="@nameof(ConsultantController.GetConsultants)"
+                           asp-route-originAction="@nameof(ContractController.GetContracts)"
                            class="btn btn-danger text-decoration-none">
                             Delete
                         </a>

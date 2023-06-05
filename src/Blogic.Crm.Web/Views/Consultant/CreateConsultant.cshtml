@@ -99,8 +99,10 @@
         }
     </div>
     <div class="mb-3">
-        <label asp-for="@consultant.Phone" class="form-label">@nameof(consultant.Phone).Humanize()</label>
-        <input type="text" class="form-control" asp-for="@consultant.Phone">
+        <label asp-for="@consultant.Phone"class="form-label">@nameof(consultant.Phone).Humanize()</label>
+        <input type="tel"
+               class="form-control"
+               asp-for="@consultant.Phone">
         @if (validationException != null &&
              validationException.ValidationFailures.ContainsKey(nameof(consultant.Phone)) &&
              validationException.ValidationFailures[nameof(consultant.Phone)].Length > 0)

@@ -1,0 +1,95 @@
+﻿@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Blogic.Crm.Web.Controllers
+@model Blogic.Crm.Web.Views.Contract.GetContractViewModel
+
+@{
+    ViewData["Title"] = "Contract Details";
+    var contract = Model.Contract;
+}
+
+<h1 class="mt-4">Contract Details</h1>
+
+@if (contract is not null)
+{
+    <div class="mb-3 row">
+        <label asp-for="@contract.Id" class="col-sm-2 col-form-label">@nameof(contract.Id).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.Id" value="@contract.Id">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.RegistrationNumber" class="col-sm-2 col-form-label">@nameof(contract.RegistrationNumber).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.RegistrationNumber" value="@contract.RegistrationNumber">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.Institution" class="col-sm-2 col-form-label">@nameof(contract.Institution).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.Institution" value="@contract.Institution">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.DateConcluded" class="col-sm-2 col-form-label">@(nameof(contract.DateConcluded).Humanize())</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.DateConcluded" value="@contract.DateConcluded">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.DateValid" class="col-sm-2 col-form-label">@nameof(contract.DateValid).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.DateValid" value="@contract.DateValid">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.DateExpired" class="col-sm-2 col-form-label">@nameof(contract.DateExpired).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.DateExpired" value="@contract.DateExpired">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.ClientId" class="col-sm-2 col-form-label">@nameof(contract.ClientId).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.ClientId" value="@contract.ClientId">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@contract.ManagerId" class="col-sm-2 col-form-label">@nameof(contract.ManagerId).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@contract.ManagerId" value="@contract.ManagerId">
+        </div>
+    </div>
+
+    <a asp-action="GetContracts"
+       class="btn btn-primary text-decoration-none me-2">
+        Dashboard
+    </a>
+    <a asp-route-id="@contract.Id.ToString()"
+       asp-action="UpdateContract"
+       asp-route-originAction="@nameof(ContractController.GetContract)"
+       class="btn btn-warning text-decoration-none me-2">
+        Update
+    </a>
+    <a asp-route-id="@contract.Id.ToString()"
+       asp-action="DeleteContractPrompt"
+       asp-route-originAction="@nameof(ContractController.GetContract)"
+       class="btn btn-danger text-decoration-none">
+        Delete
+    </a>
+}
+else
+{
+    <p>Contract not found!</p>
+    <a asp-action="GetContracts"
+       class="btn btn-primary text-decoration-none">
+        Dashboard
+    </a>
+}

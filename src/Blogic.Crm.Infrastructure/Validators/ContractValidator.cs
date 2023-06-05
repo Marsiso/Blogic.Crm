@@ -1,4 +1,4 @@
-using Blogic.Crm.Infrastructure.TypeExtensions;
+using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
@@ -9,16 +9,25 @@ public sealed class ContractValidator : AbstractValidator<Contract>
 {
 	public ContractValidator()
 	{
-		When(c => StringExtensions.IsNotNullOrEmpty(c.RegistrationNumber), () =>
+		When(c => IsNotNullOrEmpty(c.RegistrationNumber), () =>
 		{
 			RuleFor(c => c.RegistrationNumber)
-				.Must(rn => Guid.TryParse(rn, out _))
+				.Must(HasValidFormat)
 				.WithMessage("The registration number is in the wrong format.");
 		}).Otherwise(() =>
 		{
 			RuleFor(c => c.RegistrationNumber)
 				.NotEmpty()
 				.WithMessage("A registration number is required.");
+		});
+		
+		When(c => IsNotNullOrEmpty(c.Institution), () =>
+		{
+		}).Otherwise(() =>
+		{
+			RuleFor(c => c.Institution)
+				.NotEmpty()
+				.WithMessage("Institution is required.");
 		});
 
 		RuleFor(c => c.DateConcluded)
@@ -28,5 +37,10 @@ public sealed class ContractValidator : AbstractValidator<Contract>
 		RuleFor(c => c.DateValid)
 			.LessThanOrEqualTo(c => c.DateExpired)
 			.WithMessage("The date of validity of the contract must be the same or earlier than the expiry date.");
+	}
+	
+	private static bool HasValidFormat(string registrationNumber)
+	{
+		return Guid.TryParse(registrationNumber, out _);
 	}
 }

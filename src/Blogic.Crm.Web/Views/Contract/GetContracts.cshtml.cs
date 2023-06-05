@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using Microsoft.AspNetCore.Mvc;
-
 namespace Blogic.Crm.Web.Views.Contract;
 
 public sealed class GetContractsViewModel

@@ -13,6 +13,7 @@ public sealed class Contract : Entity
 {
 	public const int RegistrationNumberMaximumLength = 128;
 	public const int InstitutionMaximumLength = 256;
+	public static DateTime MinimalDateConcluded = new(1800, 1, 1);
 
 	[Column("registration_number")]
 	[Required]
