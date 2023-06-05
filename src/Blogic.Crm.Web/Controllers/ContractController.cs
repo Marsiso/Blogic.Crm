@@ -45,24 +45,41 @@ public sealed class ContractController : Controller
 		try
 		{
 			// Retrieve contract representation for the view model.
-			GetContractByIdQuery query = new(id, false);
-			Contract? contractEntity = await _sender.Send(query, cancellationToken);
-		
+			GetContractByIdQuery contractQuery = new(id, false);
+			Contract? contractEntity = await _sender.Send(contractQuery, cancellationToken);
+			
 			// Build the view model and return in to the client.
 			if (contractEntity is null)
 			{
 				return View(new GetContractViewModel());
 			}
+			
+			// Retrieve client representation for the view model.
+			GetClientByIdQuery clientQuery = new(contractEntity.ClientId, false);
+			Client? clientEntity = await _sender.Send(clientQuery, cancellationToken);
+			
+			// Retrieve client representation for the view model.
+			if (contractEntity.ManagerId.HasValue is false)
+			{
+				return RedirectToAction(nameof(Index), "Home", new { });
+			}
 
+			GetConsultantByIdQuery consultantQuery = new(contractEntity.ManagerId.Value, false);
+			Consultant? consultantEntity = await _sender.Send(consultantQuery, cancellationToken);
+			
+			// Map data to their respective representations.
 			ContractRepresentation contract = contractEntity.Adapt<ContractRepresentation>();
-			return View(new GetContractViewModel { Contract = contract });
+			ClientRepresentation? client = clientEntity?.Adapt<ClientRepresentation>();
+			ConsultantRepresentation? consultant = consultantEntity?.Adapt<ConsultantRepresentation>();
+			
+			return View(new GetContractViewModel(contract, client, consultant));
 		}
 		catch (Exception exception)
 		{
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ContractController),
-			          nameof(GetContracts));
+			          nameof(GetContract));
 
 			return RedirectToAction(nameof(Index), "Home", new { });
 		}

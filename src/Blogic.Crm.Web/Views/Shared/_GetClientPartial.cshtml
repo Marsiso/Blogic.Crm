@@ -1,0 +1,92 @@
+﻿@using Humanizer
+@model ClientRepresentation?
+
+@{
+    var client = Model;
+}
+
+@if (client is not null)
+{
+    <div class="table-responsive">
+        <table class="table table-borderless w-auto">
+            <tbody>
+            <tr>
+                <td class="fw-bold">@nameof(client.Id).Humanize()</td>
+                <td>@client.Id.ToString()</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.GivenName).Humanize()</td>
+                <td>@client.GivenName</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.FamilyName).Humanize()</td>
+                <td>@client.FamilyName</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.Email).Humanize()</td>
+                <td>
+                    @client.Email
+                    <br/>
+                    @client.NormalizedEmail
+                </td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.IsEmailConfirmed).Humanize()</td>
+                <td>@client.IsEmailConfirmed.ToString()</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.Phone).Humanize()</td>
+                <td>@client.Phone</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.IsPhoneConfirmed).Humanize()</td>
+                <td>@client.IsPhoneConfirmed.ToString()</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.BirthNumber).Humanize()</td>
+                <td>@client.BirthNumber</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">@nameof(client.DateBorn).Humanize()</td>
+                <td>
+                    @($"{client.DateBorn:dd/MM/yyyy}")
+                    <br/>
+                    @client.DateBorn.Humanize()
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="btn-group" role="group">
+        <a asp-controller="Client"
+           asp-action="GetClients"
+           class="btn btn-outline-dark">
+            Dashboard
+        </a>
+        <a class="btn btn-outline-dark active">
+            More
+        </a>
+        <a asp-route-id="@client.Id.ToString()"
+           asp-controller="Client"
+           asp-action="UpdateClient"
+           class="btn btn-outline-dark">
+            Update
+        </a>
+        <a asp-route-id="@client.Id.ToString()"
+           asp-controller="Client"
+           asp-action="DeleteClientPrompt"
+           class="btn btn-outline-dark">
+            Delete
+        </a>
+    </div>
+}
+else
+{
+    <p class="text-danger">Client not found!</p>
+    <a asp-controller="Client"
+       asp-action="GetClients"
+       class="btn btn-outline-dark">
+        Dashboard
+    </a>
+}

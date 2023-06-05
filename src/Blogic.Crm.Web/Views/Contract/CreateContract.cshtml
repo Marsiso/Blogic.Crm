@@ -3,7 +3,7 @@
 @model Blogic.Crm.Web.Views.Contract.CreateContractViewModel
 
 @{
-    ViewData["Title"] = "Create Contract";
+    ViewData["Title"] = "Create contract";
     var contract = Model.Contract;
     var validationException = Model.ValidationException;
     var hasValidationFailures = validationException is { ValidationFailures.Keys.Count: > 0 };
@@ -47,7 +47,7 @@
     </ol>
 </nav>
 
-<h1>Create Contract</h1>
+<h1>Create contract</h1>
 
 <form asp-action="CreateContract"
       method="@HttpMethods.Post"
