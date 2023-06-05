@@ -1,0 +1,96 @@
+﻿@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Blogic.Crm.Web.Controllers
+@model Blogic.Crm.Web.Views.Consultant.GetConsultantViewModel
+
+@{
+    ViewData["Title"] = "Consultant Details";
+    var consultant = Model.Consultant;
+}
+
+<h1 class="mt-4">Consultant Details</h1>
+
+@if (consultant != null)
+{
+    <div class="mb-3 row">
+        <label asp-for="@consultant.Id" class="col-sm-2 col-form-label">@nameof(consultant.Id).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.Id" value="@consultant.Id">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.Email" class="col-sm-2 col-form-label">@nameof(consultant.Email).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.Email" value="@consultant.Email">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.IsEmailConfirmed" class="col-sm-2 col-form-label">@nameof(consultant.IsEmailConfirmed).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.IsEmailConfirmed" value="@consultant.IsEmailConfirmed">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.GivenName" class="col-sm-2 col-form-label">@nameof(consultant.GivenName).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.GivenName" value="@consultant.GivenName">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.FamilyName" class="col-sm-2 col-form-label">@nameof(consultant.FamilyName).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.FamilyName" value="@consultant.FamilyName">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.Phone" class="col-sm-2 col-form-label">@nameof(consultant.Phone).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.Phone" value="@consultant.Phone">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.IsPhoneConfirmed" class="col-sm-2 col-form-label">@nameof(consultant.IsPhoneConfirmed).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.IsPhoneConfirmed" value="@consultant.IsPhoneConfirmed">
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label asp-for="@consultant.DateBorn" class="col-sm-2 col-form-label">@nameof(consultant.DateBorn).Humanize()</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" asp-for="@consultant.DateBorn" value="@consultant.DateBorn">
+        </div>
+    </div>
+
+
+    <a asp-action="GetConsultants"
+       class="btn btn-primary text-decoration-none me-2">
+        Dashboard
+    </a>
+    <a asp-route-id="@consultant.Id.ToString()"
+       asp-action="UpdateConsultant"
+       asp-route-originAction="@nameof(ConsultantController.GetConsultant)"
+       class="btn btn-warning text-decoration-none me-2">
+        Update
+    </a>
+    <a asp-route-id="@consultant.Id.ToString()"
+       asp-action="DeleteConsultantPrompt"
+       asp-route-originAction="@nameof(ConsultantController.GetConsultant)"
+       class="btn btn-danger text-decoration-none">
+        Delete
+    </a>
+}
+else
+{
+    <p>Consultant not found!</p>
+    <a asp-action="GetConsultants"
+       class="btn btn-primary text-decoration-none">
+        Dashboard
+    </a>
+}

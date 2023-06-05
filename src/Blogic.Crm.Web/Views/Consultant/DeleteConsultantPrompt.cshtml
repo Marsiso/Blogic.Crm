@@ -1,0 +1,49 @@
+﻿@using Blogic.Crm.Web.Controllers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Blogic.Crm.Web.Views.Consultant.ConsultantDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Consultant Prompt";
+    var consultant = Model.Consultant;
+}
+
+<h1 class="mt-4">Prompt</h1>
+
+@if (consultant != null)
+{
+    <p>Proceed to delete consultant?</p>
+    <div class="d-flex justify-content-start align-items-center">
+        <form asp-route-id="@consultant.Id.ToString()"
+              asp-action="DeleteConsultant"
+              method="@HttpMethods.Post"
+              asp-antiforgery="true"
+              class="me-1">
+            <button type="submit" class="btn btn-primary text-decoration-none">Yes</button>
+        </form>
+        @if (StringExtensions.IsNotNullOrEmpty(Model.OriginAction) &&
+             nameof(ConsultantController.GetConsultant).Equals(Model.OriginAction, StringComparison.OrdinalIgnoreCase))
+        {
+            <a asp-route-id="@consultant.Id.ToString()"
+               asp-action="GetConsultant"
+               class="btn btn-primary text-decoration-none">
+                No
+            </a>
+        }
+        else
+        {
+            <a asp-action="GetConsultants"
+               class="btn btn-primary text-decoration-none">
+                No
+            </a>
+        }
+    </div>
+}
+else
+{
+    <p>Consultant not found!</p>
+    <a asp-action="GetConsultants"
+       asp-controller="Consultant"
+       class="btn btn-primary text-decoration-none">
+        Dashboard
+    </a>
+}

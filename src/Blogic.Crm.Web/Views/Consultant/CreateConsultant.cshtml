@@ -1,0 +1,136 @@
+﻿@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Blogic.Crm.Web.Views.Consultant.ConsultantCreateViewModel
+
+@{
+    ViewData["Title"] = "Register Consultant";
+    var consultant = Model.Consultant;
+    var validationException = Model.ValidationException;
+}
+
+<h1 class="mt-4">Register Consultant</h1>
+
+<form asp-action="CreateConsultant"
+      method="@HttpMethods.Post"
+      asp-antiforgery="true">
+    <div class="mb-3">
+        <label asp-for="@consultant.Email" class="form-label">@nameof(consultant.Email).Humanize()</label>
+        <input type="email" class="form-control" asp-for="@consultant.Email">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.Email)) &&
+             validationException.ValidationFailures[nameof(consultant.Email)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.Email)];
+
+            <div for="@consultant.Email" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.Password" class="form-label">@nameof(consultant.Password).Humanize()</label>
+        <input type="password" class="form-control" asp-for="@consultant.Password">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.Password)) &&
+             validationException.ValidationFailures[nameof(consultant.Password)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.Password)];
+
+            <div for="@consultant.Password" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.GivenName" class="form-label">@nameof(consultant.GivenName).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@consultant.GivenName">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.GivenName)) &&
+             validationException.ValidationFailures[nameof(consultant.GivenName)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.GivenName)];
+
+            <div for="@consultant.GivenName" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.FamilyName" class="form-label">@nameof(consultant.FamilyName).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@consultant.FamilyName">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.FamilyName)) &&
+             validationException.ValidationFailures[nameof(consultant.FamilyName)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.FamilyName)];
+
+            <div for="@consultant.FamilyName" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.DateBorn" class="form-label">@nameof(consultant.DateBorn).Humanize()</label>
+        <input type="date" class="form-control" asp-for="@consultant.DateBorn">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.DateBorn)) &&
+             validationException.ValidationFailures[nameof(consultant.DateBorn)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.DateBorn)];
+
+            <div for="@consultant.DateBorn" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.Phone" class="form-label">@nameof(consultant.Phone).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@consultant.Phone">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.Phone)) &&
+             validationException.ValidationFailures[nameof(consultant.Phone)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.Phone)];
+
+            <div for="@consultant.Phone" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <label asp-for="@consultant.BirthNumber" class="form-label">@nameof(consultant.BirthNumber).Humanize()</label>
+        <input type="text" class="form-control" asp-for="@consultant.BirthNumber">
+        @if (validationException != null &&
+             validationException.ValidationFailures.ContainsKey(nameof(consultant.BirthNumber)) &&
+             validationException.ValidationFailures[nameof(consultant.BirthNumber)].Length > 0)
+        {
+            var validationFailures = validationException.ValidationFailures[nameof(consultant.BirthNumber)];
+
+            <div for="@consultant.BirthNumber" class="form-text">
+                @foreach (var validationFailure in validationFailures)
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -11,7 +11,7 @@ public static class StringExtensions
 	{
 		return !IsNullOrEmpty(value);
 	}
-	
+
 	public static bool ContainSpecialCharacters([NotNullWhen(true)] string? value, int count)
 	{
 		if (IsNullOrEmpty(value))
@@ -35,7 +35,7 @@ public static class StringExtensions
 
 		return false;
 	}
-	
+
 	public static bool ContainDigits([NotNullWhen(true)] string? value, int count)
 	{
 		if (IsNullOrEmpty(value))
@@ -59,7 +59,7 @@ public static class StringExtensions
 
 		return false;
 	}
-	
+
 	public static bool ContainLowerCaseCharacters([NotNullWhen(true)] string? value, int count)
 	{
 		if (IsNullOrEmpty(value))
@@ -83,7 +83,7 @@ public static class StringExtensions
 
 		return false;
 	}
-	
+
 	public static bool ContainUpperCaseCharacters([NotNullWhen(true)] string? value, int count)
 	{
 		if (IsNullOrEmpty(value))
@@ -107,14 +107,14 @@ public static class StringExtensions
 
 		return false;
 	}
-	
+
 	public static bool IsBirthNumber([NotNullWhen(true)] string? value)
 	{
 		if (IsNullOrEmpty(value))
 		{
 			return false;
 		}
-		
+
 		foreach (var c in value.AsSpan())
 		{
 			if (IsDigit(c))
@@ -127,7 +127,7 @@ public static class StringExtensions
 
 		return true;
 	}
-	
+
 	public static bool IsPhoneNumber([NotNullWhen(true)] string? value)
 	{
 		return !IsNullOrEmpty(value) && PhoneNumberUtil.IsViablePhoneNumber(value);

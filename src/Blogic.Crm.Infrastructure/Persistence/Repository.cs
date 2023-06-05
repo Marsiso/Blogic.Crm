@@ -1,20 +1,21 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
-using Blogic.Crm.Domain.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Persistence;
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 {
+	protected readonly DataContext DataContext;
+
+	private bool _disposed;
+
 	public Repository(DataContext dataContext)
 	{
 		DataContext = dataContext;
 		Entities = dataContext.Set<TEntity>();
 	}
 
-	private bool _disposed; 
-	protected readonly DataContext DataContext;
 	public IQueryable<TEntity> Entities { get; }
 
 	public void Dispose()
@@ -23,29 +24,16 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 		GC.SuppressFinalize(this);
 	}
 
-	protected virtual void Dispose(bool disposing)
-	{
-		if (!_disposed)
-		{
-			if (disposing)
-			{
-				DataContext.Dispose();
-			}
-		}
-
-		_disposed = true;
-	}
-
 	public IQueryable<TEntity> FindAll(bool trackChanges)
 	{
-		return trackChanges 
+		return trackChanges
 			? DataContext.Set<TEntity>().AsTracking()
 			: DataContext.Set<TEntity>().AsNoTracking();
 	}
-	
+
 	public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges)
 	{
-		return trackChanges 
+		return trackChanges
 			? DataContext.Set<TEntity>().AsTracking()
 			             .Where(expression)
 			: DataContext.Set<TEntity>().AsNoTracking()
@@ -67,7 +55,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 	public void Create(TEntity entity)
 	{
 		Debug.Assert(entity != null);
-		
+
 		DataContext.Set<TEntity>().Add(entity);
 	}
 
@@ -81,7 +69,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 	{
 		Debug.Assert(entity != null);
 		Debug.Assert(entity.Id > 0);
-		
+
 		DataContext.Set<TEntity>().Update(entity);
 	}
 
@@ -89,7 +77,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 	{
 		Debug.Assert(entity != null);
 		Debug.Assert(entity.Id > 0);
-		
+
 		DataContext.Set<TEntity>().Remove(entity);
 	}
 
@@ -97,8 +85,22 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 	{
 		DataContext.SaveChanges();
 	}
+
 	public Task SaveChangesAsync(CancellationToken cancellationToken = default)
 	{
 		return DataContext.SaveChangesAsync(cancellationToken);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!_disposed)
+		{
+			if (disposing)
+			{
+				DataContext.Dispose();
+			}
+		}
+
+		_disposed = true;
 	}
 }

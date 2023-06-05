@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Blogic.Crm.Domain.Data.Entities;
 
 namespace Blogic.Crm.Infrastructure.Persistence;
 

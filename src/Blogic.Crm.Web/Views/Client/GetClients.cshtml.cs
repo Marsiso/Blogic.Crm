@@ -9,9 +9,7 @@ public sealed class GetClientsViewModel
 	private PaginatedList<ClientRepresentation> _clients;
 	private ClientQueryString _queryString;
 
-	public GetClientsViewModel()
-	{
-	}
+	public GetClientsViewModel() { }
 
 	public GetClientsViewModel(PaginatedList<ClientRepresentation> clients,
 	                           ClientQueryString queryString)

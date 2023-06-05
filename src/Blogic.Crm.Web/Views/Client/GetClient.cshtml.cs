@@ -6,6 +6,6 @@ public sealed class GetClientViewModel
 	{
 		Client = client;
 	}
-	
+
 	public ClientRepresentation? Client { get; set; }
 }

@@ -4,11 +4,12 @@ using FluentValidation;
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-/// Installer for the validation related services.
+///     Installer for the validation related services.
 /// </summary>
 public sealed class ValidatorServiceInstaller : IServiceInstaller
 {
-	public void InstallServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+	public void InstallServices(IServiceCollection services, IConfiguration configuration,
+	                            IWebHostEnvironment environment)
 	{
 		services.AddValidatorsFromAssembly(typeof(CreateClientCommandValidator).Assembly);
 	}

@@ -4,17 +4,15 @@ namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class ClientUpdateViewModel
 {
-	public ClientUpdateViewModel()
-	{
-	}
-	
+	public ClientUpdateViewModel() { }
+
 	public ClientUpdateViewModel(long id, string originAction, ClientInput client)
 	{
 		Id = id;
 		Client = client;
 		OriginAction = originAction;
 	}
-	
+
 	public ClientUpdateViewModel(long id, string originAction, ClientInput client,
 	                             ValidationException validationException)
 	{

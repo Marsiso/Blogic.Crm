@@ -1,5 +1,3 @@
-using Blogic.Crm.Domain.Data.Entities;
-using FluentValidation;
 using static Blogic.Crm.Domain.Data.Entities.User;
 using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
@@ -7,7 +5,7 @@ using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
 namespace Blogic.Crm.Infrastructure.Validators;
 
 /// <summary>
-/// <see cref="Consultant"/> model validations.
+///     <see cref="Consultant" /> model validations.
 /// </summary>
 public sealed class ConsultantValidator : AbstractValidator<Consultant>
 {

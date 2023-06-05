@@ -1,52 +1,50 @@
 @using Humanizer
-@using Blogic.Crm.Domain.Data.Entities
-@using Blogic.Crm.Infrastructure.Pagination
 @using Blogic.Crm.Infrastructure.Sorting
 @using Blogic.Crm.Web.Controllers
 @model Blogic.Crm.Web.Views.Client.GetClientsViewModel
 
 @{
     ViewData["Title"] = "Client Dashboard";
-    
-       Dictionary<string, string> queryStringBase = new()
-        {
-            { nameof(Model.QueryString.SearchString), Model.QueryString.SearchString },
-            { nameof(Model.QueryString.SortOrder), Model.QueryString.SortOrder.ToString() },
-            { nameof(Model.QueryString.PageSize), Model.QueryString.PageSize.ToString() }
-        };
 
-        Dictionary<string, string> currentPageQueryString = new(queryStringBase)
-        {
-            [nameof(Model.QueryString.PageNumber)] = Model.Clients.CurrentPage.ToString()
-        };
+    Dictionary<string, string> queryStringBase = new()
+    {
+        { nameof(Model.QueryString.SearchString), Model.QueryString.SearchString },
+        { nameof(Model.QueryString.SortOrder), Model.QueryString.SortOrder.ToString() },
+        { nameof(Model.QueryString.PageSize), Model.QueryString.PageSize.ToString() }
+    };
 
-        Dictionary<string, string> previousPageQueryString = new(queryStringBase)
-        {
-            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage - 1).ToString()
-        };
+    Dictionary<string, string> currentPageQueryString = new(queryStringBase)
+    {
+        [nameof(Model.QueryString.PageNumber)] = Model.Clients.CurrentPage.ToString()
+    };
 
-        Dictionary<string, string> nextPageQueryString = new(queryStringBase)
-        {
-            [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage + 1).ToString()
-        };
+    Dictionary<string, string> previousPageQueryString = new(queryStringBase)
+    {
+        [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage - 1).ToString()
+    };
 
-        Dictionary<string, string> firstPageQueryString = new(queryStringBase)
-        {
-            [nameof(Model.QueryString.PageNumber)] = QueryStringBase.MinimumPageNumber.ToString()
-        };
+    Dictionary<string, string> nextPageQueryString = new(queryStringBase)
+    {
+        [nameof(Model.QueryString.PageNumber)] = (Model.Clients.CurrentPage + 1).ToString()
+    };
 
-        Dictionary<string, string> lastPageQueryString = new(queryStringBase)
-        {
-            [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
-        };
+    Dictionary<string, string> firstPageQueryString = new(queryStringBase)
+    {
+        [nameof(Model.QueryString.PageNumber)] = MinimumPageNumber.ToString()
+    };
 
-        var hasPrevListItemClass = $"page-item {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
-        var hasPrevLinkClass = $"btn page-link {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
-        var prevPage = (Model.Clients.CurrentPage - 1).ToString();
+    Dictionary<string, string> lastPageQueryString = new(queryStringBase)
+    {
+        [nameof(Model.QueryString.PageNumber)] = Model.Clients.TotalPages.ToString()
+    };
 
-        var hasNextListItemClass = $"page-item {(Model.Clients.HasNext ? string.Empty : "disabled")}";
-        var hasNextLinkClass = $"btn page-link {(Model.Clients.HasNext ? string.Empty : "disabled")}";
-        var nextPage = (Model.Clients.CurrentPage + 1).ToString();
+    var hasPrevListItemClass = $"page-item {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+    var hasPrevLinkClass = $"btn page-link {(Model.Clients.HasPrevious ? string.Empty : "disabled")}";
+    var prevPage = (Model.Clients.CurrentPage - 1).ToString();
+
+    var hasNextListItemClass = $"page-item {(Model.Clients.HasNext ? string.Empty : "disabled")}";
+    var hasNextLinkClass = $"btn page-link {(Model.Clients.HasNext ? string.Empty : "disabled")}";
+    var nextPage = (Model.Clients.CurrentPage + 1).ToString();
 }
 
 <h1 class="mt-4">Dashboard</h1>
@@ -79,8 +77,8 @@
         </label>
         <input type="range"
                class="form-range"
-               min="@QueryStringBase.MinimumPageSize.ToString()"
-               max="@QueryStringBase.MaximumPageSize.ToString()"
+               min="@MinimumPageSize.ToString()"
+               max="@MaximumPageSize.ToString()"
                asp-for="@Model.QueryString.PageSize">
         <div asp-for="@Model.QueryString.PageSize" class="form-text">Number of displayed clients.</div>
     </div>

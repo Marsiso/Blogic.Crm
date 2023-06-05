@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-/// Upper-invariant email lookup normalizer provider.
+///     Upper-invariant email lookup normalizer provider.
 /// </summary>
 public sealed class EmailLookupNormalizer : IEmailLookupNormalizer
 {

@@ -4,10 +4,8 @@ namespace Blogic.Crm.Web.Views.Client;
 
 public sealed class ClientCreateViewModel
 {
-	public ClientCreateViewModel()
-	{
-	}
-	
+	public ClientCreateViewModel() { }
+
 	public ClientCreateViewModel(ClientInput client, ValidationException validationException)
 	{
 		Client = client;

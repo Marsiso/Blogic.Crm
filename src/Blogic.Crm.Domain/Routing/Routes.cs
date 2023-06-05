@@ -9,19 +9,24 @@ public sealed class Routes
 	public static class Client
 	{
 		public const string ClientBase = Base + "/client";
-		public const string DeleteClientPrompt = ClientBase + "/{id:long}/account/delete/prompt";
-		public const string DeleteClient = ClientBase + "/{id:long}/account/delete";
-		public const string UpdateClient = ClientBase + "/{id:long}/account/update";
-		public const string CreateClient = ClientBase + "/account/create";
-		public const string GetClients = ClientBase + "/dashboard";
-		public const string GetClient = ClientBase + "/{id:long}/account";
-		public const string ExportClients = ClientBase + "/dashboard/export";
+		public const string DeletePrompt = ClientBase + "/{id:long}/account/delete/prompt";
+		public const string Delete = ClientBase + "/{id:long}/account/delete";
+		public const string Update = ClientBase + "/{id:long}/account/update";
+		public const string Create = ClientBase + "/account/create";
+		public const string GetAll = ClientBase + "/dashboard";
+		public const string Get = ClientBase + "/{id:long}/account";
+		public const string Export = ClientBase + "/dashboard/export";
 	}
-	
-	public static class Account
+
+	public static class Consultant
 	{
-		public const string AccountBase = Base + "/account";
-		public const string PostAccount = AccountBase + "/post";
-		public const string PostClient = AccountBase + "/post/client";
+		public const string ConsultantBase = Base + "/consultant";
+		public const string DeletePrompt = ConsultantBase + "/{id:long}/account/delete/prompt";
+		public const string Delete = ConsultantBase + "/{id:long}/account/delete";
+		public const string Update = ConsultantBase + "/{id:long}/account/update";
+		public const string Create = ConsultantBase + "/account/create";
+		public const string GetAll = ConsultantBase + "/dashboard";
+		public const string Get = ConsultantBase + "/{id:long}/account";
+		public const string Export = ConsultantBase + "/dashboard/export";
 	}
 }

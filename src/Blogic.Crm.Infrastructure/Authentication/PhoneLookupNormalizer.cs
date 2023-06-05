@@ -3,7 +3,7 @@ using PhoneNumbers;
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-/// Phone number normalizer provider.
+///     Phone number normalizer provider.
 /// </summary>
 public sealed class PhoneLookupNormalizer : IPhoneLookupNormalizer
 {

@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Blogic.Crm.Infrastructure\Blogic.Crm.Infrastructure.csproj" />
+        <ProjectReference Include="..\Blogic.Crm.Infrastructure\Blogic.Crm.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Faker.Net" Version="2.0.154" />
-        <PackageReference Include="Humanizer.Core" Version="2.14.1" />
+        <PackageReference Include="Faker.Net" Version="2.0.154"/>
+        <PackageReference Include="Humanizer.Core" Version="2.14.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,7 +24,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Views\Account\PostClient.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Account\PostClient.cshtml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Pages\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="Views\Consultant\GetConsultants.cshtml"/>
     </ItemGroup>
 
 </Project>

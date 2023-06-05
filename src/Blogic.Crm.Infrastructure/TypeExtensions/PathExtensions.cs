@@ -8,7 +8,7 @@ namespace Blogic.Crm.Infrastructure.TypeExtensions;
 public static class PathExtensions
 {
 	public const string CsvFileExtension = ".csv";
-	
+
 	public static bool PathDoesNotExist([NotNullWhen(false)] string? absolutePath)
 	{
 		return !Exists(absolutePath);
@@ -20,11 +20,11 @@ public static class PathExtensions
 		{
 			return true;
 		}
-		
+
 		if (HasExtension(fileNameWithExtension))
 		{
-			string extension = GetExtension(fileNameWithExtension);
-			return EqualsNot(extension,CsvFileExtension, StringComparison.Ordinal);
+			var extension = GetExtension(fileNameWithExtension);
+			return EqualsNot(extension, CsvFileExtension, StringComparison.Ordinal);
 		}
 
 		return true;

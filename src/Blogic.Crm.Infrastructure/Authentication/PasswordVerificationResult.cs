@@ -1,7 +1,7 @@
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-/// Password verification results.
+///     Password verification results.
 /// </summary>
 public enum PasswordVerificationResult
 {

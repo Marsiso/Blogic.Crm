@@ -1,7 +1,7 @@
 namespace Blogic.Crm.Domain.Data.Dtos;
 
 /// <summary>
-/// Data transfer object used to present clients.
+///     Data transfer object used to present clients.
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="GivenName"></param>

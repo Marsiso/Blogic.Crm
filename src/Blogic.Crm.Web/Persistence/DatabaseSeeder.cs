@@ -7,7 +7,7 @@ using FluentValidation;
 namespace Blogic.Crm.Web.Persistence;
 
 /// <summary>
-/// Data seed provider for the database entities.
+///     Data seed provider for the database entities.
 /// </summary>
 public sealed class DatabaseSeeder : IDisposable
 {
@@ -48,8 +48,8 @@ public sealed class DatabaseSeeder : IDisposable
 	}
 
 	/// <summary>
-	/// Creates the database with a randomly generated data seed. When database exists then it will be recreated to
-	/// provide freshly seeded data.
+	///     Creates the database with a randomly generated data seed. When database exists then it will be recreated to
+	///     provide freshly seeded data.
 	/// </summary>
 	public void Seed()
 	{
@@ -160,12 +160,12 @@ public sealed class DatabaseSeeder : IDisposable
 		{
 			clients.Add(GenerateClient(passwordHash));
 		}
-		
+
 		// Filter generated clients.
 		clients = clients.Where(c => validator.Validate(c).IsValid)
 		                 .DistinctBy(c => new { c.NormalizedEmail, c.Phone, c.BirthNumber })
 		                 .ToList();
-		
+
 		// Add generated consultant to the collection.
 		_dataContext.AddRange(clients);
 
@@ -178,14 +178,14 @@ public sealed class DatabaseSeeder : IDisposable
 	{
 		var passwordHash = _passwordHasher.HashPassword("$Password123$");
 		IValidator<Consultant> validator = new ConsultantValidator();
-		
+
 		// Generate predefined number of consultants.
 		List<Consultant> consultants = new();
 		for (var count = 0; count < GeneratedConsultantsCount; count++)
 		{
 			consultants.Add(GenerateConsultant(passwordHash));
 		}
-		
+
 		// Filter generated consultants.
 		consultants = consultants.Where(c => validator.Validate(c).IsValid)
 		                         .DistinctBy(c => new { c.NormalizedEmail, c.Phone, c.BirthNumber })
@@ -203,31 +203,31 @@ public sealed class DatabaseSeeder : IDisposable
 	                                     List<Consultant> consultants)
 	{
 		IValidator<Contract> validator = new ContractValidator();
-		
+
 		// Generate predefined number of contracts;
 		List<Contract> contracts = new();
 		for (var count = 0; count < GeneratedContractsCount; count++)
 		{
 			contracts.Add(GenerateContract());
 		}
-		
+
 		// Filter generated contracts.
 		contracts = contracts.Where(c => validator.Validate(c).IsValid)
-                             .DistinctBy(c => new { c.RegistrationNumber })
-                             .ToList();
-		
+		                     .DistinctBy(c => new { c.RegistrationNumber })
+		                     .ToList();
+
 		// Assign randomly selected contract owner and manager.
 		var clientsCount = clients.Count - 1;
 		var consultantsCount = consultants.Count - 1;
 		contracts.ForEach(c =>
 		{
-			c.ClientId = clients[RandomNumber.Next(0,clientsCount)].Id;
+			c.ClientId = clients[RandomNumber.Next(0, clientsCount)].Id;
 			c.ManagerId = consultants[RandomNumber.Next(0, consultantsCount)].Id;
 		});
-		
+
 		// Add generated consultant to the collection.
 		_dataContext.AddRange(contracts);
-	
+
 		// Save changes to database entities.
 		_dataContext.SaveChanges();
 		return contracts;
@@ -247,18 +247,18 @@ public sealed class DatabaseSeeder : IDisposable
 			};
 
 			_dataContext.Add(contractConsultant);
-			
+
 			// Seed random number of contract consultants.
 			var randomConsultants = consultants
 			                        .Where(c => c.Id != contract.ManagerId)
 			                        .OrderBy(_ => RandomNumber.Next())
 			                        .Take(RandomNumber.Next(0, GeneratedContractConsultantsUpperBound))
-			                        .Select(c =>  new ContractConsultant
+			                        .Select(c => new ContractConsultant
 			                        {
 				                        ContractId = contract.Id,
 				                        ConsultantId = c.Id
 			                        });
-			
+
 			// Add generated contract to the collection.
 			_dataContext.AddRange(randomConsultants);
 		}

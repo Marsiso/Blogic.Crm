@@ -5,7 +5,7 @@ using System.Text;
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-/// Password hashing provider that uses PBKDF2 key derivation and randomly generated salt. 
+///     Password hashing provider that uses PBKDF2 key derivation and randomly generated salt.
 /// </summary>
 public sealed class PasswordHasher : IPasswordHasher
 {
@@ -13,12 +13,12 @@ public sealed class PasswordHasher : IPasswordHasher
 	private const int SaltSize = 16;
 	private const int Cycles = 1_572_864;
 	private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
-	
+
 	public string HashPassword(ReadOnlySpan<char> password)
 	{
 		Debug.Assert(!password.IsEmpty);
 		Debug.Assert(!password.IsWhiteSpace());
-		
+
 		// Encode the provided password. 
 		Span<byte> passwordBytes = stackalloc byte[password.Length];
 		Encoding.UTF8.GetBytes(password, passwordBytes);
@@ -41,7 +41,7 @@ public sealed class PasswordHasher : IPasswordHasher
 		Debug.Assert(!password.IsWhiteSpace());
 		Debug.Assert(!passwordHash.IsEmpty);
 		Debug.Assert(!passwordHash.IsWhiteSpace());
-		
+
 		// Encode the provided password. 
 		Span<byte> passwordBytes = stackalloc byte[password.Length];
 		Encoding.UTF8.GetBytes(password, passwordBytes);

@@ -1,13 +1,13 @@
 namespace Blogic.Crm.Web.Views.Client;
 
-public sealed class DeleteClientViewModel
+public sealed class ClientDeleteViewModel
 {
-	public DeleteClientViewModel(ClientRepresentation? client, string originAction)
+	public ClientDeleteViewModel(ClientRepresentation? client, string originAction)
 	{
 		Client = client;
 		OriginAction = originAction;
 	}
-	
+
 	public ClientRepresentation? Client { get; set; }
 	public string OriginAction { get; set; }
 }

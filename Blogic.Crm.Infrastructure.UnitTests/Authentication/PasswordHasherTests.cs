@@ -1,6 +1,6 @@
-using Xunit;
 using Blogic.Crm.Infrastructure.Authentication;
 using FluentAssertions;
+using Xunit;
 
 namespace Blogic.Crm.Infrastructure.UnitTests.Authentication;
 
@@ -18,12 +18,12 @@ public sealed class PasswordHasherTests
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
 	}
-	
+
 	[Fact]
 	public void HashPassword_WhenEmptyStringAsPassword_ThenThrowException()
 	{
@@ -36,7 +36,7 @@ public sealed class PasswordHasherTests
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
@@ -50,12 +50,12 @@ public sealed class PasswordHasherTests
 		const string password = "Pass123$";
 
 		// Act
-		string passwordHash = passwordHasher.HashPassword(password);
+		var passwordHash = passwordHasher.HashPassword(password);
 
 		// Assert
 		passwordHash.Should().NotBeNullOrEmpty();
 	}
-	
+
 	[Fact]
 	public void HashPassword_WhenValidPassword_ThenReturnHash_ThatContainsDelimiter()
 	{
@@ -65,13 +65,13 @@ public sealed class PasswordHasherTests
 		const string delimiter = ";";
 
 		// Act
-		string passwordHash = passwordHasher.HashPassword(password);
+		var passwordHash = passwordHasher.HashPassword(password);
 
 		// Assert
 		passwordHash.Should().NotBeNullOrEmpty();
 		passwordHash.Should().Contain(delimiter);
 	}
-	
+
 	[Fact]
 	public void HashPassword_WhenValidPassword_ThenReturnHash_ThatContainsKeyAndSaltSeparatedByDelimiter()
 	{
@@ -81,10 +81,10 @@ public sealed class PasswordHasherTests
 		const string delimiter = ";";
 
 		// Act
-		string passwordHash = passwordHasher.HashPassword(password);
-		int delimiterIndex = passwordHash.IndexOf(delimiter, StringComparison.Ordinal);
-		string passwordHashKey = passwordHash[..delimiterIndex++];
-		string passwordHashSalt = passwordHash[delimiterIndex..];
+		var passwordHash = passwordHasher.HashPassword(password);
+		var delimiterIndex = passwordHash.IndexOf(delimiter, StringComparison.Ordinal);
+		var passwordHashKey = passwordHash[..delimiterIndex++];
+		var passwordHashSalt = passwordHash[delimiterIndex..];
 
 		// Assert
 		passwordHash.Should().NotBeNullOrEmpty();
@@ -92,7 +92,7 @@ public sealed class PasswordHasherTests
 		passwordHashKey.Should().NotBeNullOrEmpty();
 		passwordHashSalt.Should().NotBeNullOrEmpty();
 	}
-	
+
 	[Fact]
 	public void VerifyPassword_WhenNullReferenceAsPassword_ThenThrowException()
 	{
@@ -106,7 +106,7 @@ public sealed class PasswordHasherTests
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
@@ -118,19 +118,19 @@ public sealed class PasswordHasherTests
 		// Arrange
 		PasswordHasher passwordHasher = new();
 		const string passwordHash = "KEY;SALT";
-			
+
 		void Action()
 		{
 			passwordHasher.VerifyPassword(string.Empty, passwordHash);
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
 	}
-	
+
 	[Fact]
 	public void VerifyPassword_WhenNullReferenceAsPasswordHash_ThenThrowException()
 	{
@@ -144,12 +144,12 @@ public sealed class PasswordHasherTests
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
 	}
-	
+
 	[Fact]
 	public void VerifyPassword_WhenEmptyStringAsPasswordHash_ThenThrowException()
 	{
@@ -163,12 +163,12 @@ public sealed class PasswordHasherTests
 		}
 
 		// Act
-		Exception? exception = Record.Exception(Action);
+		var exception = Record.Exception(Action);
 
 		// Assert
 		exception.Should().NotBeNull();
 	}
-	
+
 	[Fact]
 	public void AssignableTo_IPasswordHasher_Abstraction()
 	{
@@ -178,7 +178,7 @@ public sealed class PasswordHasherTests
 		// Assert
 		passwordHasher.Should().BeAssignableTo<IPasswordHasher>();
 	}
-	
+
 	[Fact]
 	public void HashPassword_WhenValidPassword_ThenReturnUniquePasswordHash()
 	{
@@ -207,13 +207,13 @@ public sealed class PasswordHasherTests
 		const string password = "Pass123$";
 
 		// Act
-		string passwordHash = passwordHasher.HashPassword(password);
-		PasswordVerificationResult verificationResult = passwordHasher.VerifyPassword(password, passwordHash);
+		var passwordHash = passwordHasher.HashPassword(password);
+		var verificationResult = passwordHasher.VerifyPassword(password, passwordHash);
 
 		// Assert
 		verificationResult.Should().Be(PasswordVerificationResult.Success);
 	}
-	
+
 	[Fact]
 	public void HashPassword_WhenInvalidPassword_ThenReturnFail()
 	{

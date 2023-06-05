@@ -1,35 +1,32 @@
-using Blogic.Crm.Domain.Data.Entities;
-using Blogic.Crm.Infrastructure.Persistence;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
-/// Deletes the persisted client.
+///     Deletes the persisted client.
 /// </summary>
 /// <param name="Id">Provided unique identifier to distinct between clients.</param>
 public sealed record DeleteClientCommand(long Id) : ICommand<Unit>;
 
 /// <summary>
-/// Handles the <see cref="DeleteClientCommandHandler"/> command.
+///     Handles the <see cref="DeleteClientCommandHandler" /> command.
 /// </summary>
 public sealed class DeleteClientCommandHandler : ICommandHandler<DeleteClientCommand, Unit>
 {
+	private readonly DataContext _dataContext;
+
 	public DeleteClientCommandHandler(DataContext dataContext)
 	{
 		_dataContext = dataContext;
 	}
 
-	private readonly DataContext _dataContext;
-
 	public async Task<Unit> Handle(DeleteClientCommand request, CancellationToken cancellationToken)
 	{
 		// Retrieve the persisted client using the provided ID.
-		Client? clientEntity= await _dataContext.Clients
-		                                         .AsTracking()
-		                                         .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
-		
+		var clientEntity = await _dataContext.Clients
+		                                     .AsTracking()
+		                                     .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+
 		// When the client isn't persisted then take no action and return else delete the persisted client.
 		if (clientEntity != null)
 		{

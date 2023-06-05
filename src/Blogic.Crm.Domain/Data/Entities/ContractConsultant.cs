@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Blogic.Crm.Domain.Data.Entities;
 
 /// <summary>
-/// Persistence data model for contract and consultant relationship.
+///     Persistence data model for contract and consultant relationship.
 /// </summary>
 [Table("contract_consultants")]
 [PrimaryKey(nameof(ContractId), nameof(ConsultantId))]
@@ -18,7 +18,7 @@ public sealed class ContractConsultant
 	[ForeignKey(nameof(ContractId))]
 	[DeleteBehavior(DeleteBehavior.Cascade)]
 	public Contract Contract { get; set; } = default!;
-	
+
 	[NotMapped]
 	[ForeignKey(nameof(ConsultantId))]
 	[DeleteBehavior(DeleteBehavior.Cascade)]

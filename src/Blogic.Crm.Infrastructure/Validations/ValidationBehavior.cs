@@ -1,11 +1,9 @@
-using FluentValidation;
-using MediatR;
 using ValidationException = Blogic.Crm.Domain.Exceptions.ValidationException;
 
 namespace Blogic.Crm.Infrastructure.Validations;
 
 /// <summary>
-/// Handles command and query model validation before their execution.
+///     Handles command and query model validation before their execution.
 /// </summary>
 /// <typeparam name="TRequest">Either a command or query to be processed by their respective handlers.</typeparam>
 /// <typeparam name="TResponse">Either a command or query response type.</typeparam>

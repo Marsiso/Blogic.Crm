@@ -9,7 +9,7 @@ using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 namespace Blogic.Crm.Web.Controllers;
 
 /// <summary>
-/// Controller that handles requests related to the <see cref="Client"/> entity.
+///     Controller that handles requests related to the <see cref="Client" /> entity.
 /// </summary>
 public sealed class ClientController : Controller
 {
@@ -21,12 +21,12 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	/// Gets the client dashboard panel with the default client data set.
+	///     Gets the client dashboard panel with the default client data set.
 	/// </summary>
 	/// <param name="queryString"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpGet(Routes.Client.GetClients)]
+	[HttpGet(Routes.Client.GetAll)]
 	public async Task<IActionResult> GetClients(ClientQueryString? queryString, CancellationToken cancellationToken)
 	{
 		// When there are none query string parameters found in the route set default values.
@@ -42,12 +42,12 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	/// Gets the client dashboard panel with sorted, filtered and order client data set.
+	///     Gets the client dashboard panel with sorted, filtered and order client data set.
 	/// </summary>
 	/// <param name="viewModel"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpPost(Routes.Client.GetClients)]
+	[HttpPost(Routes.Client.GetAll)]
 	[IgnoreAntiforgeryToken]
 	public async Task<IActionResult> GetClients(GetClientsViewModel viewModel, CancellationToken cancellationToken)
 	{
@@ -60,17 +60,17 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	/// Gets the client details, owned contracts and related data.
+	///     Gets the client details, owned contracts and related data.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpGet(Routes.Client.GetClient)]
+	[HttpGet(Routes.Client.Get)]
 	public async Task<IActionResult> GetClient(long id, CancellationToken cancellationToken)
 	{
 		// Retrieve the client with provided ID.
 		GetClientByIdQuery query = new(id, false);
-		Client? clientEntity = await _sender.Send(query, cancellationToken);
+		var clientEntity = await _sender.Send(query, cancellationToken);
 
 		// Build the view model and return in to the client.
 		if (clientEntity == null)
@@ -78,37 +78,38 @@ public sealed class ClientController : Controller
 			return View(new GetClientViewModel(null));
 		}
 
-		ClientRepresentation client = clientEntity.Adapt<ClientRepresentation>();
+		var client = clientEntity.Adapt<ClientRepresentation>();
 		return View(new GetClientViewModel(client));
 	}
 
 	/// <summary>
-	/// Gets the create client form with no daata.
+	///     Gets the create client form with no daata.
 	/// </summary>
 	/// <returns></returns>
-	[HttpGet(Routes.Client.CreateClient)]
+	[HttpGet(Routes.Client.Create)]
 	public IActionResult CreateClient()
 	{
 		return View(new ClientCreateViewModel());
 	}
 
 	/// <summary>
-	/// Handles the requests made by the create client form, either creates the client in the persistence store
-	/// or return the validation failures.
+	///     Handles the requests made by the create client form, either creates the client in the persistence store
+	///     or return the validation failures.
 	/// </summary>
 	/// <param name="indexViewModel"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpPost(Routes.Client.CreateClient)]
+	[HttpPost(Routes.Client.Create)]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult>CreateClient(ClientCreateViewModel indexViewModel, CancellationToken cancellationToken)
+	public async Task<IActionResult> CreateClient(ClientCreateViewModel indexViewModel,
+	                                              CancellationToken cancellationToken)
 	{
 		try
 		{
 			// Validate and create the client in the persistence store.
-			CreateClientCommand command = indexViewModel.Client.Adapt<CreateClientCommand>();
-			Entity entity = await _sender.Send(command, cancellationToken);
-			
+			var command = indexViewModel.Client.Adapt<CreateClientCommand>();
+			var entity = await _sender.Send(command, cancellationToken);
+
 			// If the client creation is successful then redirect user to the client details page. 
 			return RedirectToAction("GetClient", "Client", new { entity.Id });
 		}
@@ -125,45 +126,45 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	/// Gets the update client form with no data.
+	///     Gets the update client form with no data.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="originAction"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpGet(Routes.Client.UpdateClient)]
+	[HttpGet(Routes.Client.Update)]
 	public async Task<IActionResult> UpdateClient(long id, string originAction, CancellationToken cancellationToken)
 	{
 		// Retrieve the client with the provided ID.
 		GetClientByIdQuery query = new(id, false);
 		var clientEntity = await _sender.Send(query, cancellationToken);
-		
+
 		// Build the view model and return in to the client.
 		if (clientEntity == null)
 		{
 			return RedirectToAction(nameof(GetClients), new { });
 		}
 
-		ClientInput client = clientEntity.Adapt<ClientInput>();
+		var client = clientEntity.Adapt<ClientInput>();
 		return View(new ClientUpdateViewModel(id, originAction, client));
 	}
 
 	/// <summary>
-	/// Handles requests made by the update client form, either updates the persisted client
-	/// or returns the update client form with validation failures.
+	///     Handles requests made by the update client form, either updates the persisted client
+	///     or returns the update client form with validation failures.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="viewModel"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpPost(Routes.Client.UpdateClient)]
+	[HttpPost(Routes.Client.Update)]
 	public async Task<IActionResult> UpdateClient(long id, ClientUpdateViewModel viewModel,
 	                                              CancellationToken cancellationToken)
 	{
 		try
 		{
 			// Get client.
-			UpdateClientCommand command = viewModel.Client.Adapt<UpdateClientCommand>() with { Id = id };
+			var command = viewModel.Client.Adapt<UpdateClientCommand>() with { Id = id };
 			await _sender.Send(command, cancellationToken);
 
 			// Build the view model and return in to the client.
@@ -180,17 +181,18 @@ public sealed class ClientController : Controller
 		catch (ValidationException validationException)
 		{
 			// If there are any client model validation failures then include them with the form data in the view model.
-			return View(new ClientUpdateViewModel(viewModel.Id, viewModel.OriginAction, viewModel.Client, validationException));
+			return View(new ClientUpdateViewModel(viewModel.Id, viewModel.OriginAction, viewModel.Client,
+			                                      validationException));
 		}
 	}
 
 	/// <summary>
-	/// Handles the deletion of persisted client.
+	///     Handles the deletion of persisted client.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpPost(Routes.Client.DeleteClient)]
+	[HttpPost(Routes.Client.Delete)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteClient(long id, CancellationToken cancellationToken)
 	{
@@ -203,37 +205,37 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	/// Displays the delete client prompt before the persisted client deletion.
+	///     Displays the delete client prompt before the persisted client deletion.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="originAction"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpGet(Routes.Client.DeleteClientPrompt)]
-	public async Task<IActionResult> DeleteClientPrompt(long id, string originAction, CancellationToken cancellationToken)
+	[HttpGet(Routes.Client.DeletePrompt)]
+	public async Task<IActionResult> DeleteClientPrompt(long id, string originAction,
+	                                                    CancellationToken cancellationToken)
 	{
 		// Retrieve the persisted client by the provided ID.
 		GetClientByIdQuery query = new(id, false);
 		var clientEntity = await _sender.Send(query, cancellationToken);
-		
+
 		// Build the view model and return in to the client.
 		if (clientEntity == null)
 		{
-			return View(new DeleteClientViewModel(null, originAction));
+			return View(new ClientDeleteViewModel(null, originAction));
 		}
 
 		var client = clientEntity.Adapt<ClientRepresentation>();
-		return View(new DeleteClientViewModel(client, originAction));
-
+		return View(new ClientDeleteViewModel(client, originAction));
 	}
 
 	/// <summary>
-	/// Handles requests made by the export to CSV file form.
+	///     Handles requests made by the export to CSV file form.
 	/// </summary>
 	/// <param name="queryString"></param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	[HttpPost(Routes.Client.ExportClients)]
+	[HttpPost(Routes.Client.Export)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> ExportClients([FromQuery] ClientQueryString? queryString,
 	                                               CancellationToken cancellationToken)
@@ -241,18 +243,18 @@ public sealed class ClientController : Controller
 		// When there are none query string parameters found in the route set default values.
 		queryString ??= new ClientQueryString(MinimumPageSize, MinimumPageNumber, string.Empty,
 		                                      ClientsSortOrder.Id, DateTime.MinValue, DateTime.MaxValue);
-		
+
 		// Retrieve sorted, filtered and ordered client data set.
 		GetClientRowsQuery query = new(queryString);
-		IEnumerable<ClientRow> clientRows = await _sender.Send(query, cancellationToken);
+		var clientRows = await _sender.Send(query, cancellationToken);
 
 		// Data set transformation. 
 		var content = new MemoryStream();
 		await using StreamWriter streamWriter = new(content);
-		await using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+		await using var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
 		await csvWriter.WriteRecordsAsync(clientRows, cancellationToken);
-		
+
 		// Return the requested data as CSV file.
 		return File(content.GetBuffer(), MediaTypeNames.Application.Octet, "clients.csv");
 	}

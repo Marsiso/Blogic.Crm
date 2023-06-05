@@ -3,12 +3,12 @@ using System.Reflection;
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-/// Extensions for the <see cref="IServiceInstaller"/> implementations.
+///     Extensions for the <see cref="IServiceInstaller" /> implementations.
 /// </summary>
 public static class ServiceInstallerExtensions
 {
 	/// <summary>
-	/// Executes every concrete implementation of <see cref="IServiceInstaller"/> abstraction in the given assembly.
+	///     Executes every concrete implementation of <see cref="IServiceInstaller" /> abstraction in the given assembly.
 	/// </summary>
 	/// <param name="services">Application's service collection.</param>
 	/// <param name="configuration">Application's configuration.</param>
@@ -24,8 +24,8 @@ public static class ServiceInstallerExtensions
 		                         .Select(Activator.CreateInstance)
 		                         .Cast<IServiceInstaller>()
 		                         .ToList();
-		
+
 		// Execute every installer.
-		installers.ForEach(installer => installer.InstallServices(services, configuration,environment));
+		installers.ForEach(installer => installer.InstallServices(services, configuration, environment));
 	}
 }
