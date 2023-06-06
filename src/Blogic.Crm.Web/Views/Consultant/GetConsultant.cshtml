@@ -33,3 +33,20 @@
         }
     }
 </div>
+
+<h2>Consulted contracts</h2>
+<p>
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-consulted-contracts" aria-expanded="false" aria-controls="collapseExample">
+        Show
+    </button>
+</p>
+
+<div class="collapse" id="toggle-consulted-contracts">
+    @if (Model.ManagedContracts is not null)
+    {
+        foreach (var contract in Model.ManagedContracts)
+        {
+            @await Html.PartialAsync("Contract/_GetContractPartial", contract)
+        }
+    }
+</div>

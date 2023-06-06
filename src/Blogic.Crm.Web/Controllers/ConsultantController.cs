@@ -74,15 +74,19 @@ public sealed class ConsultantController : Controller
 			// Build the view model and return in to the consultant.
 			if (consultantEntity == null)
 			{
-				return View(new GetConsultantViewModel(null, null));
+				return View(new GetConsultantViewModel());
 			}
 			
 			// Retrieve the owned contracts by client with provided ID.
-			GetManagedContractsQuery contractsQuery = new(entity);
-			var managedContracts = await _sender.Send(contractsQuery, cancellationToken);			
+			GetManagedContractsQuery managedContractsQuery = new(entity);
+			var managedContracts = await _sender.Send(managedContractsQuery, cancellationToken);
+			
+			// Retrieve the owned contracts by client with provided ID.
+			GetConsultedContractsQuery consultedContractsQuery = new(entity);
+			var consultedContracts = await _sender.Send(consultedContractsQuery, cancellationToken);		
 
 			var consultant = consultantEntity.Adapt<ConsultantRepresentation>();
-			return View(new GetConsultantViewModel(consultant, managedContracts));
+			return View(new GetConsultantViewModel(consultant, managedContracts, consultedContracts));
 		}
 		catch (Exception exception)
 		{
