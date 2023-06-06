@@ -27,7 +27,7 @@ public sealed class ContractController : Controller
 			GetContractRepresentationsQuery query = new(queryString);
 			PaginatedList<ContractRepresentation> paginatedContracts = await _sender.Send(query, cancellationToken);
 		
-			// Build the view model and return it to the client.
+			// Build the view model and return it to the contract.
 			return View(new GetContractsViewModel { Contracts  = paginatedContracts, QueryString = queryString });
 		}
 		catch (Exception exception)
@@ -51,7 +51,7 @@ public sealed class ContractController : Controller
 			GetContractByIdQuery contractQuery = new(id, false);
 			Contract? contractEntity = await _sender.Send(contractQuery, cancellationToken);
 			
-			// Build the view model and return in to the client.
+			// Build the view model and return in to the contract.
 			if (contractEntity is null)
 			{
 				return View(new GetContractViewModel());
@@ -61,7 +61,7 @@ public sealed class ContractController : Controller
 			GetClientByIdQuery clientQuery = new(contractEntity.ClientId, false);
 			Client? clientEntity = await _sender.Send(clientQuery, cancellationToken);
 			
-			// Retrieve client representation for the view model.
+			// Retrieve consultant representation for the view model.
 			if (contractEntity.ManagerId.HasValue is false)
 			{
 				return RedirectToAction(nameof(Index), "Home", new { });
@@ -124,7 +124,7 @@ public sealed class ContractController : Controller
 			var command = contractInput.Adapt<CreateContractCommand>();
 			var entity = await _sender.Send(command, cancellationToken);
 
-			// If the contract creation is successful then redirect user to the consultant details page. 
+			// If the contract creation is successful then redirect user to the contract details page. 
 			return RedirectToAction(nameof(GetContract), new { entity.Id });
 		}
 		catch (ValidationException exception)
@@ -143,10 +143,65 @@ public sealed class ContractController : Controller
 		}
 	}
 
-	public IActionResult UpdateContract()
+	[HttpGet(Routes.Contract.Update)]
+	public async Task<IActionResult> UpdateContract(long id, CancellationToken cancellationToken)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			// Retrieve the contract with the provided ID.
+			GetContractByIdQuery query = new(id, false);
+			var contractEntity = await _sender.Send(query, cancellationToken);
+
+			// Build the view model and return it to the contract.
+			if (contractEntity == null)
+			{
+				return RedirectToAction(nameof(GetContracts), new { });
+			}
+
+			var contractInput = contractEntity.Adapt<ContractInput>();
+			return View(new UpdateContractViewModel(id, contractInput));
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
+			          exception.Message,
+			          nameof(ContractController),
+			          nameof(UpdateContract));
+
+			return RedirectToAction(nameof(GetContracts));
+		}
 	}
+	
+	[HttpPost(Routes.Contract.Update)]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> UpdateContract(long id,
+	                                                [Bind(Prefix = nameof(CreateContractViewModel.Contract))] ContractInput contractInput,
+	                                                CancellationToken cancellationToken)
+	{
+		try
+		{
+			// Retrieve the contract with the provided ID.
+			UpdateContractCommand command = contractInput.Adapt<UpdateContractCommand>() with { Id = id };
+			await _sender.Send(command, cancellationToken);
+
+			return RedirectToAction(nameof(GetContract), new { id });
+		}
+		catch (ValidationException exception)
+		{
+			// If there are any validation failures then return them with the create contract form data.
+			return View(new UpdateContractViewModel(id, contractInput, exception));
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
+			          exception.Message,
+			          nameof(ContractController),
+			          nameof(UpdateContract));
+
+			return RedirectToAction(nameof(GetContracts));
+		}
+	}
+	
 
 	public IActionResult DeleteContractPrompt()
 	{
