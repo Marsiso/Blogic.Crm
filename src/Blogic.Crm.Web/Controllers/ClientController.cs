@@ -65,18 +65,24 @@ public sealed class ClientController : Controller
 	{
 		try
 		{
+			var entity = new Entity { Id = id };
+			
 			// Retrieve the client with provided ID.
-			GetClientQuery query = new(new Entity { Id = id }, false);
-			var clientEntity = await _sender.Send(query, cancellationToken);
+			GetClientQuery clientQuery = new(new Entity { Id = id }, false);
+			var clientEntity = await _sender.Send(clientQuery, cancellationToken);
 
 			// Build the view model and return in to the client.
 			if (clientEntity == null)
 			{
-				return View(new GetClientViewModel(null));
+				return View(new GetClientViewModel(null, null));
 			}
 
+			// Retrieve the owned contracts by client with provided ID.
+			GetOwnedContractsQuery contractsQuery = new(entity);
+			var ownedContracts = await _sender.Send(contractsQuery, cancellationToken);
+			
 			var client = clientEntity.Adapt<ClientRepresentation>();
-			return View(new GetClientViewModel(client));
+			return View(new GetClientViewModel(client, ownedContracts));
 		}
 		catch (Exception exception)
 		{

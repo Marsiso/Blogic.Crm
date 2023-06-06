@@ -59,25 +59,25 @@
             </table>
         </div>
     
-        <div class="btn-group" role="group">
+        <div class="d-inline  me-1">
             <a asp-controller="Consultant"
                asp-action="GetConsultants"
-               class="btn btn-outline-dark">
+               class="btn btn-dark  me-1">
                 Dashboard
             </a>
             <a asp-controller="Consultant"
                asp-action="GetConsultant"
                asp-route-id="@consultant.Id.ToString()"
-               class="btn btn-outline-dark">
+               class="btn btn-dark me-1">
                 More
             </a>
             <a asp-route-id="@consultant.Id.ToString()"
                asp-controller="Consultant"
                asp-action="UpdateConsultant"
-               class="btn btn-outline-dark">
+               class="btn btn-dark me-1">
                 Update
             </a>
-             @await Html.PartialAsync("Consultant/_DeleteConsultantPromptPartialView", (new Entity { Id = consultant.Id }, "btn btn-outline-dark"))
+             @await Html.PartialAsync("Consultant/_DeleteConsultantPromptPartialView", (new Entity { Id = consultant.Id }, "btn btn-dark"))
         </div>
     }
     else

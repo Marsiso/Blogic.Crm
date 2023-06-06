@@ -17,3 +17,20 @@
 <h1>Account</h1>
 
 @await Html.PartialAsync("Client/_GetClientPartial", client)
+
+<h2>Owned contracts</h2>
+<p>
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-owned-contracts" aria-expanded="false" aria-controls="collapseExample">
+        Show
+    </button>
+</p>
+
+<div class="collapse" id="toggle-owned-contracts">
+    @if (Model.OwnedContracts is not null)
+    {
+        foreach (var contract in Model.OwnedContracts)
+        {
+            @await Html.PartialAsync("Contract/_GetContractPartial", contract)
+        }
+    }
+</div>
