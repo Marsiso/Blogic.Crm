@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Humanizer
+@model (PaginatedList<ContractRepresentation>?, ContractQueryString)
+
+@{
+    var (contracts, queryString) = Model;
+}
+
+<div class="card card-body">
+    @await Html.PartialAsync("_GetContractsExporterPartialView", queryString)
+    @await Html.PartialAsync("_GetContractsSearchPartialView", queryString)
+    <div class="table-responsive">
+        <table class="table table-borderless w-100">
+            <caption>Total items: @((contracts?.TotalItems ?? 0).ToString())</caption>
+            <thead>
+            <tr class="fw-bold">
+                <td>Identifier</td>
+                <td>Registration number</td>
+                <td>Institution</td>
+                <td>Conclusion date</td>
+                <td>Validity date</td>
+                <td>Expiration date</td>
+                <td>Client identifier</td>
+                <td>Manager identifier</td>
+                <td class="text-center">Management</td>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                if (contracts is { Count: > 0 })
+                {
+                    foreach (var contract in contracts)
+                    {
+                        <tr>
+                            <td>@contract.Id.ToString()</td>
+                            <td>@contract.RegistrationNumber</td>
+                            <td>@contract.Institution</td>
+                            <td>
+                                @contract.DateConcluded.Humanize()
+                            </td>
+                            <td>
+                                @contract.DateValid.Humanize()
+                            </td>
+                            <td>
+                                @contract.DateExpired.Humanize()
+                            </td>
+                            <td>@contract.ClientId.ToString()</td>
+                            <td>@contract.ManagerId.ToString()</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Contract"
+                                       asp-action="GetContract"
+                                       asp-route-id="@contract.Id.ToString()"
+                                       class="btn">
+                                        More
+                                    </a>
+                                    <a asp-controller="Contract"
+                                       asp-action="UpdateContract"
+                                       asp-route-id="@contract.Id.ToString()"
+                                       class="btn">
+                                        Update
+                                    </a>
+                                    <a asp-controller="Contract"
+                                       asp-action="DeleteContractPrompt"
+                                       asp-route-id="@contract.Id.ToString()"
+                                       class="btn">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("_GetContractsPaginationPartialView", Model)
+</div>

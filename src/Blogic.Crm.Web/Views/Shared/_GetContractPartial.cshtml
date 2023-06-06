@@ -1,88 +1,93 @@
 ﻿@using Humanizer
-@model (ContractRepresentation?, ClientRepresentation?, ConsultantRepresentation?)
+@model ContractRepresentation?
 
 @{
-    var (contract, client, consultant) = Model;
+    var contract = Model;
 }
 
-@if (contract is not null)
-{
-    <div class="table-responsive">
-        <table class="table table-borderless w-auto">
-            <tbody>
-            <tr>
-                <td class="fw-bold">Identifier</td>
-                <td>@contract.Id.ToString()</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Registration number</td>
-                <td>@contract.RegistrationNumber</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Institution</td>
-                <td>@contract.Institution</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Conclusion date</td>
-                <td>
-                    @($"{contract.DateConcluded:dd/MM/yyyy}")
-                    <br/>
-                    @contract.DateConcluded.Humanize()
-                </td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Validity date</td>
-                <td>
-                    @($"{contract.DateValid:dd/MM/yyyy}")
-                    <br/>
-                    @contract.DateValid.Humanize()
-                </td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Expiration date</td>
-                <td>
-                    @($"{contract.DateExpired:dd/MM/yyyy}")
-                    <br/>
-                    @contract.DateExpired.Humanize()
-                </td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Client</td>
-                <td>@await Html.PartialAsync("_GetClientPartial", client)</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">Manager</td>
-                <td>@await Html.PartialAsync("_GetConsultantPartial", consultant)</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="card card-body">
+    @if (contract is not null)
+    {
+        <div class="table-responsive">
+            <table class="table table-borderless w-auto">
+                <tbody>
+                <tr>
+                    <td class="fw-bold">Identifier</td>
+                    <td>@contract.Id.ToString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Registration number</td>
+                    <td>@contract.RegistrationNumber</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Institution</td>
+                    <td>@contract.Institution</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Conclusion date</td>
+                    <td>
+                        @($"{contract.DateConcluded:dd/MM/yyyy}")
+                        <br/>
+                        @contract.DateConcluded.Humanize()
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Validity date</td>
+                    <td>
+                        @($"{contract.DateValid:dd/MM/yyyy}")
+                        <br/>
+                        @contract.DateValid.Humanize()
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Expiration date</td>
+                    <td>
+                        @($"{contract.DateExpired:dd/MM/yyyy}")
+                        <br/>
+                        @contract.DateExpired.Humanize()
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Client identifier</td>
+                    <td>@contract.ClientId.ToString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Manager identifier</td>
+                    <td>@contract.ManagerId.ToString()</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="btn-group" role="group">
+        <div class="btn-group" role="group">
+            <a asp-action="GetContracts"
+               class="btn btn-outline-dark">
+                Dashboard
+            </a>
+            <a asp-controller="Contract"
+               asp-action="GetContract"
+               asp-route-id="@contract.Id.ToString()"
+               class="btn btn-outline-dark">
+                More
+            </a>
+            <a asp-route-id="@contract.Id.ToString()"
+               asp-action="UpdateContract"
+               class="btn btn-outline-dark">
+                Update
+            </a>
+            <a asp-route-id="@contract.Id.ToString()"
+               asp-action="DeleteContractPrompt"
+               class="btn btn-outline-dark">
+                Delete
+            </a>
+        </div>
+    }
+    else
+    {
+        <p class="text-danger">Contract not found!</p>
         <a asp-action="GetContracts"
            class="btn btn-outline-dark">
             Dashboard
         </a>
-        <a class="btn btn-outline-dark active">
-            More
-        </a>
-        <a asp-route-id="@contract.Id.ToString()"
-           asp-action="UpdateContract"
-           class="btn btn-outline-dark">
-            Update
-        </a>
-        <a asp-route-id="@contract.Id.ToString()"
-           asp-action="DeleteContractPrompt"
-           class="btn btn-outline-dark">
-            Delete
-        </a>
-    </div>
-}
-else
-{
-    <p class="text-danger">Contract not found!</p>
-    <a asp-action="GetContracts"
-       class="btn btn-outline-dark">
-        Dashboard
-    </a>
-}
+    }
+</div>

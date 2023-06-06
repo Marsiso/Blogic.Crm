@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Blogic.Crm.Domain.Routing;
 using Blogic.Crm.Infrastructure.Pagination;
 
 namespace Blogic.Crm.Infrastructure.Filtering;
@@ -33,7 +34,28 @@ public static class FilterFunctions
 	public static IQueryable<Consultant> Filter(this IQueryable<Consultant> consultants,
 	                                            ConsultantQueryString queryString)
 	{
-		Debug.Assert(queryString != null);
 		return consultants;
+	}
+
+	/// <summary>
+	///     Filters the <see cref="Contract" /> data set using the <see cref="ContractQueryString" /> query string
+	///     parameters.
+	/// </summary>
+	/// <param name="contracts">The <see cref="Contract" /> data set to be filtered.</param>
+	/// <param name="queryString">Provided query string used to filter the <see cref="Contract" /> data set.</param>
+	/// <returns>The filtered <see cref="Contract" /> data set.</returns>
+	public static IQueryable<Contract> Filter(this IQueryable<Contract> contracts,
+	                                          ContractQueryString queryString)
+	{
+		return contracts.Where(c => c.DateConcluded >= queryString.MinDateConcluded &&
+		                            c.DateConcluded <= queryString.MaxDateConcluded &&
+		                            c.DateValid >= queryString.MinDateValid &&
+		                            c.DateValid <= queryString.MaxDateValid &&
+		                            c.DateValid >= queryString.MinDateExpired &&
+		                            c.DateValid <= queryString.MaxDateExpired &&
+		                            c.ClientId >= queryString.MinClientId &&
+		                            c.ClientId <= queryString.MaxClientId &&
+		                            c.ManagerId >= queryString.MinManagerId &&
+		                            c.ManagerId <= queryString.MaxManagerId);
 	}
 }

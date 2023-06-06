@@ -1,4 +1,5 @@
 ﻿using Blogic.Crm.Domain.Data.Dtos;
+using Blogic.Crm.Infrastructure.Filtering;
 using Blogic.Crm.Infrastructure.Pagination;
 using Blogic.Crm.Infrastructure.Searching;
 using Blogic.Crm.Infrastructure.Sorting;
@@ -21,6 +22,7 @@ public sealed class GetContractRepresentationsQueryHandler : IQueryHandler<GetCo
 	{
 		IQueryable<Contract> contractEntities = _dataContext.Contracts
 		                                                    .AsNoTracking()
+		                                                    .Filter(request.QueryString)
 		                                                    .Search(request.QueryString);
 		
 		var totalItems = contractEntities.Count();

@@ -16,4 +16,27 @@
 
 <h1>Contract</h1>
 
-@await Html.PartialAsync("_GetContractPartial", (Model.Contract, Model.Client, Model.Consultant))
+@await Html.PartialAsync("_GetContractPartial", Model.Contract)
+
+<h2 class="mt-5">Owner</h2>
+<p>
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-owner-account" aria-expanded="false" aria-controls="collapseExample">
+        Detail
+    </button>
+</p>
+
+<div class="collapse" id="toggle-owner-account">
+    @await Html.PartialAsync("_GetClientPartial", Model.Client)
+</div>
+
+
+<h2 class="mt-5">Manager</h2>
+<p>
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-manager-account" aria-expanded="false" aria-controls="collapseExample">
+        Detail
+    </button>
+</p>
+
+<div class="collapse" id="toggle-manager-account">
+    @await Html.PartialAsync("_GetConsultantPartial", Model.Consultant)
+</div>

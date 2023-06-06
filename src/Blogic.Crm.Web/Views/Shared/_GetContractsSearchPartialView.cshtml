@@ -1,0 +1,141 @@
+﻿@using static Blogic.Crm.Infrastructure.Sorting.ContractSortOrder
+
+@model ContractQueryString
+
+<form asp-controller="Contract"
+      asp-action="GetContracts"
+      method="@HttpMethods.Get"
+      class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="@Model.PageSize" class="form-label">Page size</label>
+        <input type="number"
+               asp-for="@Model.PageSize"
+               min="@MinimumPageSize.ToString()"
+               max="@MaximumPageSize.ToString()"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MinClientId" class="form-label">Minimal client identifier</label>
+        <input type="number"
+               asp-for="@Model.MinClientId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxClientId" class="form-label">Maximal client identifier</label>
+        <input type="number"
+               asp-for="@Model.MaxClientId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MinManagerId" class="form-label">Minimal manager identifier</label>
+        <input type="number"
+               asp-for="@Model.MinManagerId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxManagerId" class="form-label">Maximal manager identifier</label>
+        <input type="number"
+               asp-for="@Model.MaxManagerId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.RegistrationNumber" class="form-label">Registration number</label>
+        <input type="text"
+               asp-for="@Model.RegistrationNumber"
+               maxlength="36"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.Institution" class="form-label">Institution</label>
+        <input type="text"
+               asp-for="@Model.Institution"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MinDateConcluded" class="form-label">Minimal conclusion date</label>
+        <input type="date"
+               asp-for="@Model.MinDateConcluded"
+               class="form-control">
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxDateConcluded" class="form-label">Maximal conclusion date</label>
+        <input type="date"
+               asp-for="@Model.MaxDateConcluded"
+               class="form-control">
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@Model.MinDateValid" class="form-label">Minimal validity date</label>
+        <input type="date"
+               asp-for="@Model.MinDateValid"
+               class="form-control">
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxDateValid" class="form-label">Maximal validity date</label>
+        <input type="date"
+               asp-for="@Model.MaxDateValid"
+               class="form-control">
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@Model.MinDateExpired" class="form-label">Minimal expiration date</label>
+        <input type="date"
+               asp-for="@Model.MinDateExpired"
+               class="form-control">
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxDateExpired" class="form-label">Maximal expiration date</label>
+        <input type="date"
+               asp-for="@Model.MaxDateExpired"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label"
+               asp-for="@Model.SortOrder">
+            Order by
+        </label>
+        <select class="form-select" asp-for="@Model.SortOrder">
+            <option selected value="@Id">Select</option>
+            <option value="@Id">Identifier</option>
+            <option value="@IdDesc">Identifier descending</option>
+            <option value="@RegistrationNumber">Registration number</option>
+            <option value="@RegistrationNumberDesc">Registration number descending</option>
+            <option value="@Institution">Institution</option>
+            <option value="@InstitutionDesc">Institution descending</option>
+            <option value="@DateConcluded">Date concluded</option>
+            <option value="@DateConcludedDesc">Date concluded descending</option>
+            <option value="@DateExpired">Date expired</option>
+            <option value="@DateExpiredDesc">Date expired descending</option>
+            <option value="@DateValid">Date valid</option>
+            <option value="@DateValidDesc">Date valid descending</option>
+            <option value="@ClientId">Client identifier</option>
+            <option value="@ClientIdDesc">Client identifier</option>
+            <option value="@ManagerId">Manager identifier descending</option>
+            <option value="@ManagerIdDesc">Manager identifier descending</option>
+        </select>
+    </div>
+
+    <div class="btn-group" role="group">
+        <button type="submit" class="btn btn-outline-dark">Filter</button>
+        <a asp-controller="Contract"
+           asp-action="GetContracts"
+           class="btn btn-outline-dark">
+            Reset
+        </a>
+    </div>
+</form>

@@ -5,88 +5,93 @@
     var consultant = Model;
 }
 
-@if (consultant is not null)
-{
-    <div class="table-responsive">
-        <table class="table table-borderless w-auto">
-            <tbody>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.Id).Humanize()</td>
-                <td>@consultant.Id.ToString()</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.GivenName).Humanize()</td>
-                <td>@consultant.GivenName</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.FamilyName).Humanize()</td>
-                <td>@consultant.FamilyName</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.Email).Humanize()</td>
-                <td>
-                    @consultant.Email
-                    <br/>
-                    @consultant.NormalizedEmail
-                </td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.IsEmailConfirmed).Humanize()</td>
-                <td>@consultant.IsEmailConfirmed.ToString()</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.Phone).Humanize()</td>
-                <td>@consultant.Phone</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.IsPhoneConfirmed).Humanize()</td>
-                <td>@consultant.IsPhoneConfirmed.ToString()</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.BirthNumber).Humanize()</td>
-                <td>@consultant.BirthNumber</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">@nameof(consultant.DateBorn).Humanize()</td>
-                <td>
-                    @($"{consultant.DateBorn:dd/MM/yyyy}")
-                    <br/>
-                    @consultant.DateBorn.Humanize()
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="btn-group" role="group">
+<div class="card card-body">
+    @if (consultant is not null)
+    {
+        <div class="table-responsive">
+            <table class="table table-borderless w-auto">
+                <tbody>
+                <tr>
+                    <td class="fw-bold">Consultant identifier</td>
+                    <td>@consultant.Id.ToString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Given name</td>
+                    <td>@consultant.GivenName</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Family name</td>
+                    <td>@consultant.FamilyName</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Email address</td>
+                    <td>
+                        @consultant.Email
+                        <br/>
+                        @consultant.NormalizedEmail
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Confirmed</td>
+                    <td>@consultant.IsEmailConfirmed.ToString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Phone number</td>
+                    <td>@consultant.Phone</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Confirmed</td>
+                    <td>@consultant.IsPhoneConfirmed.ToString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Birth number</td>
+                    <td>@consultant.BirthNumber</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Date born</td>
+                    <td>
+                        @($"{consultant.DateBorn:dd/MM/yyyy}")
+                        <br/>
+                        @consultant.DateBorn.Humanize()
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="btn-group" role="group">
+            <a asp-controller="Consultant"
+               asp-action="GetConsultants"
+               class="btn btn-outline-dark">
+                Dashboard
+            </a>
+            <a asp-controller="Consultant"
+               asp-action="GetConsultant"
+               asp-route-id="@consultant.Id.ToString()"
+               class="btn btn-outline-dark">
+                More
+            </a>
+            <a asp-route-id="@consultant.Id.ToString()"
+               asp-controller="Consultant"
+               asp-action="UpdateConsultant"
+               class="btn btn-outline-dark">
+                Update
+            </a>
+            <a asp-route-id="@consultant.Id.ToString()"
+               asp-controller="Consultant"
+               asp-action="DeleteConsultantPrompt"
+               class="btn btn-outline-dark">
+                Delete
+            </a>
+        </div>
+    }
+    else
+    {
+        <p class="text-danger">Consultant not found!</p>
         <a asp-controller="Consultant"
            asp-action="GetConsultants"
            class="btn btn-outline-dark">
             Dashboard
         </a>
-        <a class="btn btn-outline-dark active">
-            More
-        </a>
-        <a asp-route-id="@consultant.Id.ToString()"
-           asp-controller="Consultant"
-           asp-action="UpdateConsultant"
-           class="btn btn-outline-dark">
-            Update
-        </a>
-        <a asp-route-id="@consultant.Id.ToString()"
-           asp-controller="Consultant"
-           asp-action="DeleteConsultantPrompt"
-           class="btn btn-outline-dark">
-            Delete
-        </a>
-    </div>
-}
-else
-{
-    <p class="text-danger">Consultant not found!</p>
-    <a asp-controller="Consultant"
-       asp-action="GetConsultants"
-       class="btn btn-outline-dark">
-        Dashboard
-    </a>
-}
+    }
+</div>

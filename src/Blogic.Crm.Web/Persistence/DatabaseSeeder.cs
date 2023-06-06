@@ -106,10 +106,10 @@ public sealed class DatabaseSeeder : IDisposable
 
 	private Contract GenerateContract()
 	{
-		const int yearConcludedLowerBound = 1970;
+		const int yearConcludedLowerBound = 1900;
 		const int monthConcludedLowerBound = 1;
 		const int dayConcludedLowerBound = 1;
-		const int contractLifetimeYearUpperBound = 50;
+		const int contractLifetimeYearUpperBound = 70;
 		var currentYear = DateTime.UtcNow.Year;
 
 		// Minimal possible date concluded.
@@ -127,7 +127,7 @@ public sealed class DatabaseSeeder : IDisposable
 
 		// Date expired should be same as date valid or later.
 		var dateExpired =
-			dateValid.AddYears(RandomNumber.Next(dateValid.Year, currentYear + contractLifetimeYearUpperBound));
+			dateValid.AddYears(RandomNumber.Next(0, contractLifetimeYearUpperBound));
 		dateExpired = dateExpired.AddMonths(RandomNumber.Next(0, 12));
 		dateExpired = dateExpired.AddDays(RandomNumber.Next(0, 31));
 

@@ -1,4 +1,7 @@
-﻿using Blogic.Crm.Web.Views.Contract;
+﻿using System.Globalization;
+using System.Net.Mime;
+using Blogic.Crm.Web.Views.Contract;
+using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -15,17 +18,17 @@ public sealed class ContractController : Controller
 
 	[HttpGet(Routes.Contract.GetAll)]
 	[HttpPost(Routes.Contract.GetAll)]
-	public async Task<IActionResult> GetContracts(ContractQueryString queryParameters,
+	public async Task<IActionResult> GetContracts(ContractQueryString queryString,
 	                                              CancellationToken cancellationToken)
 	{
 		try
 		{
 			// Retrieve paginated contract representation for the view model.
-			GetContractRepresentationsQuery query = new(queryParameters);
+			GetContractRepresentationsQuery query = new(queryString);
 			PaginatedList<ContractRepresentation> paginatedContracts = await _sender.Send(query, cancellationToken);
 		
 			// Build the view model and return it to the client.
-			return View(new GetContractsViewModel { Contracts  = paginatedContracts, QueryString = queryParameters });
+			return View(new GetContractsViewModel { Contracts  = paginatedContracts, QueryString = queryString });
 		}
 		catch (Exception exception)
 		{
@@ -150,8 +153,34 @@ public sealed class ContractController : Controller
 		throw new NotImplementedException();
 	}
 
-	public IActionResult ExportContracts()
+	[HttpPost(Routes.Contract.Export)]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> ExportContracts(ContractQueryString queryString, CancellationToken cancellationToken)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			// Retrieve paginated contract representation for the view model.
+			GetContractRowsQuery query = new(queryString);
+			IEnumerable<ContractRow> contracts = await _sender.Send(query, cancellationToken);
+
+			// Data set transformation. 
+			var content = new MemoryStream();
+			await using StreamWriter streamWriter = new(content);
+			await using var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+
+			await csvWriter.WriteRecordsAsync(contracts, cancellationToken);
+
+			// Return the requested data as CSV file.
+			return File(content.GetBuffer(), MediaTypeNames.Application.Octet, "contracts.csv");
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
+			          exception.Message,
+			          nameof(ContractController),
+			          nameof(ExportContracts));
+
+			return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+		}
 	}
 }

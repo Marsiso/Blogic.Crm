@@ -1,3 +1,4 @@
+using System.Reflection;
 using static System.String;
 
 namespace Blogic.Crm.Infrastructure.Pagination;
@@ -70,4 +71,13 @@ public class QueryStringBase
 	///     Example search string 'user@example.com Petr 19323455843'.
 	/// </summary>
 	public string SearchString { get; set; }
+	
+	public virtual Dictionary<string, string?> ToDictionary()
+	{
+		return new Dictionary<string, string?>()
+		{
+			{ nameof(PageSize), PageSize.ToString() },
+			{ nameof(PageNumber), PageNumber.ToString() },
+		};
+	}
 }

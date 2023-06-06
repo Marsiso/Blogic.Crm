@@ -1,0 +1,104 @@
+﻿@model (PaginatedList<ContractRepresentation>, ContractQueryString)
+
+@{
+    var (contracts, queryString) = Model;
+    var hasPreviousListItemClass = contracts.HasPrevious ? string.Empty : "disabled";
+    var hasPreviousLinkClass = contracts.HasPrevious ? string.Empty : "disabled";
+    var previousPage = (contracts.CurrentPage - 1).ToString();
+
+    var hasNextListItemClass = contracts.HasNext ? string.Empty : "disabled";
+    var hasNextLinkClass = contracts.HasNext ? string.Empty : "disabled";
+    var nextPage = (contracts.CurrentPage + 1).ToString();
+
+    Dictionary<string, string?> queryStringBase = queryString.ToDictionary();
+    Dictionary<string, string?> previousPageQueryString = new(queryStringBase)
+    {
+        [nameof(QueryStringBase.PageNumber)] = previousPage
+    };
+    
+    Dictionary<string, string?> nextPageQueryString = new(queryStringBase)
+    {
+        [nameof(QueryStringBase.PageNumber)] = nextPage
+    };
+
+    Dictionary<string, string?> firstPageQueryString = new(queryStringBase)
+    {
+        [nameof(QueryStringBase.PageNumber)]  = MinimumPageNumber.ToString()
+    };
+
+    Dictionary<string, string?> lastPageQueryString = new(queryStringBase)
+    {
+        [nameof(QueryStringBase.PageNumber)]  = contracts.TotalPages.ToString()
+    };
+}
+
+<div class="row">
+        <div class="d-flex justify-content-center align-items-center">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item @hasPreviousListItemClass">
+                        <a class="page-link link-dark @hasPreviousLinkClass"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@firstPageQueryString">
+                            <span aria-hidden="true">&laquo;</span><span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item @hasPreviousListItemClass">
+                        <a class="page-link link-dark @hasPreviousLinkClass"
+                           asp-controller="Contract"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@previousPageQueryString">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    @if (contracts.HasPrevious)
+                    {
+                        <li class="page-item">
+                            <a class="page-link link-dark "
+                               asp-controller="Contract"
+                               asp-action="GetContracts"
+                               asp-all-route-data="@previousPageQueryString">
+                                @previousPage
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item active">
+                        <a class="page-link link-dark "
+                           asp-controller="Contract"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@queryStringBase">
+                            @contracts.CurrentPage.ToString()
+                        </a>
+                    </li>
+
+                    @if (contracts.HasNext)
+                    {
+                        <li class="page-item">
+                            <a class="page-link link-dark "
+                               asp-controller="Contract"
+                               asp-action="GetContracts"
+                               asp-all-route-data="@nextPageQueryString">
+                                @nextPage
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @hasNextListItemClass">
+                        <a class="page-link link-dark @hasNextLinkClass"
+                           asp-controller="Contract"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@nextPageQueryString">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item @hasNextListItemClass">
+                        <a class="page-link link-dark @hasNextLinkClass "
+                           asp-controller="Contract"
+                           asp-action="GetContracts"
+                           asp-all-route-data="@lastPageQueryString">
+                            <span aria-hidden="true">&raquo;</span><span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+    </div>
+</div>
