@@ -77,7 +77,7 @@
                class="btn btn-outline-dark">
                 Update
             </a>
-            @await Html.PartialAsync("_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn btn-outline-dark"))
+            @await Html.PartialAsync("Client/_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn btn-outline-dark"))
         </div>
     }
     else

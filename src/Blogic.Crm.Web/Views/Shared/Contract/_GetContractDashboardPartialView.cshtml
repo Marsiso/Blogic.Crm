@@ -7,8 +7,8 @@
 }
 
 <div class="card card-body">
-    @await Html.PartialAsync("_GetContractsExporterPartialView", queryString)
-    @await Html.PartialAsync("_GetContractsSearchPartialView", queryString)
+    @await Html.PartialAsync("Contract/_GetContractsExporterPartialView", queryString)
+    @await Html.PartialAsync("Contract/_GetContractsSearchPartialView", queryString)
     
     <hr />
     
@@ -87,7 +87,7 @@
                                        class="btn">
                                         Update
                                     </a>
-                                    @await Html.PartialAsync("_DeleteContractPromptPartialView", (new Entity { Id = contract.Id }, "btn"))
+                                    @await Html.PartialAsync("Contract/_DeleteContractPromptPartialView", (new Entity { Id = contract.Id }, "btn"))
                                 </div>
                             </td>
                         </tr>
@@ -97,5 +97,5 @@
             </tbody>
         </table>
     </div>
-    @await Html.PartialAsync("_GetContractsPaginationPartialView", Model)
+    @await Html.PartialAsync("Contract/_GetContractsPaginationPartialView", Model)
 </div>

@@ -7,8 +7,8 @@
 }
 
 <div class="card card-body">
-    @await Html.PartialAsync("_GetClientExporterPartialView", queryString)
-    @await Html.PartialAsync("_GetClientSearchPartialView", queryString)
+    @await Html.PartialAsync("Client/_GetClientExporterPartialView", queryString)
+    @await Html.PartialAsync("Client/_GetClientSearchPartialView", queryString)
     
     <hr />
     
@@ -67,7 +67,7 @@
                                        class="btn">
                                         Update
                                     </a>
-                                    @await Html.PartialAsync("_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn"))
+                                    @await Html.PartialAsync("Client/_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn"))
                                 </div>
                             </td>
                         </tr>
@@ -77,5 +77,5 @@
             </tbody>
         </table>
     </div>
-    @await Html.PartialAsync("_GetClientsPaginationPartialView", Model)
+    @await Html.PartialAsync("Client/_GetClientsPaginationPartialView", Model)
 </div>

@@ -75,7 +75,7 @@
                class="btn btn-outline-dark">
                 Update
             </a>
-            @await Html.PartialAsync("_DeleteContractPromptPartialView", (new Entity { Id = contract.Id }, "btn btn-outline-dark"))
+            @await Html.PartialAsync("Contract/_DeleteContractPromptPartialView", (new Entity { Id = contract.Id }, "btn btn-outline-dark"))
             <a asp-route-id="@contract.Id.ToString()"
                asp-action="DeleteContract"
                class="btn btn-outline-dark">
