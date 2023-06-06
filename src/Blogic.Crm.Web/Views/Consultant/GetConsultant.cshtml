@@ -15,5 +15,21 @@
 </nav>
 
 <h1>Account</h1>
-
 @await Html.PartialAsync("Consultant/_GetConsultantPartial", consultant)
+
+<h2>Managed contracts</h2>
+<p>
+    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-managed-contracts" aria-expanded="false" aria-controls="collapseExample">
+        Show
+    </button>
+</p>
+
+<div class="collapse" id="toggle-managed-contracts">
+    @if (Model.ManagedContracts is not null)
+    {
+        foreach (var contract in Model.ManagedContracts)
+        {
+            @await Html.PartialAsync("Contract/_GetContractPartial", contract)
+        }
+    }
+</div>
