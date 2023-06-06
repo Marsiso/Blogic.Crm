@@ -1,5 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using Humanizer
+﻿@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model (PaginatedList<ContractRepresentation>?, ContractQueryString)
 
 @{
@@ -22,7 +22,17 @@
                 <td>Expiration date</td>
                 <td>Client identifier</td>
                 <td>Manager identifier</td>
-                <td class="text-center">Management</td>
+                <td class="text-center">
+                    <a asp-controller="Contract"
+                       asp-action="CreateContract"
+                       class="btn position-relative">
+                        <span class="fw-bold">Management</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                            Create
+                            <span class="visually-hidden">Create button</span>
+                        </span>
+                    </a>
+                </td>
             </tr>
             </thead>
             <tbody>
@@ -44,8 +54,22 @@
                             <td>
                                 @contract.DateExpired.Humanize()
                             </td>
-                            <td>@contract.ClientId.ToString()</td>
-                            <td>@contract.ManagerId.ToString()</td>
+                            <td>
+                                <a asp-controller="Client"
+                                   asp-action="GetClient"
+                                   asp-route-id="@contract.ClientId.ToString()"
+                                   class="btn">
+                                    @contract.ClientId.ToString()
+                                </a>
+                            </td>
+                            <td>
+                                <a asp-controller="Consultant"
+                                   asp-action="GetConsultant"
+                                   asp-route-id="@contract.ManagerId.ToString()"
+                                   class="btn">
+                                    @contract.ManagerId.ToString()
+                                </a>
+                            </td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a asp-controller="Contract"
@@ -60,12 +84,7 @@
                                        class="btn">
                                         Update
                                     </a>
-                                    <a asp-controller="Contract"
-                                       asp-action="DeleteContractPrompt"
-                                       asp-route-id="@contract.Id.ToString()"
-                                       class="btn">
-                                        Delete
-                                    </a>
+                                    @await Html.PartialAsync("_DeleteContractPromptPartialView", (new Entity { Id = contract.Id }, "btn"))
                                 </div>
                             </td>
                         </tr>

@@ -25,10 +25,10 @@ public sealed class ContractController : Controller
 		{
 			// Retrieve paginated contract representation for the view model.
 			GetContractRepresentationsQuery query = new(queryString);
-			PaginatedList<ContractRepresentation> paginatedContracts = await _sender.Send(query, cancellationToken);
-		
+			var paginatedContracts = await _sender.Send(query, cancellationToken);
+
 			// Build the view model and return it to the contract.
-			return View(new GetContractsViewModel { Contracts  = paginatedContracts, QueryString = queryString });
+			return View(new GetContractsViewModel { Contracts = paginatedContracts, QueryString = queryString });
 		}
 		catch (Exception exception)
 		{
@@ -48,19 +48,19 @@ public sealed class ContractController : Controller
 		try
 		{
 			// Retrieve contract representation for the view model.
-			GetContractByIdQuery contractQuery = new(id, false);
-			Contract? contractEntity = await _sender.Send(contractQuery, cancellationToken);
-			
+			GetContractQuery contractQuery = new(new Entity { Id = id }, false);
+			var contractEntity = await _sender.Send(contractQuery, cancellationToken);
+
 			// Build the view model and return in to the contract.
 			if (contractEntity is null)
 			{
 				return View(new GetContractViewModel());
 			}
-			
+
 			// Retrieve client representation for the view model.
 			GetClientByIdQuery clientQuery = new(contractEntity.ClientId, false);
-			Client? clientEntity = await _sender.Send(clientQuery, cancellationToken);
-			
+			var clientEntity = await _sender.Send(clientQuery, cancellationToken);
+
 			// Retrieve consultant representation for the view model.
 			if (contractEntity.ManagerId.HasValue is false)
 			{
@@ -68,13 +68,13 @@ public sealed class ContractController : Controller
 			}
 
 			GetConsultantByIdQuery consultantQuery = new(contractEntity.ManagerId.Value, false);
-			Consultant? consultantEntity = await _sender.Send(consultantQuery, cancellationToken);
-			
+			var consultantEntity = await _sender.Send(consultantQuery, cancellationToken);
+
 			// Map data to their respective representations.
-			ContractRepresentation contract = contractEntity.Adapt<ContractRepresentation>();
-			ClientRepresentation? client = clientEntity?.Adapt<ClientRepresentation>();
-			ConsultantRepresentation? consultant = consultantEntity?.Adapt<ConsultantRepresentation>();
-			
+			var contract = contractEntity.Adapt<ContractRepresentation>();
+			var client = clientEntity?.Adapt<ClientRepresentation>();
+			var consultant = consultantEntity?.Adapt<ConsultantRepresentation>();
+
 			return View(new GetContractViewModel(contract, client, consultant));
 		}
 		catch (Exception exception)
@@ -97,7 +97,7 @@ public sealed class ContractController : Controller
 			{
 				Contract = new ContractInput
 				{
-					DateConcluded = Contract.MinimalDateConcluded, 
+					DateConcluded = Contract.MinimalDateConcluded,
 					DateValid = Contract.MinimalDateConcluded,
 					DateExpired = Contract.MinimalDateConcluded
 				}
@@ -113,10 +113,12 @@ public sealed class ContractController : Controller
 			return RedirectToAction(nameof(GetContracts));
 		}
 	}
-	
+
 	[HttpPost(Routes.Contract.Create)]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> CreateContract([Bind(Prefix = nameof(CreateContractViewModel.Contract))] ContractInput contractInput, CancellationToken cancellationToken)
+	public async Task<IActionResult> CreateContract(
+		[Bind(Prefix = nameof(CreateContractViewModel.Contract))] ContractInput contractInput,
+		CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -130,7 +132,7 @@ public sealed class ContractController : Controller
 		catch (ValidationException exception)
 		{
 			// If there are any validation failures then return them with the create contract form data.
-			return View(new CreateContractViewModel{ Contract = contractInput, ValidationException = exception });
+			return View(new CreateContractViewModel { Contract = contractInput, ValidationException = exception });
 		}
 		catch (Exception exception)
 		{
@@ -149,7 +151,7 @@ public sealed class ContractController : Controller
 		try
 		{
 			// Retrieve the contract with the provided ID.
-			GetContractByIdQuery query = new(id, false);
+			GetContractQuery query = new(new Entity { Id = id }, false);
 			var contractEntity = await _sender.Send(query, cancellationToken);
 
 			// Build the view model and return it to the contract.
@@ -171,17 +173,18 @@ public sealed class ContractController : Controller
 			return RedirectToAction(nameof(GetContracts));
 		}
 	}
-	
+
 	[HttpPost(Routes.Contract.Update)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> UpdateContract(long id,
-	                                                [Bind(Prefix = nameof(CreateContractViewModel.Contract))] ContractInput contractInput,
+	                                                [Bind(Prefix = nameof(CreateContractViewModel.Contract))]
+	                                                ContractInput contractInput,
 	                                                CancellationToken cancellationToken)
 	{
 		try
 		{
 			// Retrieve the contract with the provided ID.
-			UpdateContractCommand command = contractInput.Adapt<UpdateContractCommand>() with { Id = id };
+			var command = contractInput.Adapt<UpdateContractCommand>() with { Id = id };
 			await _sender.Send(command, cancellationToken);
 
 			return RedirectToAction(nameof(GetContract), new { id });
@@ -196,27 +199,45 @@ public sealed class ContractController : Controller
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ContractController),
-			          nameof(UpdateContract));
+			          nameof(DeleteContract));
 
 			return RedirectToAction(nameof(GetContracts));
 		}
 	}
-	
 
-	public IActionResult DeleteContractPrompt()
+	[HttpPost(Routes.Contract.Delete)]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteContract(long id, CancellationToken cancellationToken)
 	{
-		throw new NotImplementedException();
+		try
+		{
+			// Retrieve contract representation for the view model.
+			DeleteContractCommand command = new(new Entity { Id = id });
+			await _sender.Send(command, cancellationToken);
+
+			return RedirectToAction(nameof(GetContracts));
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
+			          exception.Message,
+			          nameof(ContractController),
+			          nameof(DeleteContract));
+
+			return RedirectToAction(nameof(Index), "Home", new { });
+		}
 	}
 
 	[HttpPost(Routes.Contract.Export)]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> ExportContracts(ContractQueryString queryString, CancellationToken cancellationToken)
+	public async Task<IActionResult> ExportContracts(ContractQueryString queryString,
+	                                                 CancellationToken cancellationToken)
 	{
 		try
 		{
 			// Retrieve paginated contract representation for the view model.
 			GetContractRowsQuery query = new(queryString);
-			IEnumerable<ContractRow> contracts = await _sender.Send(query, cancellationToken);
+			var contracts = await _sender.Send(query, cancellationToken);
 
 			// Data set transformation. 
 			var content = new MemoryStream();
