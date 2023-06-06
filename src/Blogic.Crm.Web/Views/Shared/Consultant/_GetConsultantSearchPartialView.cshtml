@@ -1,0 +1,126 @@
+﻿@using static Blogic.Crm.Infrastructure.Sorting.ConsultantSortOrder
+
+@model ConsultantQueryString
+
+<form asp-controller="Consultant"
+      asp-action="GetConsultants"
+      method="@HttpMethods.Get"
+      class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="@Model.PageSize" class="form-label">Page size</label>
+        <input type="number"
+               asp-for="@Model.PageSize"
+               min="@MinimumPageSize.ToString()"
+               max="@MaximumPageSize.ToString()"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MinId" class="form-label">Minimal identifier</label>
+        <input type="number"
+               asp-for="@Model.MinId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxId" class="form-label">Maximal identifier</label>
+        <input type="number"
+               asp-for="@Model.MaxId"
+               min="1"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.GivenName" class="form-label">Given name</label>
+        <input type="search"
+               asp-for="@Model.GivenName"
+               maxlength="256"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.FamilyName" class="form-label">Family name</label>
+        <input type="search"
+               asp-for="@Model.FamilyName"
+               maxlength="256"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.Email" class="form-label">Email address</label>
+        <input type="email"
+               asp-for="@Model.Email"
+               maxlength="256"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.IsEmailConfirmed" class="form-label">Email address confirmed</label>
+        <input type="checkbox"
+               asp-for="@Model.IsEmailConfirmed"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.Phone" class="form-label">Phone number</label>
+        <input type="tel"
+               asp-for="@Model.Phone"
+               maxlength="256"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.IsPhoneConfirmed" class="form-label">Phone number confirmed</label>
+        <input type="checkbox"
+               asp-for="@Model.IsPhoneConfirmed"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MinDateBorn" class="form-label">Minimal date born</label>
+        <input type="date"
+               asp-for="@Model.MinDateBorn"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="@Model.MaxDateBorn" class="form-label">Maximal date born</label>
+        <input type="date"
+               asp-for="@Model.MaxDateBorn"
+               class="form-control">
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label"
+               asp-for="@Model.SortOrder">
+            Order by
+        </label>
+        <select class="form-select" asp-for="@Model.SortOrder">
+            <option selected value="@Id">Select</option>
+            <option value="@Id">Identifier</option>
+            <option value="@IdDesc">Identifier descending</option>
+            <option value="@Email">Email address</option>
+            <option value="@EmailDesc">Email address descending</option>
+            <option value="@GivenName">Given name</option>
+            <option value="@GivenNameDesc">Given name descending</option>
+            <option value="@FamilyName">Family name</option>
+            <option value="@FamilyNameDesc">Family name descending</option>
+            <option value="@Phone">Phone number</option>
+            <option value="@PhoneDesc">Phone number descending</option>
+            <option value="@DateBorn">Date born</option>
+            <option value="@DateBornDesc">Date born descending</option>
+            <option value="@BirthNumber">Birth name</option>
+            <option value="@BirthNumberDesc">Birth name descending</option>
+        </select>
+    </div>
+
+    <div class="d-inline" role="group">
+        <button type="submit" class="btn btn-dark me-1">Filter</button>
+        <a asp-controller="Consultant"
+           asp-action="GetConsultants"
+           class="btn btn-dark">
+            Reset
+        </a>
+    </div>
+</form>

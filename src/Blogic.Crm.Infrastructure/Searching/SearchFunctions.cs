@@ -1,5 +1,4 @@
 using Blogic.Crm.Infrastructure.Pagination;
-using static System.String;
 using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Searching;
@@ -50,22 +49,27 @@ public static class SearchFunctions
 	public static IQueryable<Consultant> Search(this IQueryable<Consultant> contracts,
 	                                            ConsultantQueryString queryString)
 	{
-		// When the provided search string is empty then do not search for the term occurrences.
-		if (IsNullOrEmpty(queryString.SearchString))
+		if (IsNotNullOrEmpty(queryString.Phone))
 		{
-			return contracts;
+			contracts = contracts.Where(c => c.Phone.Contains(queryString.Phone));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.Email))
+		{
+			contracts = contracts.Where(c => c.Email.Contains(queryString.Email));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.GivenName))
+		{
+			contracts = contracts.Where(c => c.GivenName.Contains(queryString.GivenName));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.FamilyName))
+		{
+			contracts = contracts.Where(c => c.FamilyName.Contains(queryString.FamilyName));
 		}
 
-		// Search for term matches in the provided consultant data set.
-		var searchTerms = queryString.SearchString.Split(' ');
-		return searchTerms.Aggregate(contracts, (current, searchTerm) =>
-		{
-			return current.Where(c => c.BirthNumber.Contains(searchTerm) ||
-			                          c.Phone.Contains(searchTerm) ||
-			                          c.GivenName.Contains(searchTerm) ||
-			                          c.FamilyName.Contains(searchTerm) ||
-			                          c.Email.Contains(searchTerm));
-		});
+		return contracts;
 	}
 
 	/// <summary>

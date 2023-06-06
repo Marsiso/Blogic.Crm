@@ -1,6 +1,3 @@
-using System.Reflection;
-using static System.String;
-
 namespace Blogic.Crm.Infrastructure.Pagination;
 
 /// <summary>
@@ -31,16 +28,8 @@ public class QueryStringBase
 	{
 		PageSize = MinimumPageSize;
 		PageNumber = MinimumPageNumber;
-		SearchString = Empty;
 	}
-
-	public QueryStringBase(int pageSize, int pageNumber, string searchString)
-	{
-		PageSize = pageSize;
-		PageNumber = pageNumber;
-		SearchString = searchString;
-	}
-
+	
 	/// <summary>
 	///     Used by the pagination for the index of the retrieved data set 'fragment' (page).
 	/// </summary>
@@ -65,13 +54,6 @@ public class QueryStringBase
 				: MinimumPageSize;
 	}
 
-	/// <summary>
-	///     Used for the searching through database entity data set.
-	///     Consists of search terms separated by the delimiter.
-	///     Example search string 'user@example.com Petr 19323455843'.
-	/// </summary>
-	public string SearchString { get; set; }
-	
 	public virtual Dictionary<string, string?> ToDictionary()
 	{
 		return new Dictionary<string, string?>()

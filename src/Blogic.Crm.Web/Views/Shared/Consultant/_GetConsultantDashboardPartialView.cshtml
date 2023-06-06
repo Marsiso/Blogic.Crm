@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Humanizer
+@model (PaginatedList<ConsultantRepresentation>?, ConsultantQueryString)
+
+@{
+    var (consultants, queryString) = Model;
+}
+
+<div class="card card-body">
+    @await Html.PartialAsync("Consultant/_GetConsultantExporterPartialView", queryString)
+    @await Html.PartialAsync("Consultant/_GetConsultantSearchPartialView", queryString)
+    
+    <hr />
+    
+    <div class="table-responsive">
+        <table class="table table-borderless w-100">
+            <caption>Total items: @((consultants?.TotalItems ?? 0).ToString())</caption>
+            <thead>
+            <tr class="fw-bold">
+                <td>Identifier</td>
+                <td>Given name</td>
+                <td>Family name</td>
+                <td>Email address</td>
+                <td>Confirmed</td>
+                <td>Phone number</td>
+                <td>Confirmed</td>
+                <td>Date born</td>
+                <td class="text-center">
+                    <a asp-controller="Consultant"
+                       asp-action="CreateConsultant"
+                       class="btn position-relative">
+                        <span class="fw-bold">Management</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                            Create
+                            <span class="visually-hidden">Create button</span>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                if (consultants is { Count: > 0 })
+                {
+                    foreach (var consultant in consultants)
+                    {
+                        <tr>
+                            <td>@consultant.Id.ToString()</td>
+                            <td>@consultant.GivenName</td>
+                            <td>@consultant.FamilyName</td>
+                            <td>@consultant.Email</td>
+                            <td>@consultant.IsEmailConfirmed.ToString()</td>
+                            <td>@consultant.Phone</td>
+                            <td>@consultant.IsPhoneConfirmed.ToString()</td>
+                            <td>@consultant.DateBorn.Humanize()</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Consultant"
+                                       asp-action="GetConsultant"
+                                       asp-route-id="@consultant.Id.ToString()"
+                                       class="btn">
+                                        More
+                                    </a>
+                                    <a asp-controller="Consultant"
+                                       asp-action="UpdateConsultant"
+                                       asp-route-id="@consultant.Id.ToString()"
+                                       class="btn">
+                                        Update
+                                    </a>
+                                    @await Html.PartialAsync("Consultant/_DeleteConsultantPromptPartialView", (new Entity { Id = consultant.Id }, "btn"))
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("Consultant/_GetConsultantsPaginationPartialView", Model)
+</div>

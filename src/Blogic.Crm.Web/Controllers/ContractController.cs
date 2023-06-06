@@ -68,7 +68,7 @@ public sealed class ContractController : Controller
 				return RedirectToAction(nameof(Index), "Home", new { });
 			}
 
-			GetConsultantByIdQuery consultantQuery = new(contractEntity.ManagerId.Value, false);
+			GetConsultantQuery consultantQuery = new(new Entity { Id = contractEntity.ManagerId.Value }, false);
 			var consultantEntity = await _sender.Send(consultantQuery, cancellationToken);
 
 			// Map data to their respective representations.

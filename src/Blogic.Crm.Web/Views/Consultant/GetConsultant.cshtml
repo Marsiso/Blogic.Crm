@@ -1,7 +1,4 @@
-﻿@using Humanizer
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using Blogic.Crm.Web.Controllers
-@model Blogic.Crm.Web.Views.Consultant.GetConsultantViewModel
+﻿@model Blogic.Crm.Web.Views.Consultant.GetConsultantViewModel
 
 @{
     ViewData["Title"] = "Account";
@@ -19,4 +16,4 @@
 
 <h1>Account</h1>
 
-@await Html.PartialAsync("_GetConsultantPartial", consultant)
+@await Html.PartialAsync("Consultant/_GetConsultantPartial", consultant)

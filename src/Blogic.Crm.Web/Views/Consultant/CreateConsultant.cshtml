@@ -1,138 +1,236 @@
-﻿@using Humanizer
+﻿@using static User
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Blogic.Crm.Web.Views.Consultant.ConsultantCreateViewModel
 
 @{
-    ViewData["Title"] = "Register Consultant";
+    ViewData["Title"] = "Create consultant";
     var consultant = Model.Consultant;
     var validationException = Model.ValidationException;
+    var hasValidationFailures = validationException is { ValidationFailures.Keys.Count: > 0 };
+
+    var validationFailures = validationException?.ValidationFailures!;
+    var invalidEmail = hasValidationFailures &&
+                       validationFailures.ContainsKey(nameof(consultant.Email)) &&
+                       validationFailures[nameof(consultant.Email)].Length > 0;
+
+    var invalidPassword = hasValidationFailures &&
+                          validationFailures.ContainsKey(nameof(consultant.Password)) &&
+                          validationFailures[nameof(consultant.Password)].Length > 0;
+
+    var invalidPhone = hasValidationFailures &&
+                       validationFailures.ContainsKey(nameof(consultant.Phone)) &&
+                       validationFailures[nameof(consultant.Phone)].Length > 0;
+
+    var invalidDataBorn = hasValidationFailures &&
+                          validationFailures.ContainsKey(nameof(consultant.DateBorn)) &&
+                          validationFailures[nameof(consultant.DateBorn)].Length > 0;
+
+    var invalidGivenName = hasValidationFailures &&
+                           validationFailures.ContainsKey(nameof(consultant.GivenName)) &&
+                           validationFailures[nameof(consultant.GivenName)].Length > 0;
+
+    var invalidFamilyName = hasValidationFailures &&
+                            validationFailures.ContainsKey(nameof(consultant.FamilyName)) &&
+                            validationFailures[nameof(consultant.FamilyName)].Length > 0;
+
+    var invalidBirthNumber = hasValidationFailures &&
+                             validationFailures.ContainsKey(nameof(consultant.BirthNumber)) &&
+                             validationFailures[nameof(consultant.BirthNumber)].Length > 0;
+
+    string ValidationCssClass(bool hasValidationFailure, bool hasInvalidProperty)
+    {
+        return hasValidationFailure
+            ? hasInvalidProperty
+                ? "form-control is-invalid"
+                : "form-control is-valid"
+            : "form-control";
+    }
 }
 
-<h1 class="mt-4">Register Consultant</h1>
+<nav aria-label="breadcrumb mt-4 mb-5">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Consultant" asp-action="GetConsultants">Consultant</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Create</li>
+    </ol>
+</nav>
 
-<form asp-action="CreateConsultant"
+<h1>Create consultant</h1>
+
+<form asp-controller="Consultant"
+      asp-action="CreateConsultant"
       method="@HttpMethods.Post"
-      asp-antiforgery="true">
-    <div class="mb-3">
-        <label asp-for="@consultant.Email" class="form-label">@nameof(consultant.Email).Humanize()</label>
-        <input type="email" class="form-control" asp-for="@consultant.Email">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.Email)) &&
-             validationException.ValidationFailures[nameof(consultant.Email)].Length > 0)
+      asp-antiforgery="true"
+      class="row g-3 needs-validation">
+    <div class="col-md-4">
+        <label asp-for="@consultant.Email" class="form-label">Email address</label>
+        <input type="email"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidEmail)"
+               max="@EmailMaximumLength.ToString()"
+               asp-for="@consultant.Email"
+               required>
+        @if (invalidEmail)
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.Email)];
-
-            <div for="@consultant.Email" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.Email)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
-    </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.Password" class="form-label">@nameof(consultant.Password).Humanize()</label>
-        <input type="password" class="form-control" asp-for="@consultant.Password">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.Password)) &&
-             validationException.ValidationFailures[nameof(consultant.Password)].Length > 0)
+        else
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.Password)];
+            <div class="form-text">
+                Unique email address be at most
+                <span class="fw-bold">@EmailMaximumLength characters</span>long.
+            </div>
+        }
+    </div>
 
-            <div for="@consultant.Password" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+    <div class="col-md-4">
+        <label asp-for="@consultant.Password" class="form-label">Password</label>
+        <input type="password"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidPassword)"
+               asp-for="@consultant.Password"
+               required>
+        @if (invalidPassword)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.Password)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
-    </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.GivenName" class="form-label">@nameof(consultant.GivenName).Humanize()</label>
-        <input type="text" class="form-control" asp-for="@consultant.GivenName">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.GivenName)) &&
-             validationException.ValidationFailures[nameof(consultant.GivenName)].Length > 0)
+        else
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.GivenName)];
+            <div class="form-text">
+                Must at least contain
+                <span class="fw-bold">@RequiredSpecialCharacters.ToString() special characters</span>,
+                <span class="fw-bold">@RequiredDigitCharacters.ToString() digits</span>,
+                <span class="fw-bold">@RequiredLowerCaseCharacters.ToString() lower case characters</span> and
+                <span class="fw-bold">@RequiredUpperCaseCharacters.ToString() upper case characters</span>.
+            </div>
+        }
+    </div>
 
-            <div for="@consultant.GivenName" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+    <div class="col-md-4">
+        <label asp-for="@consultant.GivenName" class="form-label">Given name</label>
+        <input type="text"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidGivenName)"
+               asp-for="@consultant.GivenName"
+               max="@GivenNameMaximumLength.ToString()"
+               required>
+        @if (invalidGivenName)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.GivenName)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
-    </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.FamilyName" class="form-label">@nameof(consultant.FamilyName).Humanize()</label>
-        <input type="text" class="form-control" asp-for="@consultant.FamilyName">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.FamilyName)) &&
-             validationException.ValidationFailures[nameof(consultant.FamilyName)].Length > 0)
+        else
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.FamilyName)];
-
-            <div for="@consultant.FamilyName" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+            <div class="form-text">
+                Must be at most <span class="fw-bold">@GivenNameMaximumLength.ToString() characters</span> long.
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        <label asp-for="@consultant.FamilyName" class="form-label">Family name</label>
+        <input type="text"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidFamilyName)"
+               asp-for="@consultant.FamilyName"
+               max="@FamilyNameMaximumLength.ToString()"
+               required>
+        @if (invalidFamilyName)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.FamilyName)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
-    </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.DateBorn" class="form-label">@nameof(consultant.DateBorn).Humanize()</label>
-        <input type="date" class="form-control" asp-for="@consultant.DateBorn">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.DateBorn)) &&
-             validationException.ValidationFailures[nameof(consultant.DateBorn)].Length > 0)
+        else
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.DateBorn)];
-
-            <div for="@consultant.DateBorn" class="form-text">
-                @foreach (var validationFailure in validationFailures)
-                {
-                    <p class="text-danger">@validationFailure</p>
-                }
-            </div>
+            <div class="form-text">Family name.</div>
         }
     </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.Phone"class="form-label">@nameof(consultant.Phone).Humanize()</label>
+
+    <div class="col-md-4">
+        <label asp-for="@consultant.Phone" class="form-label">Phone number</label>
         <input type="tel"
-               class="form-control"
-               asp-for="@consultant.Phone">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.Phone)) &&
-             validationException.ValidationFailures[nameof(consultant.Phone)].Length > 0)
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidPhone)"
+               asp-for="@consultant.Phone"
+               max="@PhoneMaximumLength.ToString()"
+               required>
+        @if (invalidPhone)
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.Phone)];
-
-            <div for="@consultant.Phone" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.Phone)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
-    </div>
-    <div class="mb-3">
-        <label asp-for="@consultant.BirthNumber" class="form-label">@nameof(consultant.BirthNumber).Humanize()</label>
-        <input type="text" class="form-control" asp-for="@consultant.BirthNumber">
-        @if (validationException != null &&
-             validationException.ValidationFailures.ContainsKey(nameof(consultant.BirthNumber)) &&
-             validationException.ValidationFailures[nameof(consultant.BirthNumber)].Length > 0)
+        else
         {
-            var validationFailures = validationException.ValidationFailures[nameof(consultant.BirthNumber)];
+            <div class="form-text">
+                Must be at most <span class="fw-bold">@PhoneMaximumLength characters</span> long.
+            </div>
+        }
+    </div>
 
-            <div for="@consultant.BirthNumber" class="form-text">
-                @foreach (var validationFailure in validationFailures)
+    <div class="col-md-4">
+        <label asp-for="@consultant.DateBorn" class="form-label">Date born</label>
+        <input type="date"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidDataBorn)"
+               asp-for="@consultant.DateBorn"
+               min="1800-01-01"
+               required>
+        @if (invalidDataBorn)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.DateBorn)])
                 {
                     <p class="text-danger">@validationFailure</p>
                 }
             </div>
         }
+        else
+        {
+            <div class="form-text">The date the consultant was born.</div>
+        }
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    
+    <div class="col-md-4">
+        <label asp-for="@consultant.BirthNumber" class="form-label">Birth number</label>
+        <input type="text"
+               class="form-control @ValidationCssClass(hasValidationFailures, invalidBirthNumber)"
+               asp-for="@consultant.BirthNumber"
+               max="@BirthNumberMaximumLength.ToString()"
+               pattern="[0-9]{6}[\/]?[0-9]{4}"
+               required>
+        @if (invalidBirthNumber)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(consultant.BirthNumber)])
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="form-text">Birth number.</div>
+        }
+    </div>
+    
+    <div class="d-inline">
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </div>
 </form>

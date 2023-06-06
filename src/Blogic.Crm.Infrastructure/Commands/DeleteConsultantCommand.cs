@@ -6,7 +6,7 @@ namespace Blogic.Crm.Infrastructure.Commands;
 ///     Deletes the persisted consultant.
 /// </summary>
 /// <param name="Id">Provided unique identifier to distinct between consultants.</param>
-public sealed record DeleteConsultantCommand(long Id) : ICommand<Unit>;
+public sealed record DeleteConsultantCommand(Entity Entity) : ICommand<Unit>;
 
 /// <summary>
 ///     Handles the <see cref="DeleteConsultantCommand" /> command.
@@ -25,7 +25,7 @@ public sealed class DeleteConsultantCommandHandler : ICommandHandler<DeleteConsu
 		// Retrieve the persisted consultant using the provided ID.
 		var consultantEntity = await _dataContext.Consultants
 		                                         .AsTracking()
-		                                         .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+		                                         .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
 
 		// When the consultant isn't persisted then take no action and return else delete the persisted consultant.
 		if (consultantEntity != null)
