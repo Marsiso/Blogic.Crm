@@ -77,7 +77,7 @@ public sealed class DatabaseSeeder : IDisposable
 			Phone = _phoneNormalizer.Normalize(phone)!,
 			IsPhoneConfirmed = true,
 			DateBorn = Identification.DateOfBirth(),
-			BirthNumber = $"{dateBorn:yyMMdd}{RandomNumber.Next(0, 9999):D4}",
+			BirthNumber = $"{dateBorn:yyMMdd}/{RandomNumber.Next(0, 9999):D4}",
 			SecurityStamp = _securityStampProvider.GenerateSecurityStamp()
 		};
 	}
@@ -99,7 +99,7 @@ public sealed class DatabaseSeeder : IDisposable
 			Phone = _phoneNormalizer.Normalize(phone)!,
 			IsPhoneConfirmed = true,
 			DateBorn = Identification.DateOfBirth(),
-			BirthNumber = $"{dateBorn:yyMMdd}{RandomNumber.Next(0, 9999):D4}",
+			BirthNumber = $"{dateBorn:yyMMdd}/{RandomNumber.Next(0, 9999):D4}",
 			SecurityStamp = _securityStampProvider.GenerateSecurityStamp()
 		};
 	}

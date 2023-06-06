@@ -1,5 +1,6 @@
 ﻿@using Humanizer
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static Contract
 @model Blogic.Crm.Web.Views.Contract.UpdateContractViewModel
 
 @{
@@ -36,6 +37,15 @@
     var invalidDateExpired = hasValidationFailures &&
                              validationFailures.ContainsKey(nameof(contract.DateExpired)) &&
                              validationFailures[nameof(contract.DateExpired)].Length > 0;
+    
+    string ValidationCssClass(bool hasValidationFailure, bool hasInvalidProperty)
+    {
+        return hasValidationFailure
+            ? hasInvalidProperty
+                ? "form-control is-invalid"
+                : "form-control is-valid"
+            : "form-control";
+    }
 }
 
 <nav aria-label="breadcrumb mt-4 mb-5">
@@ -49,20 +59,21 @@
 
 <h1>Update contract</h1>
 
-<form asp-action="UpdateContract"
+<form asp-controller="Contract"
+      asp-action="UpdateContract"
       method="@HttpMethods.Post"
       asp-antiforgery="true"
       class="row g-3 needs-validation">
     <div class="col-md-4">
         <label asp-for="@contract.ClientId" class="form-label">@nameof(contract.ClientId).Humanize()</label>
         <input type="number"
-               class="@(hasValidationFailures ? invalidClientId ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.ClientId"
                min="1"
                required>
         @if (invalidClientId)
         {
-            <div for="@contract.ClientId" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.ClientId)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -71,19 +82,19 @@
         }
         else
         {
-            <div asp-for="@contract.ClientId" class="form-text">Contract owner.</div>
+            <div class="form-text">Contract owner.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.ManagerId" class="form-label">@nameof(contract.ManagerId).Humanize()</label>
         <input type="number"
-               class="@(hasValidationFailures ? invalidManagerId ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.ManagerId"
                min="1"
                required>
         @if (invalidManagerId)
         {
-            <div for="@contract.ManagerId" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.ManagerId)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -92,20 +103,21 @@
         }
         else
         {
-            <div asp-for="@contract.ManagerId" class="form-text">Contract manager and consultant.</div>
+            <div class="form-text">Contract manager and consultant.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.RegistrationNumber" class="form-label">@nameof(contract.RegistrationNumber).Humanize()</label>
         <input type="text"
-               class="@(hasValidationFailures ? invalidRegistrationNumber ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.RegistrationNumber"
+               max="36"
                required
                placeholder="00000000-0000-0000-0000-000000000000"
                pattern="^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$">
         @if (invalidRegistrationNumber)
         {
-            <div for="@contract.RegistrationNumber" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.RegistrationNumber)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -114,18 +126,19 @@
         }
         else
         {
-            <div asp-for="@contract.RegistrationNumber" class="form-text">Format '00000000-0000-0000-0000-000000000000'.</div>
+            <div class="form-text">Format '00000000-0000-0000-0000-000000000000'.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.Institution" class="form-label">@nameof(contract.Institution).Humanize()</label>
         <input type="text"
-               class="@(hasValidationFailures ? invalidInstitution ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidInstitution)"
                asp-for="@contract.Institution"
+               max="@InstitutionMaximumLength.ToString()"
                required>
         @if (invalidInstitution)
         {
-            <div for="@contract.Institution" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.Institution)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -134,19 +147,19 @@
         }
         else
         {
-            <div asp-for="@contract.Institution" class="form-text">The institution with which the contract was concluded.</div>
+            <div class="form-text">The institution with which the contract was concluded.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.DateConcluded" class="form-label">@nameof(contract.DateConcluded).Humanize()</label>
         <input type="date"
-               class="@(hasValidationFailures ? invalidDateConcluded ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidDateConcluded)"
                asp-for="@contract.DateConcluded"
                min="1800-01-01"
                required>
         @if (invalidDateConcluded)
         {
-            <div for="@contract.DateConcluded" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.DateConcluded)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -155,19 +168,19 @@
         }
         else
         {
-            <div asp-for="@contract.DateValid" class="form-text">The date of conclusion of the contract.</div>
+            <div class="form-text">The date of conclusion of the contract.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.DateValid" class="form-label">@nameof(contract.DateValid).Humanize()</label>
         <input type="date"
-               class="@(hasValidationFailures ? invalidDateValid ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidDateValid)"
                asp-for="@contract.DateValid"
                min="1800-01-01"
                required>
         @if (invalidDateValid)
         {
-            <div for="@contract.DateValid" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.DateValid)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -176,19 +189,19 @@
         }
         else
         {
-            <div asp-for="@contract.DateValid" class="form-text">The date of validity of the contract.</div>
+            <div class="form-text">The date of validity of the contract.</div>
         }
     </div>
     <div class="col-md-4">
         <label asp-for="@contract.DateExpired" class="form-label">@nameof(contract.DateExpired).Humanize()</label>
         <input type="date"
-               class="@(hasValidationFailures ? invalidDateExpired ? "form-control is-invalid" : "form-control is-valid" : "form-control")"
+               class="@ValidationCssClass(hasValidationFailures, invalidDateExpired)"
                asp-for="@contract.DateExpired"
                min="1800-01-01"
                required>
         @if (invalidDateExpired)
         {
-            <div for="@contract.DateExpired" class="invalid-feedback">
+            <div class="invalid-feedback">
                 @foreach (var validationFailure in validationFailures[nameof(contract.DateExpired)])
                 {
                     <p class="text-danger">@validationFailure</p>
@@ -197,8 +210,10 @@
         }
         else
         {
-            <div asp-for="@contract.DateExpired" class="form-text">The date of expiration of the contract.</div>
+            <div class="form-text">The date of expiration of the contract.</div>
         }
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="d-inline">
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </div>
 </form>

@@ -1,3 +1,5 @@
+using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
+
 namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
@@ -40,6 +42,7 @@ public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCom
 	{
 		// Map the data to the client model.
 		var clientEntity = request.Adapt<Client>();
+		clientEntity.BirthNumber = FormatBirthNumber(clientEntity.BirthNumber)!;
 
 		// Bind additional data such as indexers.
 		clientEntity.NormalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using Blogic.Crm.Domain.Routing;
 using Blogic.Crm.Infrastructure.Pagination;
 
 namespace Blogic.Crm.Infrastructure.Filtering;
@@ -19,9 +17,14 @@ public static class FilterFunctions
 	public static IQueryable<Client> Filter(this IQueryable<Client> clients,
 	                                        ClientQueryString queryString)
 	{
-		Debug.Assert(queryString != null);
 		return clients.Where(c => c.DateBorn > queryString.MinDateBorn &&
-		                          c.DateBorn < queryString.MaxDateBorn);
+		                          c.DateBorn < queryString.MaxDateBorn &&
+		                          c.IsEmailConfirmed == queryString.IsEmailConfirmed &&
+		                          c.IsPhoneConfirmed == queryString.IsPhoneConfirmed &&
+		                          c.DateBorn >= queryString.MinDateBorn &&
+		                          c.DateBorn <= queryString.MaxDateBorn &&
+		                          c.Id >= queryString.MinId &&
+		                          c.Id <= queryString.MaxId);
 	}
 
 	/// <summary>

@@ -23,6 +23,7 @@ public class User : Entity
 	public const int RequiredDigitCharacters = 1;
 	public const int RequiredLowerCaseCharacters = 1;
 	public const int RequiredUpperCaseCharacters = 1;
+	public static DateTime MinimalDateBorn = new DateTime(1800,1,1);
 
 	[Column("given_name")]
 	[Required]

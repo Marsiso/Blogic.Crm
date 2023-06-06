@@ -1,11 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
+using FluentValidation.Validators;
 using PhoneNumbers;
 using static System.Char;
 using static System.String;
 
 namespace Blogic.Crm.Infrastructure.TypeExtensions;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
 	public static bool IsNotNullOrEmpty([NotNullWhen(true)] string? value)
 	{
@@ -137,4 +139,26 @@ public static class StringExtensions
 	{
 		return !string.Equals(left, right, comparisonType);
 	}
+
+	public static string? FormatBirthNumber([NotNullIfNotNull(nameof(birthNumber))] string? birthNumber)
+	{
+		if (IsNullOrEmpty(birthNumber))
+		{
+			return birthNumber;
+		}
+
+		var validFormat = BirthNumberRegularExpression().IsMatch(birthNumber);
+		if (validFormat is false)
+		{
+			return birthNumber;
+		}
+
+		var span = birthNumber.AsSpan();
+		var containsDelimiter = birthNumber[7].Equals('/');
+		return containsDelimiter ? birthNumber : $"{span[..6]}/{span[6..]}";
+
+	}
+
+    [GeneratedRegex("[0-9]{6}[/]?[0-9]{4}", RegexOptions.Compiled)]
+    private static partial Regex BirthNumberRegularExpression();
 }

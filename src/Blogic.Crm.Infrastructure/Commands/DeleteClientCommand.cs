@@ -6,7 +6,7 @@ namespace Blogic.Crm.Infrastructure.Commands;
 ///     Deletes the persisted client.
 /// </summary>
 /// <param name="Id">Provided unique identifier to distinct between clients.</param>
-public sealed record DeleteClientCommand(long Id) : ICommand<Unit>;
+public sealed record DeleteClientCommand(Entity Entity) : ICommand<Unit>;
 
 /// <summary>
 ///     Handles the <see cref="DeleteClientCommandHandler" /> command.
@@ -25,7 +25,7 @@ public sealed class DeleteClientCommandHandler : ICommandHandler<DeleteClientCom
 		// Retrieve the persisted client using the provided ID.
 		var clientEntity = await _dataContext.Clients
 		                                     .AsTracking()
-		                                     .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+		                                     .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
 
 		// When the client isn't persisted then take no action and return else delete the persisted client.
 		if (clientEntity != null)

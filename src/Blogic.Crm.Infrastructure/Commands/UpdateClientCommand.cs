@@ -57,6 +57,7 @@ public sealed class UpdateClientCommandHandler : ICommandHandler<UpdateClientCom
 
 		// Map the data to the original client entity.
 		request.Adapt(clientEntity);
+		clientEntity.BirthNumber = FormatBirthNumber(clientEntity.BirthNumber)!;
 
 		// Track if new security stamp should be assigned for security purposes.
 		var generateSecurityStamp = false;

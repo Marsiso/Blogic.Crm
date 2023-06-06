@@ -1,14 +1,14 @@
-﻿@model (PaginatedList<ContractRepresentation>, ContractQueryString)
+﻿@model (PaginatedList<ClientRepresentation>, ClientQueryString)
 
 @{
-    var (contracts, queryString) = Model;
-    var hasPreviousListItemClass = contracts.HasPrevious ? string.Empty : "disabled";
-    var hasPreviousLinkClass = contracts.HasPrevious ? string.Empty : "disabled";
-    var previousPage = (contracts.CurrentPage - 1).ToString();
+    var (clients, queryString) = Model;
+    var hasPreviousListItemClass = clients.HasPrevious ? string.Empty : "disabled";
+    var hasPreviousLinkClass = clients.HasPrevious ? string.Empty : "disabled";
+    var previousPage = (clients.CurrentPage - 1).ToString();
 
-    var hasNextListItemClass = contracts.HasNext ? string.Empty : "disabled";
-    var hasNextLinkClass = contracts.HasNext ? string.Empty : "disabled";
-    var nextPage = (contracts.CurrentPage + 1).ToString();
+    var hasNextListItemClass = clients.HasNext ? string.Empty : "disabled";
+    var hasNextLinkClass = clients.HasNext ? string.Empty : "disabled";
+    var nextPage = (clients.CurrentPage + 1).ToString();
 
     Dictionary<string, string?> queryStringBase = queryString.ToDictionary();
     Dictionary<string, string?> previousPageQueryString = new(queryStringBase)
@@ -28,7 +28,7 @@
 
     Dictionary<string, string?> lastPageQueryString = new(queryStringBase)
     {
-        [nameof(QueryStringBase.PageNumber)]  = contracts.TotalPages.ToString()
+        [nameof(QueryStringBase.PageNumber)]  = clients.TotalPages.ToString()
     };
 }
 
@@ -38,26 +38,26 @@
                 <ul class="pagination">
                     <li class="page-item @hasPreviousListItemClass">
                         <a class="page-link link-dark @hasPreviousLinkClass"
-                           asp-controller="Contract"
-                           asp-action="GetContracts"
+                           asp-controller="Client"
+                           asp-action="GetClients"
                            asp-all-route-data="@firstPageQueryString">
                             <span aria-hidden="true">&laquo;</span><span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                     <li class="page-item @hasPreviousListItemClass">
                         <a class="page-link link-dark @hasPreviousLinkClass"
-                           asp-controller="Contract"
-                           asp-action="GetContracts"
+                           asp-controller="Client"
+                           asp-action="GetClients"
                            asp-all-route-data="@previousPageQueryString">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    @if (contracts.HasPrevious)
+                    @if (clients.HasPrevious)
                     {
                         <li class="page-item">
                             <a class="page-link link-dark "
-                               asp-controller="Contract"
-                               asp-action="GetContracts"
+                               asp-controller="Client"
+                               asp-action="GetClients"
                                asp-all-route-data="@previousPageQueryString">
                                 @previousPage
                             </a>
@@ -65,19 +65,19 @@
                     }
                     <li class="page-item active">
                         <a class="page-link link-dark "
-                           asp-controller="Contract"
-                           asp-action="GetContracts"
+                           asp-controller="Client"
+                           asp-action="GetClients"
                            asp-all-route-data="@queryStringBase">
-                            @contracts.CurrentPage.ToString()
+                            @clients.CurrentPage.ToString()
                         </a>
                     </li>
 
-                    @if (contracts.HasNext)
+                    @if (clients.HasNext)
                     {
                         <li class="page-item">
                             <a class="page-link link-dark "
-                               asp-controller="Contract"
-                               asp-action="GetContracts"
+                               asp-controller="Client"
+                               asp-action="GetClients"
                                asp-all-route-data="@nextPageQueryString">
                                 @nextPage
                             </a>
@@ -85,16 +85,16 @@
                     }
                     <li class="page-item @hasNextListItemClass">
                         <a class="page-link link-dark @hasNextLinkClass"
-                           asp-controller="Contract"
-                           asp-action="GetContracts"
+                           asp-controller="Client"
+                           asp-action="GetClients"
                            asp-all-route-data="@nextPageQueryString">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
                     <li class="page-item @hasNextListItemClass">
                         <a class="page-link link-dark @hasNextLinkClass "
-                           asp-controller="Contract"
-                           asp-action="GetContracts"
+                           asp-controller="Client"
+                           asp-action="GetClients"
                            asp-all-route-data="@lastPageQueryString">
                             <span aria-hidden="true">&raquo;</span><span aria-hidden="true">&raquo;</span>
                         </a>

@@ -49,7 +49,7 @@
 
     <div class="col-md-4">
         <label asp-for="@Model.RegistrationNumber" class="form-label">Registration number</label>
-        <input type="text"
+        <input type="search"
                asp-for="@Model.RegistrationNumber"
                maxlength="36"
                class="form-control">
@@ -57,7 +57,7 @@
 
     <div class="col-md-4">
         <label asp-for="@Model.Institution" class="form-label">Institution</label>
-        <input type="text"
+        <input type="search"
                asp-for="@Model.Institution"
                class="form-control">
     </div>
@@ -130,7 +130,7 @@
         </select>
     </div>
 
-    <div class="d-inline-flex justify-content-center align-content-center mb-3" role="group">
+    <div class="d-inline" role="group">
         <button type="submit" class="btn btn-dark me-1">Filter</button>
         <a asp-controller="Contract"
            asp-action="GetContracts"

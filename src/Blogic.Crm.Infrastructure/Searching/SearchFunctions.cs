@@ -18,22 +18,27 @@ public static class SearchFunctions
 	public static IQueryable<Client> Search(this IQueryable<Client> clients,
 	                                        ClientQueryString queryString)
 	{
-		// When the provided search string is empty then do not search for the term occurrences.
-		if (IsNullOrEmpty(queryString.SearchString))
+		if (IsNotNullOrEmpty(queryString.Phone))
 		{
-			return clients;
+			clients = clients.Where(c => c.Phone.Contains(queryString.Phone));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.Email))
+		{
+			clients = clients.Where(c => c.Email.Contains(queryString.Email));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.GivenName))
+		{
+			clients = clients.Where(c => c.GivenName.Contains(queryString.GivenName));
+		}
+		
+		if (IsNotNullOrEmpty(queryString.FamilyName))
+		{
+			clients = clients.Where(c => c.FamilyName.Contains(queryString.FamilyName));
 		}
 
-		// Search for term matches in the provided client data set.
-		var searchTerms = queryString.SearchString.Split(' ');
-		return searchTerms.Aggregate(clients, (current, searchTerm) =>
-		{
-			return current.Where(c => c.BirthNumber.Contains(searchTerm) ||
-			                          c.Phone.Contains(searchTerm) ||
-			                          c.GivenName.Contains(searchTerm) ||
-			                          c.FamilyName.Contains(searchTerm) ||
-			                          c.Email.Contains(searchTerm));
-		});
+		return clients;
 	}
 
 	/// <summary>

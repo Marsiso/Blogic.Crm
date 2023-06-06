@@ -16,7 +16,7 @@
                     <td>@client.Id.ToString()</td>
                 </tr>
                 <tr>
-                    <td class="fw-bold">=Given name)</td>
+                    <td class="fw-bold">Given name</td>
                     <td>@client.GivenName</td>
                 </tr>
                 <tr>
@@ -77,12 +77,7 @@
                class="btn btn-outline-dark">
                 Update
             </a>
-            <a asp-route-id="@client.Id.ToString()"
-               asp-controller="Client"
-               asp-action="DeleteClientPrompt"
-               class="btn btn-outline-dark">
-                Delete
-            </a>
+            @await Html.PartialAsync("_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn btn-outline-dark"))
         </div>
     }
     else

@@ -1,0 +1,10 @@
+﻿@model ClientQueryString
+
+<form asp-controller="Client"
+      asp-action="ExportClients"
+      asp-antiforgery="true"
+      method="@HttpMethods.Post"
+      asp-all-route-data="@Model.ToDictionary()"
+      class="d-flex align-content-end justify-content-end g-3">
+    <button type="submit" class="btn btn-dark">CSV</button>
+</form>

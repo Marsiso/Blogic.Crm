@@ -9,6 +9,9 @@
 <div class="card card-body">
     @await Html.PartialAsync("_GetContractsExporterPartialView", queryString)
     @await Html.PartialAsync("_GetContractsSearchPartialView", queryString)
+    
+    <hr />
+    
     <div class="table-responsive">
         <table class="table table-borderless w-100">
             <caption>Total items: @((contracts?.TotalItems ?? 0).ToString())</caption>

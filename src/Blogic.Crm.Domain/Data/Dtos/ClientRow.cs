@@ -9,7 +9,7 @@ namespace Blogic.Crm.Domain.Data.Dtos;
 /// </summary>
 public sealed class ClientRow
 {
-	[Name("Id")] [Index(1)] public long Id { get; set; }
+	[Name("Identifier")] [Index(1)] public long Id { get; set; }
 
 	[Name("Given name")] [Index(2)] public string GivenName { get; set; }
 
@@ -21,13 +21,13 @@ public sealed class ClientRow
 	[Index(5)]
 	public string NormalizedEmail { get; set; }
 
-	[Name("Email address confirmed")]
+	[Name("Cconfirmed")]
 	[Index(6)]
 	public bool IsEmailConfirmed { get; set; }
 
 	[Name("Phone number")] [Index(7)] public string Phone { get; set; }
 
-	[Name("Phone number confirmed")]
+	[Name("Confirmed")]
 	[Index(8)]
 	public bool IsPhoneConfirmed { get; set; }
 

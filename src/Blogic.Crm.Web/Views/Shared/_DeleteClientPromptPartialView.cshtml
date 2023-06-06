@@ -1,0 +1,47 @@
+﻿@model (Entity, string)
+
+@{
+    var (entity, deleteButtonCss) = Model;
+}
+
+<!-- Button trigger modal -->
+<button type="button" class="@deleteButtonCss" data-bs-toggle="modal" data-bs-target="#delete-resource">
+    Delete
+</button>
+
+<!-- Modal -->
+<div class="modal fade"
+     id="delete-resource"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="staticBackdropLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Prompt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Proceed to delete client?
+            </div>
+            <div class="modal-footer">
+                <a asp-controller="Client"
+                   asp-action="GetClient"
+                   asp-route-id="@entity.Id.ToString()"
+                   class="btn"
+                   data-bs-dismiss="modal">
+                    Cancel
+                </a>
+                <form asp-controller="Client"
+                      asp-action="DeleteClient"
+                      asp-route-id="@entity.Id.ToString()"
+                      asp-antiforgery="true"
+                      method="@HttpMethods.Post">
+                    <button type="submit" class="btn btn-dark" data-bs-dismiss="modal">Proceed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

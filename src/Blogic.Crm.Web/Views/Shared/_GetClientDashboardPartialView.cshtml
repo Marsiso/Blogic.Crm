@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Humanizer
+@model (PaginatedList<ClientRepresentation>?, ClientQueryString)
+
+@{
+    var (clients, queryString) = Model;
+}
+
+<div class="card card-body">
+    @await Html.PartialAsync("_GetClientExporterPartialView", queryString)
+    @await Html.PartialAsync("_GetClientSearchPartialView", queryString)
+    
+    <hr />
+    
+    <div class="table-responsive">
+        <table class="table table-borderless w-100">
+            <caption>Total items: @((clients?.TotalItems ?? 0).ToString())</caption>
+            <thead>
+            <tr class="fw-bold">
+                <td>Identifier</td>
+                <td>Given name</td>
+                <td>Family name</td>
+                <td>Email address</td>
+                <td>Confirmed</td>
+                <td>Phone number</td>
+                <td>Confirmed</td>
+                <td>Date born</td>
+                <td class="text-center">
+                    <a asp-controller="Client"
+                       asp-action="CreateClient"
+                       class="btn position-relative">
+                        <span class="fw-bold">Management</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                            Create
+                            <span class="visually-hidden">Create button</span>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                if (clients is { Count: > 0 })
+                {
+                    foreach (var client in clients)
+                    {
+                        <tr>
+                            <td>@client.Id.ToString()</td>
+                            <td>@client.GivenName</td>
+                            <td>@client.FamilyName</td>
+                            <td>@client.Email</td>
+                            <td>@client.IsEmailConfirmed.ToString()</td>
+                            <td>@client.Phone</td>
+                            <td>@client.IsPhoneConfirmed.ToString()</td>
+                            <td>@client.DateBorn.Humanize()</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Client"
+                                       asp-action="GetClient"
+                                       asp-route-id="@client.Id.ToString()"
+                                       class="btn">
+                                        More
+                                    </a>
+                                    <a asp-controller="Client"
+                                       asp-action="UpdateClient"
+                                       asp-route-id="@client.Id.ToString()"
+                                       class="btn">
+                                        Update
+                                    </a>
+                                    @await Html.PartialAsync("_DeleteClientPromptPartialView", (new Entity { Id = client.Id }, "btn"))
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("_GetClientsPaginationPartialView", Model)
+</div>

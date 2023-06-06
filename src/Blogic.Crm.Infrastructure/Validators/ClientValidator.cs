@@ -74,7 +74,7 @@ public sealed class ClientValidator : AbstractValidator<Client>
 				.WithMessage($"Client's birth number must be at most {BirthNumberMaximumLength} characters long.");
 
 			RuleFor(c => c.BirthNumber)
-				.Must(IsBirthNumber)
+				.Matches(@"[0-9]{6}[/]?[0-9]{4}")
 				.WithMessage("Client's birth number format is invalid.");
 		}).Otherwise(() =>
 		{

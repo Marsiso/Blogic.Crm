@@ -4,6 +4,7 @@ using Blogic.Crm.Web.Views.Contract;
 using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using static Blogic.Crm.Domain.Data.Entities.Contract;
 
 namespace Blogic.Crm.Web.Controllers;
 
@@ -58,7 +59,7 @@ public sealed class ContractController : Controller
 			}
 
 			// Retrieve client representation for the view model.
-			GetClientByIdQuery clientQuery = new(contractEntity.ClientId, false);
+			GetClientQuery clientQuery = new(new Entity { Id = contractEntity.ClientId }, false);
 			var clientEntity = await _sender.Send(clientQuery, cancellationToken);
 
 			// Retrieve consultant representation for the view model.
@@ -97,9 +98,9 @@ public sealed class ContractController : Controller
 			{
 				Contract = new ContractInput
 				{
-					DateConcluded = Contract.MinimalDateConcluded,
-					DateValid = Contract.MinimalDateConcluded,
-					DateExpired = Contract.MinimalDateConcluded
+					DateConcluded = MinimalDateConcluded,
+					DateValid = MinimalDateConcluded,
+					DateExpired = MinimalDateConcluded
 				}
 			});
 		}
