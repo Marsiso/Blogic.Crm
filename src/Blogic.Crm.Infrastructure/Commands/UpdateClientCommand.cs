@@ -1,102 +1,86 @@
-using Microsoft.EntityFrameworkCore;
-using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
-
 namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
-///     Updates the persisted client.
+///     The command to update the client in the database.
 /// </summary>
-/// <param name="Id">Client's unique identifier used to retrieve the persisted client entity.</param>
-/// <param name="Email">Client's email address to be updated.</param>
-/// <param name="Password">Client's password to be updated.</param>
-/// <param name="GivenName">Client's given name to be updated.</param>
-/// <param name="FamilyName">Client's family name to be updated.</param>
-/// <param name="Phone">Client's phone number to be updated.</param>
-/// <param name="DateBorn">Client's date born to be updated.</param>
-/// <param name="BirthNumber">Client's birth number to be updated.</param>
-public sealed record UpdateClientCommand(long Id, string Email, string Password, string GivenName, string FamilyName,
-                                         string Phone, DateTime DateBorn, string BirthNumber) : ICommand<Unit>;
+public sealed record UpdateClientCommand(Entity Entity, string Email, string Password, string GivenName, string FamilyName,
+    string Phone, DateTime DateBorn, string BirthNumber) : ICommand<Unit>;
 
 /// <summary>
-///     Handles the <see cref="UpdateClientCommand" /> command.
+///     Processes the <see cref="UpdateClientCommand" /> command.
 /// </summary>
 public sealed class UpdateClientCommandHandler : ICommandHandler<UpdateClientCommand, Unit>
 {
-	private readonly DataContext _dataContext;
-	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
-	private readonly IPasswordHasher _passwordHasher;
-	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
-	private readonly ISecurityStampProvider _securityStampProvider;
+    private readonly DataContext _dataContext;
+    private readonly IEmailLookupNormalizer _emailLookupNormalizer;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
+    private readonly ISecurityStampProvider _securityStampProvider;
 
-	public UpdateClientCommandHandler(DataContext dataContext, ISecurityStampProvider securityStampProvider,
-	                                  IEmailLookupNormalizer emailLookupNormalizer,
-	                                  IPhoneLookupNormalizer phoneLookupNormalizer, IPasswordHasher passwordHasher)
-	{
-		_dataContext = dataContext;
-		_securityStampProvider = securityStampProvider;
-		_emailLookupNormalizer = emailLookupNormalizer;
-		_phoneLookupNormalizer = phoneLookupNormalizer;
-		_passwordHasher = passwordHasher;
-	}
+    public UpdateClientCommandHandler(DataContext dataContext, ISecurityStampProvider securityStampProvider,
+        IEmailLookupNormalizer emailLookupNormalizer,
+        IPhoneLookupNormalizer phoneLookupNormalizer, IPasswordHasher passwordHasher)
+    {
+        _dataContext = dataContext;
+        _securityStampProvider = securityStampProvider;
+        _emailLookupNormalizer = emailLookupNormalizer;
+        _phoneLookupNormalizer = phoneLookupNormalizer;
+        _passwordHasher = passwordHasher;
+    }
 
-	public async Task<Unit> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
-	{
-		// Retrieve the persisted client using the provided ID.
-		var clientEntity = await _dataContext.Clients
-		                                     .AsTracking()
-		                                     .SingleOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+    public async Task<Unit> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
+    {
+        // Get the client from the database.
+        var client = await _dataContext.Clients
+            .AsTracking()
+            .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
 
-		// When the client is not persisted then take no action and return.
-		if (clientEntity == null)
-		{
-			return Unit.Value;
-		}
+        // If the client is not found, do not perform any action and return,
+        // otherwise remove the client from the database and save the changes.
+        if (client == null) return Unit.Value;
 
-		// Duplicate client entity for the original-new comparison.
-		var clientPrevious = (Client)clientEntity.Clone();
+        // Create a copy of the client for comparison purposes.
+        var clientPrevious = (Client)client.Clone();
 
-		// Map the data to the original client entity.
-		request.Adapt(clientEntity);
-		clientEntity.BirthNumber = FormatBirthNumber(clientEntity.BirthNumber)!;
+        // Map input data to the client model.
+        request.Adapt(client);
+        client.BirthNumber = FormatBirthNumber(client.BirthNumber)!;
 
-		// Track if new security stamp should be assigned for security purposes.
-		var generateSecurityStamp = false;
+        // Keep track of changes to client login credentials.
+        var generateSecurityStamp = false;
 
-		// Normalize and set email address.
-		var normalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
-		if (EqualsNot(normalizedEmail, clientPrevious.NormalizedEmail, StringComparison.Ordinal))
-		{
-			generateSecurityStamp = true;
-			clientEntity.NormalizedEmail = normalizedEmail;
-		}
+        // Normalize and complete the email address.
+        var normalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
+        if (EqualsNot(normalizedEmail, clientPrevious.NormalizedEmail, StringComparison.Ordinal))
+        {
+            generateSecurityStamp = true;
+            client.NormalizedEmail = normalizedEmail;
+        }
 
-		// Normalize and set phone number. 
-		var normalizedPhone = _phoneLookupNormalizer.Normalize(request.Phone)!;
-		if (EqualsNot(normalizedPhone, clientPrevious.Phone, StringComparison.Ordinal))
-		{
-			generateSecurityStamp = true;
-			clientEntity.Phone = normalizedPhone;
-		}
+        // Normalize and complete the telephone number.
+        var normalizedPhone = _phoneLookupNormalizer.Normalize(request.Phone)!;
+        if (EqualsNot(normalizedPhone, clientPrevious.Phone, StringComparison.Ordinal))
+        {
+            generateSecurityStamp = true;
+            client.Phone = normalizedPhone;
+        }
 
-		// Update password when password and its supposed password hash doesn't match.
-		if (_passwordHasher.VerifyPassword(request.Password, clientPrevious.PasswordHash) ==
-		    PasswordVerificationResult.Fail)
-		{
-			generateSecurityStamp = true;
-			clientEntity.PasswordHash = _passwordHasher.HashPassword(request.Password);
-		}
+        // When client change the user password,
+        // replace the original encrypted password with a replacement.
+        if (_passwordHasher.VerifyPassword(request.Password, clientPrevious.PasswordHash) ==
+            PasswordVerificationResult.Fail)
+        {
+            generateSecurityStamp = true;
+            client.PasswordHash = _passwordHasher.HashPassword(request.Password);
+        }
 
-		// When client's credential changed than generate new security stamp.
-		if (generateSecurityStamp)
-		{
-			clientEntity.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
-		}
+        // When client's credentials change then set new security stamp.
+        if (generateSecurityStamp) client.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
 
-		// Persist changes to the client entity.
-		_dataContext.Clients.Update(clientEntity);
-		await _dataContext.SaveChangesAsync(cancellationToken);
+        // Update a client in the database.
+        _dataContext.Clients.Update(client);
+        await _dataContext.SaveChangesAsync(cancellationToken);
 
-		// Finish.
-		return Unit.Value;
-	}
+        return Unit.Value;
+    }
 }

@@ -1,18 +1,35 @@
-﻿namespace Blogic.Crm.Infrastructure.Logging;
+﻿#nullable disable
 
+namespace Blogic.Crm.Infrastructure.Logging;
+
+/// <summary>
+///     Logging service provider settings.
+/// </summary>
 public sealed class LoggerOptions
 {
-	public ConsoleSinkOptions Console { get; set; } = default!;
+    /// <summary>
+    ///     Settings related to console.
+    /// </summary>
+    public ConsoleSinkOptions Console { get; set; }
 
-	public SeqSinkOptions Seq { get; set; } = default!;
+    /// <summary>
+    ///     Settings related to Seq.
+    /// </summary>
+    public SeqSinkOptions Seq { get; set; }
 }
 
 public sealed class ConsoleSinkOptions
 {
-	public string OutputTemplate { get; set; } = default!;
+    /// <summary>
+    ///     Template to display log messages to the console.
+    /// </summary>
+    public string OutputTemplate { get; set; }
 }
 
 public sealed class SeqSinkOptions
 {
-	public string ServerUrl { get; set; } = default!;
+    /// <summary>
+    ///     Server address for centralized logging.
+    /// </summary>
+    public string ServerUrl { get; set; }
 }

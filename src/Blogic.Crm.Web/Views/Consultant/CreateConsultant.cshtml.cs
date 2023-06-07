@@ -13,6 +13,11 @@ public sealed class ConsultantCreateViewModel
 		ValidationException = validationException;
 	}
 
+	public ConsultantCreateViewModel(ConsultantInput consultant) : this()
+	{
+		Consultant = consultant;
+	}
+
 	public ConsultantInput Consultant { get; set; }
 	public ValidationException ValidationException { get; set; }
 }

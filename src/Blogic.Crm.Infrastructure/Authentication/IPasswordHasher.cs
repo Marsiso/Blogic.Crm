@@ -1,22 +1,22 @@
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-///     Password hashing provider abstraction.
+///     An abstraction of a password hashing intermediary.
 /// </summary>
 public interface IPasswordHasher
 {
 	/// <summary>
-	///     Hashes provided password.
+	///     Encrypts passwords with randomly generated salt.
 	/// </summary>
-	/// <param name="password">Provided password to be hashed.</param>
-	/// <returns>Password's hash.</returns>
+	/// <param name="password">Password to be encrypted.</param>
+	/// <returns>Encrypted password.</returns>
 	string HashPassword(ReadOnlySpan<char> password);
 
 	/// <summary>
-	///     Compares password and its password hash.
+	///     Validates the password against its hash.
 	/// </summary>
-	/// <param name="password">Provided password to be verified.</param>
-	/// <param name="passwordHash">Provided password hash to be password verified against.</param>
-	/// <returns>Success - If the password matches its hash. False - Otherwise.</returns>
+	/// <param name="password">The password to be verified.</param>
+	/// <param name="passwordHash">The password hash against which the password will be validated.</param>
+	/// <returns>Success when the password matches its encrypted counterpart, otherwise false.</returns>
 	PasswordVerificationResult VerifyPassword(ReadOnlySpan<char> password, ReadOnlySpan<char> passwordHash);
 }

@@ -1,7 +1,7 @@
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-///     Installer for the routing, controller and view related services.
+///     Installer services that are related to routing, controllers, and views.
 /// </summary>
 public sealed class RouteServiceInstaller : IServiceInstaller
 {

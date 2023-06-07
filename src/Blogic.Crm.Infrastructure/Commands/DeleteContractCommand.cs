@@ -1,32 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace Blogic.Crm.Infrastructure.Commands;
 
-namespace Blogic.Crm.Infrastructure.Commands;
-
+/// <summary>
+///     The command to remove the contract from the database.
+/// </summary>
+/// <param name="Entity"></param>
 public sealed record DeleteContractCommand(Entity Entity) : ICommand<Unit>;
 
 public sealed class DeleteContractCommandHandler : ICommandHandler<DeleteContractCommand, Unit>
 {
-	private readonly DataContext _dataContext;
+    private readonly DataContext _dataContext;
 
-	public DeleteContractCommandHandler(DataContext dataContext)
-	{
-		_dataContext = dataContext;
-	}
+    public DeleteContractCommandHandler(DataContext dataContext)
+    {
+        _dataContext = dataContext;
+    }
 
-	public async Task<Unit> Handle(DeleteContractCommand request, CancellationToken cancellationToken)
-	{
-		// Retrieve the persisted contract using the provided ID.
-		var contractEntity = await _dataContext.Contracts
-		                                       .AsTracking()
-		                                       .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
+    public async Task<Unit> Handle(DeleteContractCommand request, CancellationToken cancellationToken)
+    {
+        // Get the contract from the database.
+        var contractEntity = await _dataContext.Contracts
+            .AsTracking()
+            .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
 
-		// When the contract isn't persisted then take no action and return else delete the persisted consultant.
-		if (contractEntity != null)
-		{
-			_dataContext.Contracts.Remove(contractEntity);
-			await _dataContext.SaveChangesAsync(cancellationToken);
-		}
+        // If the contract is not found, do not perform any action and return,
+        // otherwise remove the client from the database and save the changes.
+        if (contractEntity is null) return Unit.Value;
 
-		return Unit.Value;
-	}
+        _dataContext.Contracts.Remove(contractEntity);
+        await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
+    }
 }

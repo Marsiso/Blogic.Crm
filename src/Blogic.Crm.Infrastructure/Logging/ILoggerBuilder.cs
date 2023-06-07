@@ -9,14 +9,12 @@ namespace Blogic.Crm.Infrastructure.Logging;
 public interface ILoggerBuilder
 {
     /// <summary>
-    ///     Creates application logger instance. Used for the general purposes.
+    ///     Creates an instance of the application logger. It is used for general purposes.
     /// </summary>
-    /// <returns>Application logger instance.</returns>
     Logger CreateLogger();
 
     /// <summary>
-    ///     Creates application logger instance for the application bootstrapping process.
+    ///     Creates an instance of the application logger. It is used for application bootstrapping purposes.
     /// </summary>
-    /// <returns>Application bootstrapping logger instance.</returns>
     ReloadableLogger CreateBootstrapLogger();
 }

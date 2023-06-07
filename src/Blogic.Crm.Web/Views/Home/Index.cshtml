@@ -2,5 +2,65 @@
     ViewData["Title"] = "Home Page";
 }
 
-<h1 class="display- mt-4">Welcome</h1>
-<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<nav aria-label="breadcrumb mt-4 mb-5">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home</li>
+    </ol>
+</nav>
+
+<h1 class="display- mt-4">Welcome to the contract manager</h1>
+
+<div id="index-carousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#index-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#index-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#index-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#index-carousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    <button type="button" data-bs-target="#index-carousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="img/client/client-get-all-min.png" class="d-block w-100" alt="Consultant management panel">
+       <div class="carousel-caption d-none d-md-block bg-light opacity-75">
+          <h5>Client dashboard</h5>
+          <p>A page for managing users by an administrator or user account manager.</p>
+        </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/client/client-get-min.png" class="d-block w-100" alt="Contract details">
+      <div class="carousel-caption d-none d-md-block bg-light opacity-75">
+        <h5>Client details</h5>
+        <p>A page displaying user details by an administrator or user account manager.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/client/client-create-min.png" class="d-block w-100" alt="Create contract form">
+      <div class="carousel-caption d-none d-md-block bg-light opacity-75">
+        <h5>Create client form</h5>
+        <p>A page for user registration by an administrator or user account manager.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/client/client-update-min.png" class="d-block w-100" alt="Create contract form">
+      <div class="carousel-caption d-none d-md-block bg-light opacity-75">
+        <h5>Update client form</h5>
+        <p>A page for updating a user by an administrator or user account manager.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/client/client-delete-min.png" class="d-block w-100" alt="Create contract form">
+      <div class="carousel-caption d-none d-md-block bg-light opacity-75">
+        <h5>Delete client</h5>
+        <p>Prompt for deleting a user by an administrator or user account manager..</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#index-carousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#index-carousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>

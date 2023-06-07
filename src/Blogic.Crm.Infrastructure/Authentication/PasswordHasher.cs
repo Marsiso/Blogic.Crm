@@ -5,64 +5,81 @@ using System.Text;
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-///     Password hashing provider that uses PBKDF2 key derivation and randomly generated salt.
+///     A password hashing provider that uses PBKDF2 key derivation and a randomly generated salt.
 /// </summary>
 public sealed class PasswordHasher : IPasswordHasher
 {
-	private const int KeySize = 32;
-	private const int SaltSize = 16;
-	private const int Cycles = 1_572_864;
-	private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
+    /// <summary>
+    ///     Key size in bytes.
+    /// </summary>
+    private const int KeySize = 32;
 
-	public string HashPassword(ReadOnlySpan<char> password)
-	{
-		Debug.Assert(!password.IsEmpty);
-		Debug.Assert(!password.IsWhiteSpace());
+    /// <summary>
+    ///     Salt size in bytes.
+    /// </summary>
+    private const int SaltSize = 16;
 
-		// Encode the provided password. 
-		Span<byte> passwordBytes = stackalloc byte[password.Length];
-		Encoding.UTF8.GetBytes(password, passwordBytes);
+    /// <summary>
+    ///     Number of cycles performed by the algorithm during key derivation.
+    /// </summary>
+    private const int Cycles = 1_572_864;
 
-		// Generate random salt.
-		Span<byte> salt = stackalloc byte[SaltSize];
-		RandomNumberGenerator.Fill(salt);
+    /// <summary>
+    ///     A separator used to store a key including the salt used in its derivation for storage purposes.
+    /// </summary>
+    private const char Separator = ';';
 
-		// Derive key from the encoded password and salt.
-		Span<byte> key = stackalloc byte[KeySize];
-		Rfc2898DeriveBytes.Pbkdf2(passwordBytes, salt, key, Cycles, Algorithm);
+    /// <summary>
+    ///     Type of algorithm used for key derivation.
+    /// </summary>
+    private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
 
-		// Return derived key and salt separated by the delimiter.
-		return $"{Convert.ToBase64String(key)};{Convert.ToBase64String(salt)}";
-	}
+    public string HashPassword(ReadOnlySpan<char> password)
+    {
+        Debug.Assert(!password.IsEmpty);
+        Debug.Assert(!password.IsWhiteSpace());
 
-	public PasswordVerificationResult VerifyPassword(ReadOnlySpan<char> password, ReadOnlySpan<char> passwordHash)
-	{
-		Debug.Assert(!password.IsEmpty);
-		Debug.Assert(!password.IsWhiteSpace());
-		Debug.Assert(!passwordHash.IsEmpty);
-		Debug.Assert(!passwordHash.IsWhiteSpace());
+        // Encode password. 
+        Span<byte> passwordBytes = stackalloc byte[password.Length];
+        Encoding.UTF8.GetBytes(password, passwordBytes);
 
-		// Encode the provided password. 
-		Span<byte> passwordBytes = stackalloc byte[password.Length];
-		Encoding.UTF8.GetBytes(password, passwordBytes);
+        // Generate random salt.
+        Span<byte> salt = stackalloc byte[SaltSize];
+        RandomNumberGenerator.Fill(salt);
 
-		// Separate derived key and salt using the delimiter.
-		var delimiter = passwordHash.IndexOf(';');
-		if (delimiter == -1)
-		{
-			throw new FormatException("Password hash has no delimiter");
-		}
+        // Derive key.
+        Span<byte> key = stackalloc byte[KeySize];
+        Rfc2898DeriveBytes.Pbkdf2(passwordBytes, salt, key, Cycles, Algorithm);
 
-		var passwordHashKey = Convert.FromBase64String(passwordHash[..delimiter++].ToString());
-		var passwordHashSalt = Convert.FromBase64String(passwordHash[delimiter..].ToString());
+        // Return the key including the salt used to derive the key.
+        return $"{Convert.ToBase64String(key)};{Convert.ToBase64String(salt)}";
+    }
 
-		// Derive key using the encoded password and salt. 
-		Span<byte> key = stackalloc byte[KeySize];
-		Rfc2898DeriveBytes.Pbkdf2(passwordBytes, passwordHashSalt, key, Cycles, Algorithm);
+    public PasswordVerificationResult VerifyPassword(ReadOnlySpan<char> password, ReadOnlySpan<char> passwordHash)
+    {
+        Debug.Assert(!password.IsEmpty);
+        Debug.Assert(!password.IsWhiteSpace());
+        Debug.Assert(!passwordHash.IsEmpty);
+        Debug.Assert(!passwordHash.IsWhiteSpace());
 
-		// Compare derived key with the derived key contained within password hash in fixed time interval.
-		return CryptographicOperations.FixedTimeEquals(key, passwordHashKey)
-			? PasswordVerificationResult.Success
-			: PasswordVerificationResult.Fail;
-	}
+        // Encode password. 
+        Span<byte> passwordBytes = stackalloc byte[password.Length];
+        Encoding.UTF8.GetBytes(password, passwordBytes);
+
+        // Separate the key and salt using the separator.
+        var delimiter = passwordHash.IndexOf(Separator);
+        if (delimiter == -1) throw new FormatException("Hash does not contain a key and salt separator.");
+
+        var passwordHashKey = Convert.FromBase64String(passwordHash[..delimiter++].ToString());
+        var passwordHashSalt = Convert.FromBase64String(passwordHash[delimiter..].ToString());
+
+        // Derive key. 
+        Span<byte> key = stackalloc byte[KeySize];
+        Rfc2898DeriveBytes.Pbkdf2(passwordBytes, passwordHashSalt, key, Cycles, Algorithm);
+
+        // Compare key derivation and encrypted password at fixed time intervals
+        return CryptographicOperations.FixedTimeEquals(key, passwordHashKey)
+            ? PasswordVerificationResult.Success
+            : PasswordVerificationResult.Fail;
+    }
 }

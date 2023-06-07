@@ -11,11 +11,11 @@ namespace Blogic.Crm.Web.Persistence;
 /// </summary>
 public sealed class DatabaseSeeder : IDisposable
 {
-	public const int GeneratedClientsCount = 1000;
+	public const int GeneratedClientsCount = 1_000;
 
-	public const int GeneratedConsultantsCount = 200;
+	public const int GeneratedConsultantsCount = 500;
 
-	public const int GeneratedContractsCount = 5000;
+	public const int GeneratedContractsCount = 10_000;
 
 	public const int GeneratedContractConsultantsUpperBound = 10;
 
@@ -73,9 +73,9 @@ public sealed class DatabaseSeeder : IDisposable
 			PasswordHash = passwordHash,
 			Email = email,
 			NormalizedEmail = _emailNormalizer.Normalize(email)!,
-			IsEmailConfirmed = true,
+			IsEmailConfirmed = Convert.ToBoolean(RandomNumber.Next(0, 1)),
 			Phone = _phoneNormalizer.Normalize(phone)!,
-			IsPhoneConfirmed = true,
+			IsPhoneConfirmed = Convert.ToBoolean(RandomNumber.Next(0, 1)),
 			DateBorn = Identification.DateOfBirth(),
 			BirthNumber = $"{dateBorn:yyMMdd}/{RandomNumber.Next(0, 9999):D4}",
 			SecurityStamp = _securityStampProvider.GenerateSecurityStamp()
@@ -95,9 +95,9 @@ public sealed class DatabaseSeeder : IDisposable
 			PasswordHash = passwordHash,
 			Email = email,
 			NormalizedEmail = _emailNormalizer.Normalize(email)!,
-			IsEmailConfirmed = true,
+			IsEmailConfirmed = Convert.ToBoolean(RandomNumber.Next(0, 1)),
 			Phone = _phoneNormalizer.Normalize(phone)!,
-			IsPhoneConfirmed = true,
+			IsPhoneConfirmed = Convert.ToBoolean(RandomNumber.Next(0, 1)),
 			DateBorn = Identification.DateOfBirth(),
 			BirthNumber = $"{dateBorn:yyMMdd}/{RandomNumber.Next(0, 9999):D4}",
 			SecurityStamp = _securityStampProvider.GenerateSecurityStamp()

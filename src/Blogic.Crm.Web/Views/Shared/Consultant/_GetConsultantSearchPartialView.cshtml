@@ -30,11 +30,24 @@
                min="1"
                class="form-control">
     </div>
-
     <div class="col-md-4">
         <label asp-for="@Model.GivenName" class="form-label">Given name</label>
         <input type="search"
                asp-for="@Model.GivenName"
+               maxlength="256"
+               class="form-control">
+    </div>
+    <div class="col-md-4">
+        <label asp-for="@Model.Email" class="form-label">Email address</label>
+        <input type="email"
+               asp-for="@Model.Email"
+               maxlength="256"
+               class="form-control">
+    </div>
+    <div class="col-md-4">
+        <label asp-for="@Model.Phone" class="form-label">Phone number</label>
+        <input type="tel"
+               asp-for="@Model.Phone"
                maxlength="256"
                class="form-control">
     </div>
@@ -47,34 +60,18 @@
                class="form-control">
     </div>
 
-    <div class="col-md-4">
-        <label asp-for="@Model.Email" class="form-label">Email address</label>
-        <input type="email"
-               asp-for="@Model.Email"
-               maxlength="256"
-               class="form-control">
-    </div>
-
-    <div class="col-md-4">
-        <label asp-for="@Model.IsEmailConfirmed" class="form-label">Email address confirmed</label>
+    <div class="col-md-4 check-box-dark">
         <input type="checkbox"
                asp-for="@Model.IsEmailConfirmed"
-               class="form-control">
+               class="form-check-input">
+        <label asp-for="@Model.IsEmailConfirmed" class="form-check-label">Email address confirmed</label>
     </div>
 
-    <div class="col-md-4">
-        <label asp-for="@Model.Phone" class="form-label">Phone number</label>
-        <input type="tel"
-               asp-for="@Model.Phone"
-               maxlength="256"
-               class="form-control">
-    </div>
-
-    <div class="col-md-4">
-        <label asp-for="@Model.IsPhoneConfirmed" class="form-label">Phone number confirmed</label>
+    <div class="col-md-4 check-box-dark">
         <input type="checkbox"
                asp-for="@Model.IsPhoneConfirmed"
-               class="form-control">
+               class="form-check-input">
+        <label asp-for="@Model.IsPhoneConfirmed" class="form-check-label">Phone number confirmed</label>
     </div>
 
     <div class="col-md-4">

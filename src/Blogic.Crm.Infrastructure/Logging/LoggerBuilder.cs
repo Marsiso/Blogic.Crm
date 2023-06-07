@@ -11,72 +11,69 @@ namespace Blogic.Crm.Infrastructure.Logging;
 /// </summary>
 public sealed class LoggerBuilder : ILoggerBuilder
 {
-	public readonly LoggerConfiguration LoggerConfiguration;
+    /// <summary>
+    ///     Logging service provider configuration.
+    /// </summary>
+    public readonly LoggerConfiguration LoggerConfiguration;
 
-	public LoggerBuilder()
-	{
-		LoggerConfiguration = new LoggerConfiguration();
-	}
+    public LoggerBuilder()
+    {
+        LoggerConfiguration = new LoggerConfiguration();
+    }
 
-	public Logger CreateLogger()
-	{
-		return LoggerConfiguration.CreateLogger();
-	}
+    public Logger CreateLogger()
+    {
+        return LoggerConfiguration.CreateLogger();
+    }
 
-	public ReloadableLogger CreateBootstrapLogger()
-	{
-		return LoggerConfiguration.CreateBootstrapLogger();
-	}
+    public ReloadableLogger CreateBootstrapLogger()
+    {
+        return LoggerConfiguration.CreateBootstrapLogger();
+    }
 
     /// <summary>
-    ///     Adds the logging to the console sink.
+    ///     Adds support for logging to the console.
     /// </summary>
-    /// <param name="options">Options used to configure the console sink.</param>
-    /// <returns>The application logger builder instance that is being configured.</returns>
-    public LoggerConfiguration AddConsole(ConsoleSinkOptions options)
-	{
-		Debug.Assert(options != null);
-		Debug.Assert(!string.IsNullOrEmpty(options.OutputTemplate));
+    public void AddConsole(ConsoleSinkOptions options)
+    {
+        Debug.Assert(options != null);
+        Debug.Assert(!string.IsNullOrEmpty(options.OutputTemplate));
 
-		return LoggerConfiguration.WriteTo.Console(outputTemplate: options.OutputTemplate);
-	}
+        LoggerConfiguration.WriteTo.Console(outputTemplate: options.OutputTemplate);
+    }
 
     /// <summary>
-    ///     Adds the logging to the Seq sink.
+    ///     Adds support for logging to the Seq.
     /// </summary>
-    /// <param name="options">Options used to configure the Seq sink.</param>
-    /// <returns>The application logger builder instance that is being configured.</returns>
-    public LoggerConfiguration AddSeq(SeqSinkOptions options)
-	{
-		Debug.Assert(options != null);
-		Debug.Assert(Uri.IsWellFormedUriString(options.ServerUrl, UriKind.Absolute));
+    public void AddSeq(SeqSinkOptions options)
+    {
+        Debug.Assert(options != null);
+        Debug.Assert(Uri.IsWellFormedUriString(options.ServerUrl, UriKind.Absolute));
 
-		return LoggerConfiguration.WriteTo.Seq(options.ServerUrl);
-	}
+        LoggerConfiguration.WriteTo.Seq(options.ServerUrl);
+    }
 
     /// <summary>
-    ///     Adds an additional data to logs.
+    ///     Adds additional data to the logs.
     /// </summary>
-    /// <returns>The application logger builder instance that is being configured.</returns>
-    public LoggerConfiguration AddEnriches()
-	{
-		return LoggerConfiguration.Enrich.WithProcessId()
-		                          .Enrich.WithProcessName()
-		                          .Enrich.WithThreadId()
-		                          .Enrich.WithThreadName()
-		                          .Enrich.WithEnvironmentName()
-		                          .Enrich.WithEnvironmentUserName()
-		                          .Enrich.WithMachineName()
-		                          .Enrich.FromLogContext();
-	}
+    public void AddEnriches()
+    {
+        LoggerConfiguration.Enrich.WithProcessId()
+            .Enrich.WithProcessName()
+            .Enrich.WithThreadId()
+            .Enrich.WithThreadName()
+            .Enrich.WithEnvironmentName()
+            .Enrich.WithEnvironmentUserName()
+            .Enrich.WithMachineName()
+            .Enrich.FromLogContext();
+    }
 
     /// <summary>
-    ///     Overrides minimal logging levels for selected sources.
+    ///     Resets the minimum log severity levels for selected sources.
     /// </summary>
-    /// <returns>The application logger builder instance that is being configured.</returns>
     public LoggerConfiguration OverrideMinimumLevels()
-	{
-		return LoggerConfiguration.MinimumLevel.Override("System", LogEventLevel.Warning)
-		                          .MinimumLevel.Override("Microsoft", LogEventLevel.Warning);
-	}
+    {
+        return LoggerConfiguration.MinimumLevel.Override("System", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning);
+    }
 }

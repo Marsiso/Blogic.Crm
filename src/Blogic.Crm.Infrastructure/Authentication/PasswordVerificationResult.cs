@@ -1,10 +1,10 @@
 namespace Blogic.Crm.Infrastructure.Authentication;
 
 /// <summary>
-///     Password verification results.
+///     Type of key verification result.
 /// </summary>
 public enum PasswordVerificationResult
 {
-	Success = 1,
-	Fail = 2
+    Success = 1,
+    Fail = 2
 }

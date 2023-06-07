@@ -1,15 +1,10 @@
-﻿using System.Globalization;
-using System.Net.Mime;
-using Blogic.Crm.Web.Views.Consultant;
-using CsvHelper;
-using Microsoft.AspNetCore.Mvc;
-using Serilog;
+﻿using Blogic.Crm.Web.Views.Consultant;
 using static Blogic.Crm.Domain.Data.Entities.User;
 
 namespace Blogic.Crm.Web.Controllers;
 
 /// <summary>
-///     Controller that handles requests related to the <see cref="Consultant" /> entity.
+///     A controller that handles requests that are related to the contract consultants.
 /// </summary>
 public sealed class ConsultantController : Controller
 {
@@ -21,11 +16,8 @@ public sealed class ConsultantController : Controller
 	}
 
 	/// <summary>
-	///     Gets the consultant dashboard panel with the default consultant data set.
+	///     Returns a view with the consultant management panel.
 	/// </summary>
-	/// <param name="queryString"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Consultant.GetAll)]
 	[HttpPost(Routes.Consultant.GetAll)]
 	[IgnoreAntiforgeryToken]
@@ -34,30 +26,28 @@ public sealed class ConsultantController : Controller
 	{
 		try
 		{
-			// Retrieve paginated consultant representation for the view model.
-			GetConsultantRepresentationsQuery query = new(queryString);
+			// Retrieving consultants from the database.
+			GetConsultantsQuery query = new(queryString);
 			var paginatedConsultants = await _sender.Send(query, cancellationToken);
 
-			// Build the view model and return in to the client.
+			// Response to request.
 			return View(new GetConsultantsViewModel { Consultants = paginatedConsultants, QueryString = queryString });
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
 			          nameof(GetConsultants));
 
-			return RedirectToAction(nameof(Index), "Home", new { });
+			return RedirectToAction(nameof(Index), "Home");
 		}
 	}
 
 	/// <summary>
-	///     Gets the consultant details, owned contracts and related data.
+	///     Returns a view with the contract details.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Consultant.Get)]
 	[HttpPost(Routes.Consultant.Get)]
 	[IgnoreAntiforgeryToken]
@@ -65,31 +55,36 @@ public sealed class ConsultantController : Controller
 	{
 		try
 		{
+			// Represents an identifiable entity in the database.
 			var entity = new Entity { Id = id };
 			
-			// Retrieve the consultant with provided ID.
+			// Retrieving client from the database.
 			GetConsultantQuery query = new(entity, false);
 			var consultantEntity = await _sender.Send(query, cancellationToken);
 
-			// Build the view model and return in to the consultant.
+			// When the consultant is not found then respond to the request.
 			if (consultantEntity == null)
 			{
 				return View(new GetConsultantViewModel());
 			}
 			
-			// Retrieve the owned contracts by client with provided ID.
-			GetManagedContractsQuery managedContractsQuery = new(entity);
-			var managedContracts = await _sender.Send(managedContractsQuery, cancellationToken);
+			// Retrieving managed contracts from the database.
+			GetContractsManagedQuery contractsManagedQuery = new(entity);
+			var managedContracts = await _sender.Send(contractsManagedQuery, cancellationToken);
 			
-			// Retrieve the owned contracts by client with provided ID.
-			GetConsultedContractsQuery consultedContractsQuery = new(entity);
-			var consultedContracts = await _sender.Send(consultedContractsQuery, cancellationToken);		
+			// Retrieving consulted contracts from the database.
+			GetContractsConsultedQuery contractsConsultedQuery = new(entity);
+			var consultedContracts = await _sender.Send(contractsConsultedQuery, cancellationToken);		
 
+			// Mapping consultant to the model to be exported.
 			var consultant = consultantEntity.Adapt<ConsultantRepresentation>();
+			
+			// Response to request.
 			return View(new GetConsultantViewModel(consultant, managedContracts, consultedContracts));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
@@ -100,24 +95,19 @@ public sealed class ConsultantController : Controller
 	}
 
 	/// <summary>
-	///     Gets the create consultant form with no data.
+	///     Returns a view with the consultant registration form.
 	/// </summary>
-	/// <returns></returns>
 	[HttpGet(Routes.Consultant.Create)]
 	public IActionResult CreateConsultant()
 	{
 		try
 		{
-			return View(new ConsultantCreateViewModel
-			{
-				Consultant = new ConsultantInput
-				{
-					DateBorn = MinimalDateBorn
-				}
-			});
+			// Response to request.
+			return View(new ConsultantCreateViewModel(new ConsultantInput(MinimalDateBorn)));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
@@ -128,12 +118,8 @@ public sealed class ConsultantController : Controller
 	}
 
 	/// <summary>
-	///     Handles the requests made by the create consultant form, either creates the consultant in the persistence store
-	///     or return the validation failures.
+	///     Returns a view with the consultant registration form and its validation failures if any.
 	/// </summary>
-	/// <param name="consultantInput"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Consultant.Create)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> CreateConsultant(
@@ -142,20 +128,21 @@ public sealed class ConsultantController : Controller
 	{
 		try
 		{
-			// Validate and create the consultant in the persistence store.
+			// Create a consultant in the database.
 			var command = consultantInput.Adapt<CreateConsultantCommand>();
 			var entity = await _sender.Send(command, cancellationToken);
 
-			// If the consultant creation is successful then redirect user to the consultant details page. 
+			// If the consultant is successfully registered, display his details. 
 			return RedirectToAction("GetConsultant", "Consultant", new { entity.Id });
 		}
 		catch (ValidationException exception)
 		{
-			// If there are any validation failures then return them with the create consultant form data.
+			// In case of validation errors in the consultant registration form, return the form with validation errors.
 			return View(nameof(CreateConsultant), new ConsultantCreateViewModel(consultantInput, exception));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
@@ -166,139 +153,135 @@ public sealed class ConsultantController : Controller
 	}
 
 	/// <summary>
-	///     Gets the update consultant form with no data.
+	///     Returns a view with the consultant update form.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Consultant.Update)]
 	public async Task<IActionResult> UpdateConsultant(long id, CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Retrieve the consultant with the provided ID.
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Retrieving client from the database.
 			GetConsultantQuery query = new(entity, false);
 			var consultantEntity = await _sender.Send(query, cancellationToken);
 
-			// Build the view model and return in to the consultant.
-			if (consultantEntity == null)
+			// When the consultant is not found then respond to the request with redirect to the consultant management panel.
+			if (consultantEntity is null)
 			{
 				return RedirectToAction(nameof(GetConsultants), new { });
 			}
 
+			// Mapping consultant to the model to be exported.
 			var consultant = consultantEntity.Adapt<ConsultantInput>();
+			
+			// Response to request.
 			return View(new ConsultantUpdateViewModel(id, consultant));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
 			          nameof(UpdateConsultant));
 
-			return RedirectToAction(nameof(GetConsultant), new { entity.Id });
+			return RedirectToAction(nameof(GetConsultants));
 		}
 	}
 
 	/// <summary>
-	///     Handles requests made by the update consultant form, either updates the persisted consultant
-	///     or returns the update consultant form with validation failures.
+	///     Returns a view with the consultant update form and its validation failures if any.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="consultantInput"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Consultant.Update)]
+	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> UpdateConsultant(long id,
 	                                                  [Bind(Prefix = nameof(ConsultantCreateViewModel.Consultant))]
 	                                                  ConsultantInput consultantInput,
 	                                                  CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Get consultant.
-			var command = consultantInput.Adapt<UpdateConsultantCommand>() with { Id = id };
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Update consultant in the database.
+			var command = consultantInput.Adapt<UpdateConsultantCommand>() with { Entity = entity };
 			await _sender.Send(command, cancellationToken);
 
-			// Build the view model and return in to the consultant.
+			// If the consultant is successfully updated, display his details.
 			return RedirectToAction(nameof(GetConsultant), new { entity.Id });
 		}
 		catch (ValidationException validationException)
 		{
-			// If there are any consultant model validation failures then include them with the form data in the view model.
+			// In case of validation errors in the consultant update form, return the form with validation errors.
 			return View(new ConsultantUpdateViewModel(id, consultantInput, validationException));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
 			          nameof(UpdateConsultant));
 
-			return RedirectToAction(nameof(GetConsultant), new { entity.Id });
+			return RedirectToAction(nameof(GetConsultants));
 		}
 	}
 
 	/// <summary>
-	///     Handles the deletion of persisted consultant.
+	///     Handles the form for deleting consultants in the database.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Consultant.Delete)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteConsultant(long id, CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Delete the persisted consultant.
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Delete the consultant in the database.
 			DeleteConsultantCommand command = new(entity);
 			await _sender.Send(command, cancellationToken);
 
-			// Redirect user to the consultant dashboard panel page.
+			// If the consultant is successfully deleted, display the consultant management panel.
 			return RedirectToAction(nameof(GetConsultants));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ConsultantController),
 			          nameof(DeleteConsultant));
 
-			return RedirectToAction(nameof(GetConsultant), new { entity.Id });
+			return RedirectToAction(nameof(GetConsultants));
 		}
 	}
 
 	/// <summary>
-	///     Handles requests made by the export to CSV file form.
+	///     Handles the form for exporting consultant records to CSV.
 	/// </summary>
-	/// <param name="queryString"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Consultant.Export)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> ExportConsultants(ConsultantQueryString queryString, CancellationToken cancellationToken)
 	{
 		try
 		{
-			// Retrieve sorted, filtered and ordered consultant data set.
-			GetConsultantRowsQuery query = new(queryString);
+			// Retrieving consultants from the database.
+			GetConsultantsToExportQuery query = new(queryString);
 			var consultantRows = await _sender.Send(query, cancellationToken);
 
-			// Data set transformation. 
+			// Export data set to CSV file. 
 			var content = new MemoryStream();
 			await using StreamWriter streamWriter = new(content);
 			await using var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
 			await csvWriter.WriteRecordsAsync(consultantRows, cancellationToken);
 
-			// Return the requested data as CSV file.
+			// Return the requested file.
 			return File(content.GetBuffer(), MediaTypeNames.Application.Octet, "consultants.csv");
 
 		}

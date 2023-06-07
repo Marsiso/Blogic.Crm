@@ -8,7 +8,7 @@
 <nav aria-label="breadcrumb mt-4 mb-5">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a asp-action="GetContracts">Contracts</a>
+            <a class="link-dark" asp-action="GetContracts">Contracts</a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Contract</li>
     </ol>
@@ -20,7 +20,12 @@
 
 <h2 class="mt-5">Owner</h2>
 <p>
-    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-owner-account" aria-expanded="false" aria-controls="collapseExample">
+    <button class="btn btn-outline-dark"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#toggle-owner-account"
+            aria-expanded="false"
+            aria-controls="collapseExample">
         Detail
     </button>
 </p>
@@ -32,11 +37,38 @@
 
 <h2 class="mt-5">Manager</h2>
 <p>
-    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-manager-account" aria-expanded="false" aria-controls="collapseExample">
+    <button class="btn btn-outline-dark"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#toggle-manager-account"
+            aria-expanded="false"
+            aria-controls="collapseExample">
         Detail
     </button>
 </p>
 
 <div class="collapse" id="toggle-manager-account">
-    @await Html.PartialAsync("Consultant/_GetConsultantPartial", Model.Consultant)
+    @await Html.PartialAsync("Consultant/_GetConsultantPartial", Model.Manager)
 </div>
+
+<h2 class="mt-5">Consultants</h2>
+ @if (Model.Consultants is not null)
+ {
+     <p>
+         <button class="btn btn-outline-dark"
+                 type="button"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#toggle-consultant-accounts"
+                 aria-expanded="false"
+                 aria-controls="collapseExample">
+             Detail
+         </button>
+     </p>
+
+     <div class="collapse" id="toggle-consultant-accounts">
+         @foreach (var consultant in Model.Consultants)
+         {
+             @await Html.PartialAsync("Consultant/_GetConsultantPartial", consultant)
+         }
+     </div>
+ }

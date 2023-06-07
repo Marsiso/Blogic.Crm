@@ -1,7 +1,6 @@
 using Blogic.Crm.Infrastructure.Logging;
 using Blogic.Crm.Web.Installers;
 using Blogic.Crm.Web.Persistence;
-using Serilog;
 
 #region Serilog
 

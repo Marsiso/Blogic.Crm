@@ -3,7 +3,7 @@ using Blogic.Crm.Infrastructure.Authentication;
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-///     Installer to the authentication related services.
+///     Installer of services related to user account management, authentication and authorization.
 /// </summary>
 public sealed class AuthServiceInstaller : IServiceInstaller
 {

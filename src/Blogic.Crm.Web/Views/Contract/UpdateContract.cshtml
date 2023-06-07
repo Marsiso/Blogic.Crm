@@ -1,5 +1,4 @@
-﻿@using Humanizer
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static Contract
 @model Blogic.Crm.Web.Views.Contract.UpdateContractViewModel
 
@@ -38,6 +37,10 @@
                              validationFailures.ContainsKey(nameof(contract.DateExpired)) &&
                              validationFailures[nameof(contract.DateExpired)].Length > 0;
     
+    var invalidConsultantIds = hasValidationFailures &&
+                               validationFailures.ContainsKey(nameof(contract.ConsultantIds)) &&
+                               validationFailures[nameof(contract.ConsultantIds)].Length > 0;
+    
     string ValidationCssClass(bool hasValidationFailure, bool hasInvalidProperty)
     {
         return hasValidationFailure
@@ -51,7 +54,7 @@
 <nav aria-label="breadcrumb mt-4 mb-5">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a asp-controller="Contract" asp-action="GetContracts">Contract</a>
+            <a class="link-dark" asp-controller="Contract" asp-action="GetContracts">Contract</a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Create</li>
     </ol>
@@ -65,7 +68,7 @@
       asp-antiforgery="true"
       class="row g-3 needs-validation">
     <div class="col-md-4">
-        <label asp-for="@contract.ClientId" class="form-label">@nameof(contract.ClientId).Humanize()</label>
+        <label asp-for="@contract.ClientId" class="form-label">Client identifier</label>
         <input type="number"
                class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.ClientId"
@@ -86,7 +89,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.ManagerId" class="form-label">@nameof(contract.ManagerId).Humanize()</label>
+        <label asp-for="@contract.ManagerId" class="form-label">Manager identifier</label>
         <input type="number"
                class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.ManagerId"
@@ -107,7 +110,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.RegistrationNumber" class="form-label">@nameof(contract.RegistrationNumber).Humanize()</label>
+        <label asp-for="@contract.RegistrationNumber" class="form-label">Registration number</label>
         <input type="text"
                class="@ValidationCssClass(hasValidationFailures, invalidClientId)"
                asp-for="@contract.RegistrationNumber"
@@ -130,7 +133,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.Institution" class="form-label">@nameof(contract.Institution).Humanize()</label>
+        <label asp-for="@contract.Institution" class="form-label">Institution</label>
         <input type="text"
                class="@ValidationCssClass(hasValidationFailures, invalidInstitution)"
                asp-for="@contract.Institution"
@@ -151,7 +154,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.DateConcluded" class="form-label">@nameof(contract.DateConcluded).Humanize()</label>
+        <label asp-for="@contract.DateConcluded" class="form-label">Conclusion date</label>
         <input type="date"
                class="@ValidationCssClass(hasValidationFailures, invalidDateConcluded)"
                asp-for="@contract.DateConcluded"
@@ -172,7 +175,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.DateValid" class="form-label">@nameof(contract.DateValid).Humanize()</label>
+        <label asp-for="@contract.DateValid" class="form-label">Validity date</label>
         <input type="date"
                class="@ValidationCssClass(hasValidationFailures, invalidDateValid)"
                asp-for="@contract.DateValid"
@@ -193,7 +196,7 @@
         }
     </div>
     <div class="col-md-4">
-        <label asp-for="@contract.DateExpired" class="form-label">@nameof(contract.DateExpired).Humanize()</label>
+        <label asp-for="@contract.DateExpired" class="form-label">Expiration date</label>
         <input type="date"
                class="@ValidationCssClass(hasValidationFailures, invalidDateExpired)"
                asp-for="@contract.DateExpired"
@@ -211,6 +214,26 @@
         else
         {
             <div class="form-text">The date of expiration of the contract.</div>
+        }
+    </div>
+    <div class="col-md-12">
+        <label asp-for="@contract.ConsultantIds" class="form-label">Consultant identifiers</label>
+        <input type="text"
+               class="@ValidationCssClass(hasValidationFailures, invalidConsultantIds)"
+               asp-for="@contract.ConsultantIds"
+               pattern="^((\s*\d+\s*,)*(\s*\d+\s*,?\s*))?$">
+        @if (invalidConsultantIds)
+        {
+            <div class="invalid-feedback">
+                @foreach (var validationFailure in validationFailures[nameof(contract.ConsultantIds)])
+                {
+                    <p class="text-danger">@validationFailure</p>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="form-text">Type consultants IDs. Format '10000, 20000, 30000, ...'.</div>
         }
     </div>
     <div class="d-inline">

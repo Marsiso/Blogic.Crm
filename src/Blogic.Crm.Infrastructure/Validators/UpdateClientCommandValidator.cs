@@ -1,172 +1,153 @@
-using Blogic.Crm.Infrastructure.Commands;
-using Microsoft.EntityFrameworkCore;
 using static Blogic.Crm.Domain.Data.Entities.User;
-using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
-using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
 /// <summary>
-///     Model validation to be executed before the <see cref="UpdateClientCommand" /> command handler.
+///     Validations for the <see cref="UpdateClientCommand" /> command.
 /// </summary>
 public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClientCommand>
 {
-	private readonly DataContext _dataContext;
-	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
-	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
+    public UpdateClientCommandValidator(DataContext dataContext, IEmailLookupNormalizer emailNormalizer,
+        IPhoneLookupNormalizer phoneNormalizer)
+    {
+        #region GivenName
 
-	public UpdateClientCommandValidator(DataContext dataContext, IEmailLookupNormalizer emailLookupNormalizer,
-	                                    IPhoneLookupNormalizer phoneLookupNormalizer)
-	{
-		_dataContext = dataContext;
-		_emailLookupNormalizer = emailLookupNormalizer;
-		_phoneLookupNormalizer = phoneLookupNormalizer;
+        When(c => IsNotNullOrEmpty(c.GivenName), () =>
+        {
+            RuleFor(c => c.GivenName)
+                .MaximumLength(GivenNameMaximumLength)
+                .WithMessage($"Given name must be at most {GivenNameMaximumLength} characters long.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.GivenName)
+                .NotEmpty()
+                .WithMessage("Given name is required.");
+        });
 
-		When(c => IsNotNullOrEmpty(c.GivenName), () =>
-		{
-			RuleFor(c => c.GivenName)
-				.MaximumLength(GivenNameMaximumLength)
-				.WithMessage($"Client's given name must be at most {GivenNameMaximumLength} characters long.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.GivenName)
-				.NotEmpty()
-				.WithMessage("Client's given name is required.");
-		});
+        #endregion
 
-		When(c => IsNotNullOrEmpty(c.FamilyName), () =>
-		{
-			RuleFor(c => c.FamilyName)
-				.MaximumLength(FamilyNameMaximumLength)
-				.WithMessage($"Client's family name must be at most {FamilyNameMaximumLength} characters long.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.FamilyName)
-				.NotEmpty()
-				.WithMessage("Client's family name is required.");
-		});
+        #region FamilyName
 
-		When(c => IsNotNullOrEmpty(c.Email), () =>
-		{
-			RuleFor(c => c.Email)
-				.MaximumLength(EmailMaximumLength)
-				.WithMessage($"Client's email address must be at most {EmailMaximumLength} characters long.");
+        When(c => IsNotNullOrEmpty(c.FamilyName), () =>
+        {
+            RuleFor(c => c.FamilyName)
+                .MaximumLength(FamilyNameMaximumLength)
+                .WithMessage($"Family name must be at most {FamilyNameMaximumLength} characters long.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.FamilyName)
+                .NotEmpty()
+                .WithMessage("Family name is required.");
+        });
 
-			RuleFor(c => c.Email)
-				.EmailAddress()
-				.WithMessage("Client's email address format is invalid.");
+        #endregion
 
-			RuleFor(c => c.Email)
-				.Must((c, e) => EmailNotTaken(c.Id, e))
-				.WithMessage("Client's email address already taken.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.Email)
-				.NotEmpty()
-				.WithMessage("Client's email address is required.");
-		});
+        #region Email
 
-		When(c => IsNotNullOrEmpty(c.Phone), () =>
-		{
-			RuleFor(c => c.Phone)
-				.MaximumLength(PhoneMaximumLength)
-				.WithMessage($"Client's phone number must be at most {PhoneMaximumLength} characters long.");
+        When(c => IsNotNullOrEmpty(c.Email), () =>
+        {
+            RuleFor(c => c.Email)
+                .MaximumLength(EmailMaximumLength)
+                .WithMessage($"Email address must be at most {EmailMaximumLength} characters long.");
 
-			RuleFor(c => c.Phone)
-				.Must(IsPhoneNumber)
-				.WithMessage("Client's phone number format is invalid.");
+            RuleFor(c => c.Email)
+                .EmailAddress()
+                .WithMessage("Email address has invalid format.");
 
-			RuleFor(c => c.Phone)
-				.Must((c, p) => PhoneNotTaken(c.Id, p))
-				.WithMessage("Client's phone number already taken.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.Phone)
-				.NotEmpty()
-				.WithMessage("Client's phone number is required.");
-		});
+            RuleFor(c => c.Email)
+                .Must((client, email) => EmailNotTaken(client.Entity, email, dataContext, emailNormalizer))
+                .WithMessage("Email address already taken.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .WithMessage("Email address is required.");
+        });
 
-		When(c => IsNotNullOrEmpty(c.BirthNumber), () =>
-		{
-			RuleFor(c => c.BirthNumber)
-				.MaximumLength(BirthNumberMaximumLength)
-				.WithMessage($"Client's birth number must be at most {BirthNumberMaximumLength} characters long.");
+        #endregion
 
-			RuleFor(c => c.BirthNumber)
-				.Matches(@"[0-9]{6}[/]?[0-9]{4}")
-				.WithMessage("Client's birth number format is invalid.");
+        #region Phone
 
-			RuleFor(c => c.BirthNumber)
-				.Must((c, b) => BirthNumberNotTaken(c.Id, b))
-				.WithMessage("Client's birth number already taken.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.BirthNumber)
-				.NotEmpty()
-				.WithMessage("Client's birth number is required.");
-		});
+        When(c => IsNotNullOrEmpty(c.Phone), () =>
+        {
+            RuleFor(c => c.Phone)
+                .MaximumLength(PhoneMaximumLength)
+                .WithMessage($"Telephone number must be at most {PhoneMaximumLength} characters long.");
 
-		When(c => IsNotNullOrEmpty(c.Password), () =>
-		{
-			RuleFor(c => c.Password)
-				.Must(p => ContainSpecialCharacters(p, RequiredSpecialCharacters))
-				.WithMessage($"Password must contain at least {RequiredSpecialCharacters} special characters.");
+            RuleFor(c => c.Phone)
+                .Must(IsPhoneNumber)
+                .WithMessage("Telephone number has invalid format.");
 
-			RuleFor(c => c.Password)
-				.Must(p => ContainDigits(p, RequiredDigitCharacters))
-				.WithMessage($"Password must contain at least {RequiredDigitCharacters} special characters.");
+            RuleFor(c => c.Phone)
+                .Must((client, phone) => PhoneNotTaken(client.Entity, phone, dataContext, phoneNormalizer))
+                .WithMessage("Telephone number already taken.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.Phone)
+                .NotEmpty()
+                .WithMessage("Telephone number is required.");
+        });
 
-			RuleFor(c => c.Password)
-				.Must(p => ContainLowerCaseCharacters(p, RequiredLowerCaseCharacters))
-				.WithMessage($"Password must contain at least {RequiredLowerCaseCharacters} lower case characters.");
+        #endregion
 
-			RuleFor(c => c.Password)
-				.Must(p => ContainUpperCaseCharacters(p, RequiredUpperCaseCharacters))
-				.WithMessage($"Password must contain at least {RequiredUpperCaseCharacters} upper case characters.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.Password)
-				.NotEmpty()
-				.WithMessage("Password is required.");
-		});
+        #region BirthNumber
 
-		RuleFor(c => c.DateBorn)
-			.Must(db => IsLegalAge(db, AgeMinimumValue))
-			.WithMessage($"Client must be at least {AgeMinimumValue} years old.");
-	}
+        When(c => IsNotNullOrEmpty(c.BirthNumber), () =>
+        {
+            RuleFor(c => c.BirthNumber)
+                .MaximumLength(BirthNumberMaximumLength)
+                .WithMessage($"Birth number must be at most {BirthNumberMaximumLength} characters long.");
 
-	public bool EmailNotTaken(long id, string email)
-	{
-		var normalizedEmail = _emailLookupNormalizer.Normalize(email)!;
-		var client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.NormalizedEmail == normalizedEmail);
-		if (client == null)
-		{
-			return true;
-		}
+            RuleFor(c => c.BirthNumber)
+                .Matches(@"[0-9]{6}[/]?[0-9]{4}")
+                .WithMessage("Birth number has invalid format.");
 
-		return client.Id == id;
-	}
+            RuleFor(c => c.BirthNumber)
+                .Must((client, birthNumber) => BirthNumberNotTaken(client.Entity, birthNumber, dataContext))
+                .WithMessage("Birth number already taken.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.BirthNumber)
+                .NotEmpty()
+                .WithMessage("Birth number is required.");
+        });
 
-	public bool PhoneNotTaken(long id, string phone)
-	{
-		var normalizedPhone = _phoneLookupNormalizer.Normalize(phone)!;
-		var client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.Phone == normalizedPhone);
-		if (client == null)
-		{
-			return true;
-		}
+        #endregion
 
-		return client.Id == id;
-	}
+        #region Password
 
-	public bool BirthNumberNotTaken(long id, string birthNumber)
-	{
-		var client = _dataContext.Clients.AsNoTracking().SingleOrDefault(c => c.BirthNumber == birthNumber);
-		if (client == null)
-		{
-			return true;
-		}
+        When(c => IsNotNullOrEmpty(c.Password), () =>
+        {
+            RuleFor(c => c.Password)
+                .Must(p => ContainSpecialCharacters(p, RequiredSpecialCharacters))
+                .WithMessage($"Password must contain at least {RequiredSpecialCharacters} special characters.");
 
-		return client.Id == id;
-	}
+            RuleFor(c => c.Password)
+                .Must(p => ContainDigits(p, RequiredDigitCharacters))
+                .WithMessage($"Password must contain at least {RequiredDigitCharacters} special characters.");
+
+            RuleFor(c => c.Password)
+                .Must(p => ContainLowerCaseCharacters(p, RequiredLowerCaseCharacters))
+                .WithMessage($"Password must contain at least {RequiredLowerCaseCharacters} lower case characters.");
+
+            RuleFor(c => c.Password)
+                .Must(p => ContainUpperCaseCharacters(p, RequiredUpperCaseCharacters))
+                .WithMessage($"Password must contain at least {RequiredUpperCaseCharacters} upper case characters.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.Password)
+                .NotEmpty()
+                .WithMessage("Password is required.");
+        });
+
+        #endregion
+
+        #region DateBorn
+
+        RuleFor(c => c.DateBorn)
+            .Must(db => IsLegalAge(db, AgeMinimumValue))
+            .WithMessage($"Client must be at least {AgeMinimumValue} years old.");
+
+        #endregion
+    }
 }

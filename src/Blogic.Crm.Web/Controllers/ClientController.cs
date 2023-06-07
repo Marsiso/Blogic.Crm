@@ -1,15 +1,10 @@
-using System.Globalization;
-using System.Net.Mime;
-using Blogic.Crm.Web.Views.Client;
-using CsvHelper;
-using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using static Blogic.Crm.Domain.Data.Entities.User;
+using Blogic.Crm.Web.Views.Client;
 
 namespace Blogic.Crm.Web.Controllers;
 
 /// <summary>
-///     Controller that handles requests related to the <see cref="Client" /> entity.
+///     A controller that handles requests that are related to the clients.
 /// </summary>
 public sealed class ClientController : Controller
 {
@@ -21,11 +16,8 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	///     Gets the client dashboard panel with the default client data set.
+	///     Returns a view with the user management panel.
 	/// </summary>
-	/// <param name="queryString"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Client.GetAll)]
 	[HttpPost(Routes.Client.GetAll)]
 	[IgnoreAntiforgeryToken]
@@ -34,30 +26,28 @@ public sealed class ClientController : Controller
 	{
 		try
 		{
-			// Retrieve paginated client representation for the view model.
-			GetClientsRepresentationsQuery query = new(queryString);
+			// Retrieving clients from the database.
+			GetClientsQuery query = new(queryString);
 			var paginatedClients = await _sender.Send(query, cancellationToken);
 
-			// Build the view model and return in to the client.
+			// Response to request.
 			return View(new GetClientsViewModel { Clients = paginatedClients, QueryString = queryString });
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
 			          nameof(GetClients));
 
-			return RedirectToAction(nameof(Index), "Home", new { });
+			return RedirectToAction(nameof(Index), "Home");
 		}
 	}
 
 	/// <summary>
-	///     Gets the client details, owned contracts and related data.
+	///     Returns a view with the user details.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Client.Get)]
 	[HttpPost(Routes.Client.Get)]
 	[IgnoreAntiforgeryToken]
@@ -65,27 +55,32 @@ public sealed class ClientController : Controller
 	{
 		try
 		{
-			var entity = new Entity { Id = id };
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
 			
-			// Retrieve the client with provided ID.
-			GetClientQuery clientQuery = new(new Entity { Id = id }, false);
+			// Retrieving client from the database.
+			GetClientQuery clientQuery = new(entity, false);
 			var clientEntity = await _sender.Send(clientQuery, cancellationToken);
 
-			// Build the view model and return in to the client.
-			if (clientEntity == null)
+			// When the client is not found then respond to the request.
+			if (clientEntity is null)
 			{
 				return View(new GetClientViewModel(null, null));
 			}
 
-			// Retrieve the owned contracts by client with provided ID.
-			GetOwnedContractsQuery contractsQuery = new(entity);
-			var ownedContracts = await _sender.Send(contractsQuery, cancellationToken);
+			// Retrieving owned contracts by client from the database.
+			GetContractsOwnedQuery query = new(entity);
+			var ownedContracts = await _sender.Send(query, cancellationToken);
 			
+			// Mapping client to the model to be exported.
 			var client = clientEntity.Adapt<ClientRepresentation>();
+			
+			// Response to request.
 			return View(new GetClientViewModel(client, ownedContracts));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
@@ -96,24 +91,19 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	///     Gets the create client form with no data.
+	///     Returns a view with the user registration form.
 	/// </summary>
-	/// <returns></returns>
 	[HttpGet(Routes.Client.Create)]
 	public IActionResult CreateClient()
 	{
 		try
 		{
-			return View(new ClientCreateViewModel
-			{
-				Client = new ClientInput
-				{
-					DateBorn = MinimalDateBorn
-				}
-			});
+			// Response to request.
+			return View(new ClientCreateViewModel(new ClientInput(MinimalDateBorn)));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
@@ -124,12 +114,8 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	///     Handles the requests made by the create client form, either creates the client in the persistence store
-	///     or return the validation failures.
+	///     Returns a view with the user registration form and its validation failures if any.
 	/// </summary>
-	/// <param name="clientInput"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Client.Create)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> CreateClient(
@@ -138,20 +124,21 @@ public sealed class ClientController : Controller
 	{
 		try
 		{
-			// Validate and create the client in the persistence store.
+			// Create a client in the database.
 			var command = clientInput.Adapt<CreateClientCommand>();
 			var entity = await _sender.Send(command, cancellationToken);
 
-			// If the client creation is successful then redirect user to the client details page. 
-			return RedirectToAction("GetClient", "Client", new { entity.Id });
+			// If the user is successfully registered, display his details.
+			return RedirectToAction(nameof(GetClient), new { entity.Id });
 		}
 		catch (ValidationException exception)
 		{
-			// If there are any validation failures then return them with the create client form data.
+			// In case of validation errors in the client registration form, return the form with validation errors.
 			return View(nameof(CreateClient), new ClientCreateViewModel(clientInput, exception));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
@@ -162,151 +149,147 @@ public sealed class ClientController : Controller
 	}
 
 	/// <summary>
-	///     Gets the update client form with no data.
+	///     Returns a view with the user update form.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpGet(Routes.Client.Update)]
 	public async Task<IActionResult> UpdateClient(long id, CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Retrieve the client with the provided ID.
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Retrieving client from the database.
 			GetClientQuery query = new(entity, false);
 			var clientEntity = await _sender.Send(query, cancellationToken);
 
-			// Build the view model and return in to the client.
-			if (clientEntity == null)
+			// When the client is not found then respond to the request with redirect to the client management panel.
+			if (clientEntity is null)
 			{
-				return RedirectToAction(nameof(GetClients), new { });
+				return RedirectToAction(nameof(GetClients));
 			}
 
+			// Mapping client to the model to be exported.
 			var client = clientEntity.Adapt<ClientInput>();
+			
+			// Response to request.
 			return View(new ClientUpdateViewModel(id, client));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
 			          nameof(UpdateClient));
 
-			return RedirectToAction(nameof(GetClient), new { entity.Id });
+			return RedirectToAction(nameof(GetClients));
 		}
 	}
 
 	/// <summary>
-	///     Handles requests made by the update client form, either updates the persisted client
-	///     or returns the update client form with validation failures.
+	///     Returns a view with the user update form and its validation failures if any.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="clientInput"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Client.Update)]
+	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> UpdateClient(long id,
 	                                              [Bind(Prefix = nameof(ClientCreateViewModel.Client))]
 	                                              ClientInput clientInput,
 	                                              CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Get client.
-			var command = clientInput.Adapt<UpdateClientCommand>() with { Id = id };
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Update client in the database.
+			var command = clientInput.Adapt<UpdateClientCommand>() with { Entity = entity };
 			await _sender.Send(command, cancellationToken);
 
-			// Build the view model and return in to the client.
+			// If the user is successfully updated, display his details.
 			return RedirectToAction(nameof(GetClient), new { entity.Id });
 		}
 		catch (ValidationException validationException)
 		{
-			// If there are any client model validation failures then include them with the form data in the view model.
+			// In case of validation errors in the client update form, return the form with validation errors.
 			return View(new ClientUpdateViewModel(id, clientInput, validationException));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
 			          nameof(UpdateClient));
 
-			return RedirectToAction(nameof(GetClient), new { entity.Id });
+			return RedirectToAction(nameof(GetClients));
 		}
 	}
 
 	/// <summary>
-	///     Handles the deletion of persisted client.
+	///     Handles the form for deleting clients in the database.
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Client.Delete)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteClient(long id, CancellationToken cancellationToken)
 	{
-		var entity = new Entity { Id = id };
-
 		try
 		{
-			// Delete the persisted client.
+			// Represents an identifiable entity in the database.
+			var entity = new Entity(id);
+			
+			// Delete the client in the database.
 			DeleteClientCommand command = new(entity);
 			await _sender.Send(command, cancellationToken);
 
-			// Redirect user to the client dashboard panel page.
+			// If the user is successfully deleted, display the client management panel.
 			return RedirectToAction(nameof(GetClients));
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
 			          nameof(DeleteClient));
 
-			return RedirectToAction(nameof(GetClient), new { entity.Id });
+			return RedirectToAction(nameof(GetClients));
 		}
 	}
 
 	/// <summary>
-	///     Handles requests made by the export to CSV file form.
+	///     Handles the form for exporting client records to CSV.
 	/// </summary>
-	/// <param name="queryString"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	[HttpPost(Routes.Client.Export)]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> ExportClients(ClientQueryString queryString, CancellationToken cancellationToken)
 	{
 		try
 		{
-			// Retrieve sorted, filtered and ordered client data set.
-			GetClientRowsQuery query = new(queryString);
+			// Retrieving clients from the database.
+			GetClientsToExportQuery query = new(queryString);
 			var clientRows = await _sender.Send(query, cancellationToken);
 
-			// Data set transformation. 
+			// Export data set to CSV file. 
 			var content = new MemoryStream();
 			await using StreamWriter streamWriter = new(content);
 			await using var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
 			await csvWriter.WriteRecordsAsync(clientRows, cancellationToken);
 
-			// Return the requested data as CSV file.
+			// Return the requested file.
 			return File(content.GetBuffer(), MediaTypeNames.Application.Octet, "clients.csv");
 
 		}
 		catch (Exception exception)
 		{
+			// Exception catching and logging.
 			Log.Error(exception, "{Message}. Controller: '{Controller}'. Action: '{Action}'",
 			          exception.Message,
 			          nameof(ClientController),
 			          nameof(ExportClients));
 
 			return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-
 		}
 	}
 }

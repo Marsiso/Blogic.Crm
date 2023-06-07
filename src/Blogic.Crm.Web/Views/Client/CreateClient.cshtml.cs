@@ -12,6 +12,11 @@ public sealed class ClientCreateViewModel
 		ValidationException = validationException;
 	}
 
+	public ClientCreateViewModel(ClientInput client) : this()
+	{
+		Client = client;
+	}
+
 	public ClientInput Client { get; set; }
 	public ValidationException ValidationException { get; set; }
 }

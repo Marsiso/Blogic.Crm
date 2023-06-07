@@ -1,60 +1,52 @@
-using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
-
 namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
-///     Persists the client.
+///     Command for creating a client in the database.
 /// </summary>
-/// <param name="Email">Client's email address.</param>
-/// <param name="Password">Client's password used by the <see cref="IPasswordHasher" /> to securely store credentials.</param>
-/// <param name="GivenName">Client's given name.</param>
-/// <param name="FamilyName">Client's family name.</param>
-/// <param name="Phone">Client's phone number.</param>
-/// <param name="DateBorn">Client's date of birth.</param>
-/// <param name="BirthNumber">Client's birth number.</param>
-public record CreateClientCommand(string Email, string Password, string GivenName, string FamilyName, string Phone,
-                                  DateTime DateBorn, string BirthNumber) : ICommand<Entity>;
+public sealed record CreateClientCommand(string Email, string Password, string GivenName, string FamilyName,
+    string Phone,
+    DateTime DateBorn, string BirthNumber) : ICommand<Entity>;
 
 /// <summary>
-///     Handlers <see cref="CreateClientCommand" /> command.
+///     Processes the <see cref="CreateClientCommand" /> command.
 /// </summary>
 public sealed class CreateClientCommandHandler : ICommandHandler<CreateClientCommand, Entity>
 {
-	private readonly DataContext _dataContext;
-	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
-	private readonly IPasswordHasher _passwordHasher;
-	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
-	private readonly ISecurityStampProvider _securityStampProvider;
+    private readonly DataContext _dataContext;
+    private readonly IEmailLookupNormalizer _emailLookupNormalizer;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
+    private readonly ISecurityStampProvider _securityStampProvider;
 
-	public CreateClientCommandHandler(DataContext dataContext, IPasswordHasher passwordHasher,
-	                                  ISecurityStampProvider securityStampProvider,
-	                                  IEmailLookupNormalizer emailLookupNormalizer,
-	                                  IPhoneLookupNormalizer phoneLookupNormalizer)
-	{
-		_dataContext = dataContext;
-		_passwordHasher = passwordHasher;
-		_securityStampProvider = securityStampProvider;
-		_emailLookupNormalizer = emailLookupNormalizer;
-		_phoneLookupNormalizer = phoneLookupNormalizer;
-	}
+    public CreateClientCommandHandler(DataContext dataContext, IPasswordHasher passwordHasher,
+        ISecurityStampProvider securityStampProvider,
+        IEmailLookupNormalizer emailLookupNormalizer,
+        IPhoneLookupNormalizer phoneLookupNormalizer)
+    {
+        _dataContext = dataContext;
+        _passwordHasher = passwordHasher;
+        _securityStampProvider = securityStampProvider;
+        _emailLookupNormalizer = emailLookupNormalizer;
+        _phoneLookupNormalizer = phoneLookupNormalizer;
+    }
 
-	public Task<Entity> Handle(CreateClientCommand request, CancellationToken cancellationToken)
-	{
-		// Map the data to the client model.
-		var clientEntity = request.Adapt<Client>();
-		clientEntity.BirthNumber = FormatBirthNumber(clientEntity.BirthNumber)!;
+    public Task<Entity> Handle(CreateClientCommand request, CancellationToken cancellationToken)
+    {
+        // Map input data to the client model.
+        var client = request.Adapt<Client>();
+        client.BirthNumber = FormatBirthNumber(client.BirthNumber)!;
 
-		// Bind additional data such as indexers.
-		clientEntity.NormalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
-		clientEntity.Phone = _phoneLookupNormalizer.Normalize(request.Phone)!;
-		clientEntity.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
-		clientEntity.PasswordHash = _passwordHasher.HashPassword(request.Password);
+        // Normalize and complete the selected properties.
+        client.NormalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
+        client.Phone = _phoneLookupNormalizer.Normalize(request.Phone)!;
+        client.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
+        client.PasswordHash = _passwordHasher.HashPassword(request.Password);
 
-		// Persist the client.
-		_dataContext.Clients.Add(clientEntity);
-		_dataContext.SaveChanges();
+        // Create a client in the database.
+        _dataContext.Clients.Add(client);
+        _dataContext.SaveChanges();
 
-		// Return the client ID.
-		return Task.FromResult((Entity)clientEntity);
-	}
+        // Return the identifier of the created client.
+        return Task.FromResult((Entity)client);
+    }
 }

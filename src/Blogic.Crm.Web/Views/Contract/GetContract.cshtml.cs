@@ -6,14 +6,16 @@ public sealed class GetContractViewModel
 	{
 	}
 
-	public GetContractViewModel(ContractRepresentation? contract, ClientRepresentation? client, ConsultantRepresentation? consultant)
+	public GetContractViewModel(ContractRepresentation? contract, ClientRepresentation? client, ConsultantRepresentation? manager, IEnumerable<ConsultantRepresentation>? consultants)
 	{
 		Contract = contract;
 		Client = client;
-		Consultant = consultant;
+		Manager = manager;
+		Consultants = consultants;
 	}
 
 	public ContractRepresentation? Contract { get; set; }
 	public ClientRepresentation? Client { get; set; }
-	public ConsultantRepresentation? Consultant { get; set; }
+	public ConsultantRepresentation? Manager { get; set; }
+	public IEnumerable<ConsultantRepresentation>? Consultants { get; set; }
 }

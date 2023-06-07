@@ -8,8 +8,8 @@ namespace Blogic.Crm.Domain.Data.Entities;
 [Table("consultants")]
 public sealed class Consultant : User, ICloneable
 {
-	public object Clone()
-	{
-		return MemberwiseClone();
-	}
+    public object Clone()
+    {
+        return MemberwiseClone();
+    }
 }

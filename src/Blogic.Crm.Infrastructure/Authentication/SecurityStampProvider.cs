@@ -5,10 +5,13 @@ namespace Blogic.Crm.Infrastructure.Authentication;
 /// </summary>
 public sealed class SecurityStampProvider : ISecurityStampProvider
 {
-	public const string Format = "D";
+    /// <summary>
+    ///     The format of the generated stamp, also known as Hyphens , which consists of 36 characters.
+    /// </summary>
+    private const string Format = "D";
 
-	public string GenerateSecurityStamp()
-	{
-		return Guid.NewGuid().ToString(Format);
-	}
+    public string GenerateSecurityStamp()
+    {
+        return Guid.NewGuid().ToString(Format);
+    }
 }

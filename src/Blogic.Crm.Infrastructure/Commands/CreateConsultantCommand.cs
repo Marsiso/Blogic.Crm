@@ -1,57 +1,50 @@
 ﻿namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
-///     Persists the consultant.
+///     Create a consultant in the database.
 /// </summary>
-/// <param name="Email">Consultant's email address.</param>
-/// <param name="Password">Consultant's password used by the <see cref="IPasswordHasher" /> to securely store credentials.</param>
-/// <param name="GivenName">Consultant's given name.</param>
-/// <param name="FamilyName">Consultant's family name.</param>
-/// <param name="Phone">Consultant's phone number.</param>
-/// <param name="DateBorn">Consultant's date of birth.</param>
-/// <param name="BirthNumber">Consultant's birth number.</param>
 public record CreateConsultantCommand(string Email, string Password, string GivenName, string FamilyName, string Phone,
-                                      DateTime DateBorn, string BirthNumber) : ICommand<Entity>;
+    DateTime DateBorn, string BirthNumber) : ICommand<Entity>;
 
 /// <summary>
-///     Handles <see cref="CreateConsultantCommand" /> command.
+///     Processes the <see cref="CreateConsultantCommand" /> command.
 /// </summary>
 public sealed class CreateConsultantCommandHandler : ICommandHandler<CreateConsultantCommand, Entity>
 {
-	private readonly DataContext _dataContext;
-	private readonly IEmailLookupNormalizer _emailLookupNormalizer;
-	private readonly IPasswordHasher _passwordHasher;
-	private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
-	private readonly ISecurityStampProvider _securityStampProvider;
+    private readonly DataContext _dataContext;
+    private readonly IEmailLookupNormalizer _emailLookupNormalizer;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IPhoneLookupNormalizer _phoneLookupNormalizer;
+    private readonly ISecurityStampProvider _securityStampProvider;
 
-	public CreateConsultantCommandHandler(DataContext dataContext, IPasswordHasher passwordHasher,
-	                                      ISecurityStampProvider securityStampProvider,
-	                                      IEmailLookupNormalizer emailLookupNormalizer,
-	                                      IPhoneLookupNormalizer phoneLookupNormalizer)
-	{
-		_dataContext = dataContext;
-		_passwordHasher = passwordHasher;
-		_securityStampProvider = securityStampProvider;
-		_emailLookupNormalizer = emailLookupNormalizer;
-		_phoneLookupNormalizer = phoneLookupNormalizer;
-	}
+    public CreateConsultantCommandHandler(DataContext dataContext, IPasswordHasher passwordHasher,
+        ISecurityStampProvider securityStampProvider,
+        IEmailLookupNormalizer emailLookupNormalizer,
+        IPhoneLookupNormalizer phoneLookupNormalizer)
+    {
+        _dataContext = dataContext;
+        _passwordHasher = passwordHasher;
+        _securityStampProvider = securityStampProvider;
+        _emailLookupNormalizer = emailLookupNormalizer;
+        _phoneLookupNormalizer = phoneLookupNormalizer;
+    }
 
-	public Task<Entity> Handle(CreateConsultantCommand request, CancellationToken cancellationToken)
-	{
-		// Map the data to the consultant model.
-		var consultantEntity = request.Adapt<Consultant>();
+    public Task<Entity> Handle(CreateConsultantCommand request, CancellationToken cancellationToken)
+    {
+        // Map input data to the consultant model.
+        var consultant = request.Adapt<Consultant>();
 
-		// Bind additional data such as indexers.
-		consultantEntity.NormalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
-		consultantEntity.Phone = _phoneLookupNormalizer.Normalize(request.Phone)!;
-		consultantEntity.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
-		consultantEntity.PasswordHash = _passwordHasher.HashPassword(request.Password);
+        // Normalize and complete the selected properties.
+        consultant.NormalizedEmail = _emailLookupNormalizer.Normalize(request.Email)!;
+        consultant.Phone = _phoneLookupNormalizer.Normalize(request.Phone)!;
+        consultant.SecurityStamp = _securityStampProvider.GenerateSecurityStamp();
+        consultant.PasswordHash = _passwordHasher.HashPassword(request.Password);
 
-		// Persist the consultant.
-		_dataContext.Consultants.Add(consultantEntity);
-		_dataContext.SaveChanges();
+        // Create a consultant in the database.
+        _dataContext.Consultants.Add(consultant);
+        _dataContext.SaveChanges();
 
-		// Return the consultant ID.
-		return Task.FromResult((Entity)consultantEntity);
-	}
+        // Return the identifier of the created consultant.
+        return Task.FromResult((Entity)consultant);
+    }
 }

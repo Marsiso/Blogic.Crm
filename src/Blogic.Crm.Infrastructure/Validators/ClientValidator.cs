@@ -1,97 +1,123 @@
 using static Blogic.Crm.Domain.Data.Entities.User;
-using static Blogic.Crm.Infrastructure.TypeExtensions.StringExtensions;
-using static Blogic.Crm.Infrastructure.TypeExtensions.DateTimeExtensions;
 
 namespace Blogic.Crm.Infrastructure.Validators;
 
 /// <summary>
-///     <see cref="Client" /> model validations.
+///     Validations for the <see cref="Client" /> model.
 /// </summary>
 public sealed class ClientValidator : AbstractValidator<Client>
 {
-	public ClientValidator()
-	{
-		When(c => IsNotNullOrEmpty(c.GivenName), () =>
-		{
-			RuleFor(c => c.GivenName)
-				.MaximumLength(GivenNameMaximumLength)
-				.WithMessage($"Client's given name must be at most {GivenNameMaximumLength} characters long.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.GivenName)
-				.NotEmpty()
-				.WithMessage("Client's given name is required.");
-		});
+    public ClientValidator()
+    {
+        #region GivenName
 
-		When(c => IsNotNullOrEmpty(c.FamilyName), () =>
-		{
-			RuleFor(c => c.FamilyName)
-				.MaximumLength(FamilyNameMaximumLength)
-				.WithMessage($"Client's family name must be at most {FamilyNameMaximumLength} characters long.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.FamilyName)
-				.NotEmpty()
-				.WithMessage("Client's family name is required.");
-		});
+        When(c => IsNotNullOrEmpty(c.GivenName), () =>
+        {
+            RuleFor(c => c.GivenName)
+                .MaximumLength(GivenNameMaximumLength)
+                .WithMessage($"Given name must be at most {GivenNameMaximumLength} characters long.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.GivenName)
+                .NotEmpty()
+                .WithMessage("Given name is required.");
+        });
 
-		When(c => IsNotNullOrEmpty(c.Email), () =>
-		{
-			RuleFor(c => c.Email)
-				.MaximumLength(EmailMaximumLength)
-				.WithMessage($"Client's email address must be at most {EmailMaximumLength} characters long.");
+        #endregion
 
-			RuleFor(c => c.Email)
-				.EmailAddress()
-				.WithMessage("Client's email address format is invalid.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.Email)
-				.NotEmpty()
-				.WithMessage("Client's email address is required.");
-		});
+        #region FamilyName
 
-		When(c => IsNotNullOrEmpty(c.Phone), () =>
-		{
-			RuleFor(c => c.Phone)
-				.MaximumLength(PhoneMaximumLength)
-				.WithMessage($"Client's phone number must be at most {PhoneMaximumLength} characters long.");
+        When(c => IsNotNullOrEmpty(c.FamilyName), () =>
+        {
+            RuleFor(c => c.FamilyName)
+                .MaximumLength(FamilyNameMaximumLength)
+                .WithMessage($"Family name must be at most {FamilyNameMaximumLength} characters long.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.FamilyName)
+                .NotEmpty()
+                .WithMessage("Family name is required.");
+        });
 
-			RuleFor(c => c.Phone)
-				.Must(IsPhoneNumber)
-				.WithMessage("Client's phone number format is invalid.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.Phone)
-				.NotEmpty()
-				.WithMessage("Client's phone number is required.");
-		});
+        #endregion
 
-		When(c => IsNotNullOrEmpty(c.BirthNumber), () =>
-		{
-			RuleFor(c => c.BirthNumber)
-				.MaximumLength(BirthNumberMaximumLength)
-				.WithMessage($"Client's birth number must be at most {BirthNumberMaximumLength} characters long.");
+        #region Email
 
-			RuleFor(c => c.BirthNumber)
-				.Matches(@"[0-9]{6}[/]?[0-9]{4}")
-				.WithMessage("Client's birth number format is invalid.");
-		}).Otherwise(() =>
-		{
-			RuleFor(c => c.BirthNumber)
-				.NotEmpty()
-				.WithMessage("Client's birth number is required.");
-		});
+        When(c => IsNotNullOrEmpty(c.Email), () =>
+        {
+            RuleFor(c => c.Email)
+                .MaximumLength(EmailMaximumLength)
+                .WithMessage($"Email address must be at most {EmailMaximumLength} characters long.");
 
-		When(c => IsNotNullOrEmpty(c.PasswordHash), () => { }).Otherwise(() =>
-		{
-			RuleFor(c => c.PasswordHash)
-				.NotEmpty()
-				.WithMessage("Password hash is required.");
-		});
+            RuleFor(c => c.Email)
+                .EmailAddress()
+                .WithMessage("Email address has invalid format.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .WithMessage("Email address is required.");
+        });
 
-		RuleFor(c => c.DateBorn)
-			.Must(db => IsLegalAge(db, AgeMinimumValue))
-			.WithMessage($"Client must be at least {AgeMinimumValue} years old.");
-	}
+        #endregion
+
+        #region Phone
+
+        When(c => IsNotNullOrEmpty(c.Phone), () =>
+        {
+            RuleFor(c => c.Phone)
+                .MaximumLength(PhoneMaximumLength)
+                .WithMessage($"Telephone number must be at most {PhoneMaximumLength} characters long.");
+
+            RuleFor(c => c.Phone)
+                .Must(IsPhoneNumber)
+                .WithMessage("Telephone number has invalid format.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.Phone)
+                .NotEmpty()
+                .WithMessage("Telephone number is required.");
+        });
+
+        #endregion
+
+        #region BirthNumber
+
+        When(c => IsNotNullOrEmpty(c.BirthNumber), () =>
+        {
+            RuleFor(c => c.BirthNumber)
+                .MaximumLength(BirthNumberMaximumLength)
+                .WithMessage($"Birth number must be at most {BirthNumberMaximumLength} characters long.");
+
+            RuleFor(c => c.BirthNumber)
+                .Matches(@"[0-9]{6}[/]?[0-9]{4}")
+                .WithMessage("Birth number format is invalid.");
+        }).Otherwise(() =>
+        {
+            RuleFor(c => c.BirthNumber)
+                .NotEmpty()
+                .WithMessage("Birth number is required.");
+        });
+
+        #endregion
+
+        #region PasswordHash
+
+        When(c => IsNotNullOrEmpty(c.PasswordHash), () => { }).Otherwise(() =>
+        {
+            RuleFor(c => c.PasswordHash)
+                .NotEmpty()
+                .WithMessage("Password hash is required.");
+        });
+
+        #endregion
+
+        #region DateBorn
+
+        RuleFor(c => c.DateBorn)
+            .Must(db => IsLegalAge(db, AgeMinimumValue))
+            .WithMessage($"Client must be at least {AgeMinimumValue} years old.");
+
+        #endregion
+    }
 }

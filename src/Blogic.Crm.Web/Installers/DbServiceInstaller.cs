@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-///     Installer for the database related services.
+///     Installer services that bind to the database, data access and CRUD operations.
 /// </summary>
 public sealed class DbServiceInstaller : IServiceInstaller
 {

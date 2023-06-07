@@ -3,7 +3,7 @@ using Blogic.Crm.Infrastructure.Validations;
 namespace Blogic.Crm.Web.Installers;
 
 /// <summary>
-///     Installer related to the CQRS related services.
+///     Installer services that are related to commands, queries, and services related to the CQRS design pattern.
 /// </summary>
 public sealed class CqrsInstaller : IServiceInstaller
 {

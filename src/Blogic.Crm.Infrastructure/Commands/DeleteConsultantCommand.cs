@@ -1,39 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Blogic.Crm.Infrastructure.Commands;
+﻿namespace Blogic.Crm.Infrastructure.Commands;
 
 /// <summary>
-///     Deletes the persisted consultant.
+///     The command to remove the consultant from the database.
 /// </summary>
 /// <param name="Id">Provided unique identifier to distinct between consultants.</param>
 public sealed record DeleteConsultantCommand(Entity Entity) : ICommand<Unit>;
 
 /// <summary>
-///     Handles the <see cref="DeleteConsultantCommand" /> command.
+///     Processes the <see cref="DeleteConsultantCommand" /> command.
 /// </summary>
 public sealed class DeleteConsultantCommandHandler : ICommandHandler<DeleteConsultantCommand, Unit>
 {
-	private readonly DataContext _dataContext;
+    private readonly DataContext _dataContext;
 
-	public DeleteConsultantCommandHandler(DataContext dataContext)
-	{
-		_dataContext = dataContext;
-	}
+    public DeleteConsultantCommandHandler(DataContext dataContext)
+    {
+        _dataContext = dataContext;
+    }
 
-	public async Task<Unit> Handle(DeleteConsultantCommand request, CancellationToken cancellationToken)
-	{
-		// Retrieve the persisted consultant using the provided ID.
-		var consultantEntity = await _dataContext.Consultants
-		                                         .AsTracking()
-		                                         .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
+    public async Task<Unit> Handle(DeleteConsultantCommand request, CancellationToken cancellationToken)
+    {
+        // Get the consultant from the database.
+        var consultant = await _dataContext.Consultants
+            .AsTracking()
+            .SingleOrDefaultAsync(c => c.Id == request.Entity.Id, cancellationToken);
 
-		// When the consultant isn't persisted then take no action and return else delete the persisted consultant.
-		if (consultantEntity != null)
-		{
-			_dataContext.Consultants.Remove(consultantEntity);
-			await _dataContext.SaveChangesAsync(cancellationToken);
-		}
+        // If the consultant is not found, do not perform any action and return,
+        // otherwise remove the consultant from the database and save the changes.
+        if (consultant is null) return Unit.Value;
 
-		return Unit.Value;
-	}
+        _dataContext.Consultants.Remove(consultant);
+        await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
+    }
 }
