@@ -1,4 +1,5 @@
 using Blogic.Crm.Infrastructure.Logging;
+using Blogic.Crm.Web.Helpers;
 using Blogic.Crm.Web.Installers;
 using Blogic.Crm.Web.Persistence;
 
@@ -44,6 +45,7 @@ try
 		application.UseHsts();
 	}
 
+	application.AddSecurityHeaders();
 	application.UseHttpsRedirection();
 	application.UseStaticFiles();
 	application.UseRouting();
